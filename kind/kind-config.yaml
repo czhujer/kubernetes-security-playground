@@ -37,6 +37,12 @@ nodes:
       # for SPO
       - hostPath: /proc
         containerPath: /hostproc
+      # allow Falco to use devices provided by the kernel module
+      - hostPath: /dev
+        containerPath: /dev
+        # allow Falco to use the Docker unix socket
+      - hostPath: /var/run/docker.sock
+        containerPath: /var/run/docker.sock
     kubeadmConfigPatches:
       - |
         kind: InitConfiguration

@@ -183,10 +183,13 @@ prometheus-stack-deploy:
 
 .PHONY: starboard-deploy
 starboard-deploy:
-	# projects
 	kubectl -n argocd apply -f argocd/projects/security-starboard.yaml
-	# (update) CRDs
 	kubectl -n argocd apply -f argocd/security-starboard.yaml
+
+.PHONY: falco-deploy
+falco-deploy:
+	kubectl -n argocd apply -f argocd/projects/security-falco.yaml
+	kubectl -n argocd apply -f argocd/security-falco.yaml
 
 #.PHONY: k8s-apply
 #k8s-apply:
