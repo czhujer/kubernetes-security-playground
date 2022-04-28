@@ -1,0 +1,32 @@
+---
+preflight:
+  image:
+    pullPolicy: IfNotPresent
+operator:
+  image:
+    pullPolicy: IfNotPresent
+  replicas: 1
+  prometheus:
+    enabled: true
+nodeinit:
+  image:
+    pullPolicy: IfNotPresent
+  enabled: true
+kubeProxyReplacement: partial
+hostServices:
+  enabled: false
+externalIPs:
+  enabled: true
+nodePort:
+  enabled: true
+hostPort:
+  enabled: true
+bpf:
+  masquerade: false
+image:
+  pullPolicy: IfNotPresent
+ipam:
+  mode: kubernetes
+prometheus:
+  enabled: true
+

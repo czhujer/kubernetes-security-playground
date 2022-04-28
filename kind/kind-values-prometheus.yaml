@@ -1,0 +1,52 @@
+---
+#prometheusOperator:
+#  admissionWebhooks:
+#    enabled: false
+#  tls:
+#    enabled: false
+grafana:
+  enabled: true
+  serviceMonitor:
+    enable: true
+  adminPassword: admin
+  ingress:
+    enabled: true
+    hosts:
+      - grafana.127.0.0.1.nip.io
+  sidecar:
+    dashboards:
+      searchNamespace: ALL
+    enableUniqueFilenames: true
+prometheus:
+  enabled: true
+  ingress:
+    enabled: yes
+    hosts:
+      - prometheus.127.0.0.1.nip.io
+  prometheusSpec:
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+#    scrapeInterval: 5s
+#    scrapeTimeout: 5s
+#
+kubeStateMetrics:
+  enabled: true
+nodeExporter:
+  enabled: true
+alertmanager:
+  enabled: false
+kubeApiServer:
+  enabled: false
+kubelet:
+  enabled: true
+kubeProxy:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+coreDns:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeEtcd:
+  enabled: false
