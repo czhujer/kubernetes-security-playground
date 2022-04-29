@@ -16,19 +16,6 @@ resource "helm_release" "cert-manager" {
   ]
 }
 
-#helm repo add argo https://argoproj.github.io/argo-helm
-#helm upgrade --install \
-#argocd-single \
-#argo/argo-cd \
-#--namespace argocd \
-#--create-namespace \
-#--version "${ARGOCD_CHART_VERSION}" \
-#-f kind/kind-values-argocd.yaml \
-#-f kind/kind-values-argocd-service-monitors.yaml \
-#--wait
-## update CRDs
-#kubectl -n argocd apply -f argocd/argo-cd-crds.yaml
-
 resource "helm_release" "argocd" {
   name             = "argocd-single"
   repository       = "https://argoproj.github.io/argo-helm"
@@ -66,7 +53,18 @@ resource "helm_release" "argocd" {
     type  = "string"
   }
 
-  depends_on = [digitalocean_droplet.control_plane,
+  depends_on = [helm_release.cilium,
     digitalocean_droplet.worker,
   ]
+}
+
+## update CRDs
+#
+data "kubectl_file_documents" "argo_cd_crds" {
+  content = file("../argocd/argo-cd-crds.yaml")
+}
+
+resource "kubectl_manifest" "argo_cd_crds" {
+  yaml_body          = data.kubectl_file_documents.argo_cd_crds.content
+  depends_on         = [helm_release.argocd]
 }

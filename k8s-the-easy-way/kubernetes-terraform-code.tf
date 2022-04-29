@@ -10,6 +10,10 @@ provider "helm" {
   }
 }
 
+provider "kubectl" {
+  config_path = "~/.kube/config_ktew"
+}
+
 ###########################################################
 #### GENERATE RANDOM STRING FOR UNIQUE KUBECTL CONTEXT ####
 ###########################################################

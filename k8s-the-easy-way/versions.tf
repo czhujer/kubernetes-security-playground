@@ -8,5 +8,9 @@ terraform {
     null   = { version = "~> 3.1" }
     random = { version = "~> 3.1" }
     helm   = { version = "~> 2.5" }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.14.0"
+    }
   }
 }
