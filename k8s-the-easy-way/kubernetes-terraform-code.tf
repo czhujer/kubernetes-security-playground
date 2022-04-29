@@ -98,12 +98,17 @@ resource "digitalocean_droplet" "control_plane" {
     ]
   }
 
+  # fixes for cilium and etcd
+  #
   provisioner "remote-exec" {
     inline = [
-      "export KUBECONFIG=/etc/kubernetes/admin.conf; kubectl apply -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/crds/crd-servicemonitors.yaml",
+      "kubectl apply -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/crds/crd-servicemonitors.yaml",
+      "kubectl taint nodes --all node-role.kubernetes.io/master- || true"
     ]
   }
 
+  # copy kubeconfig from remote server to workstation
+  #
   provisioner "local-exec" {
     command = "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${digitalocean_droplet.control_plane.0.ipv4_address}:/etc/kubernetes/admin.conf $${HOME}/.kube/config_ktew"
   }

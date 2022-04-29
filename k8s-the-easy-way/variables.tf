@@ -2,11 +2,7 @@
 variable "kubernetes_version" { default = "1.23.5" }
 # https://docs.docker.com/engine/release-notes/
 variable "docker_version" { default = "20.10.8" }
-# Note: Cilium no longer releases a deployment file and rely on helm now.
-# to generate:
-# helm template cilium cilium/cilium --version 1.10.4 --namespace kube-system > cilium-install.yaml
-# https://github.com/cilium/cilium/releases
-# variable "cilium_version" { default = "1.10.4" }
+# k8s cluster bootstrap
 variable "pod_subnet" { default = "10.217.0.0/16" }
 # https://www.digitalocean.com/docs/platform/availability-matrix/#datacenter-regions
 variable "dc_region" { default = "fra1" }

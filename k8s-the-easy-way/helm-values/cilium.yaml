@@ -1,5 +1,6 @@
 ---
 operator:
+  replicas: 1
   prometheus:
     enabled: true
   serviceMonitor:
