@@ -1,42 +1,14 @@
-##############
-#### TODO ####
-##############
-
-# containerd swap
-# security
-# multi-master
-# block storage
-
-##################################
-#### SET VARIABLES & VERISONS ####
-##################################
-
-# https://github.com/kubernetes/sig-release/blob/master/releases/patch-releases.md#timelines
-variable "kubernetes_version" { default = "1.23.5" }
-# https://docs.docker.com/engine/release-notes/
-variable "docker_version" { default = "20.10.8" }
-# Note: Cilium no longer releases a deployment file and rely on helm now.
-# to generate:
-# helm template cilium cilium/cilium --version 1.10.4 --namespace kube-system > cilium-install.yaml
-# https://github.com/cilium/cilium/releases
-# variable "cilium_version" { default = "1.10.4" }
-variable "pod_subnet" { default = "10.217.0.0/16" }
-# https://www.digitalocean.com/docs/platform/availability-matrix/#datacenter-regions
-variable "dc_region" { default = "fra1" }
-# https://developers.digitalocean.com/documentation/v2/#list-all-sizes
-# setting below 2 CPUs will fail kubeadm, ignore with `--ignore-preflight-errors=all`
-variable "droplet_size" { default = "s-2vcpu-2gb" }
-# set with `export DO_PAT=<API TOKEN>`
-variable "do_token" {}
-# set in `*-cluster.sh` scripts
-variable "pub_key" {}
-variable "pvt_key" {}
-
 ##################################
 #### CONFIGURE CLOUD PROVIDER ####
 ##################################
 
 provider "digitalocean" { token = var.do_token }
+
+provider "helm" {
+  kubernetes {
+    config_path = "~/.kube/config_ktew"
+  }
+}
 
 ###########################################################
 #### GENERATE RANDOM STRING FOR UNIQUE KUBECTL CONTEXT ####
@@ -126,22 +98,9 @@ resource "digitalocean_droplet" "control_plane" {
     ]
   }
 
-  #####################
-  #### INSTALL CNI ####
-  #####################
-
-  provisioner "file" {
-    source      = "cilium-install.yaml"
-    destination = "/tmp/cilium-install.yaml"
+  provisioner "local-exec" {
+    command = "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${digitalocean_droplet.control_plane.0.ipv4_address}:/etc/kubernetes/admin.conf $${HOME}/.kube/config_ktew"
   }
-
-  provisioner "remote-exec" {
-    inline = [
-      # INSTALL CILIUM CNI
-      "kubectl apply -f /tmp/cilium-install.yaml"
-    ]
-  }
-
 }
 
 #############################
@@ -156,7 +115,6 @@ resource "digitalocean_droplet" "worker" {
   size               = var.droplet_size
   private_networking = true
   ssh_keys           = [digitalocean_ssh_key.terraform.id]
-
 
   connection {
     user        = "root"
@@ -214,19 +172,21 @@ resource "digitalocean_droplet" "worker" {
   }
 }
 
-##########################
-#### OUTPUT VARIABLES ####
-##########################
+#####################
+#### INSTALL CNI ####
+#####################
 
-output "control_plane_ip" {
-  value = digitalocean_droplet.control_plane.*.ipv4_address
-}
+resource "helm_release" "cilium" {
+  name       = "cilium"
+  repository = "https://helm.cilium.io/"
+  chart      = "cilium"
+  version    = "1.11.4"
+  namespace  = "kube-system"
 
-output "worker_ip" {
-  value = digitalocean_droplet.worker.*.ipv4_address
-}
+#  values = [
+#    file("../kind/cilium-hubble.yaml"),
+#    file("../kind/cilium-service-monitors.yaml")
+#  ]
 
-output "cluster_context" {
-  value       = format("ktew-%s-%s", random_string.lower.result, var.dc_region)
-  description = "kubectl config use-context --context ..."
+  depends_on = [digitalocean_droplet.control_plane]
 }

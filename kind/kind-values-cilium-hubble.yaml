@@ -1,5 +1,4 @@
 ---
-
 hubble:
   enabled: true
   relay:

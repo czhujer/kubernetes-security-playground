@@ -1,8 +1,3 @@
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
-  }
-}
 
 resource "helm_release" "cert-manager" {
   name             = "cert-manager"
@@ -14,5 +9,9 @@ resource "helm_release" "cert-manager" {
 
   values = [
     file("../kind/cert-manager.yaml")
+  ]
+
+  depends_on = [digitalocean_droplet.control_plane,
+    digitalocean_droplet.worker,
   ]
 }

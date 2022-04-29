@@ -7,5 +7,6 @@ terraform {
     }
     null   = { version = "~> 3.1" }
     random = { version = "~> 3.1" }
+    helm   = { version = "~> 2.5" }
   }
 }
