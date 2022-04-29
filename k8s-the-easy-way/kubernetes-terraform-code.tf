@@ -69,7 +69,7 @@ resource "digitalocean_droplet" "control_plane" {
   private_networking = true
   ssh_keys           = [digitalocean_ssh_key.terraform.id]
 
-connection {
+  connection {
     user        = "root"
     host        = self.ipv4_address
     type        = "ssh"
@@ -78,26 +78,26 @@ connection {
     agent       = false
   }
 
-###############################
-#### RENDER KUBEADM CONFIG ####
-###############################
+  ###############################
+  #### RENDER KUBEADM CONFIG ####
+  ###############################
 
-provisioner "file" {
-    content = templatefile("${path.module}/kubeadm-config.tpl", 
-    {
-      cluster_name = format("ktew-%s", var.dc_region),
-      kubernetes_version = var.kubernetes_version,
-      pod_subnet = var.pod_subnet,
-      control_plane_ip = digitalocean_droplet.control_plane[0].ipv4_address 
+  provisioner "file" {
+    content = templatefile("${path.module}/kubeadm-config.tpl",
+      {
+        cluster_name       = format("ktew-%s", var.dc_region),
+        kubernetes_version = var.kubernetes_version,
+        pod_subnet         = var.pod_subnet,
+        control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address
     })
     destination = "/tmp/kubeadm-config.yaml"
   }
 
-###################################################
-#### INSTALL CONTROL PLANE DOCKER / KUBERNETES ####
-###################################################
+  ###################################################
+  #### INSTALL CONTROL PLANE DOCKER / KUBERNETES ####
+  ###################################################
 
-provisioner "remote-exec" {
+  provisioner "remote-exec" {
     inline = [
       # GENERAL REPO SPEEDUP
       "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
@@ -122,23 +122,23 @@ provisioner "remote-exec" {
       # KUBEADM INIT THE CONTROL PLANE
       "kubeadm init --config=/tmp/kubeadm-config.yaml",
       # SETUP KUBECTL REMOTELY
-     "mkdir -p /root/.kube && cp -i /etc/kubernetes/admin.conf /root/.kube/config && chown $(id -u):$(id -g) /root/.kube/config"
+      "mkdir -p /root/.kube && cp -i /etc/kubernetes/admin.conf /root/.kube/config && chown $(id -u):$(id -g) /root/.kube/config"
     ]
   }
 
-#####################
-#### INSTALL CNI ####
-#####################
+  #####################
+  #### INSTALL CNI ####
+  #####################
 
-provisioner "file" {
-  source      = "cilium-install.yaml"
-  destination = "/tmp/cilium-install.yaml"
-}
+  provisioner "file" {
+    source      = "cilium-install.yaml"
+    destination = "/tmp/cilium-install.yaml"
+  }
 
-provisioner "remote-exec" {
-  inline = [
-    # INSTALL CILIUM CNI
-    "kubectl apply -f /tmp/cilium-install.yaml"
+  provisioner "remote-exec" {
+    inline = [
+      # INSTALL CILIUM CNI
+      "kubectl apply -f /tmp/cilium-install.yaml"
     ]
   }
 
@@ -158,36 +158,36 @@ resource "digitalocean_droplet" "worker" {
   ssh_keys           = [digitalocean_ssh_key.terraform.id]
 
 
-connection {
-  user        = "root"
-  host        = self.ipv4_address
-  type        = "ssh"
-  private_key = var.pvt_key
-  timeout     = "2m"
-  agent       = false
+  connection {
+    user        = "root"
+    host        = self.ipv4_address
+    type        = "ssh"
+    private_key = var.pvt_key
+    timeout     = "2m"
+    agent       = false
   }
 
-###############################
-#### RENDER KUBEADM CONFIG ####
-############################### 
+  ###############################
+  #### RENDER KUBEADM CONFIG ####
+  ############################### 
 
-provisioner "file" {
-  content = templatefile("${path.module}/kubeadm-config.tpl", 
-    {
-      cluster_name = format("ktew-%s", var.dc_region),
-      kubernetes_version = var.kubernetes_version,
-      pod_subnet = var.pod_subnet,
-      control_plane_ip = digitalocean_droplet.control_plane[0].ipv4_address 
+  provisioner "file" {
+    content = templatefile("${path.module}/kubeadm-config.tpl",
+      {
+        cluster_name       = format("ktew-%s", var.dc_region),
+        kubernetes_version = var.kubernetes_version,
+        pod_subnet         = var.pod_subnet,
+        control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address
     })
     destination = "/tmp/kubeadm-config.yaml"
   }
 
-############################################
-#### INSTALL WORKER DOCKER / KUBERNETES ####
-############################################
+  ############################################
+  #### INSTALL WORKER DOCKER / KUBERNETES ####
+  ############################################
 
-provisioner "remote-exec" {
-  inline = [
+  provisioner "remote-exec" {
+    inline = [
       # GENERAL REPO SPEEDUP
       "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
       "echo '' > /etc/apt/sources.list",
@@ -227,6 +227,6 @@ output "worker_ip" {
 }
 
 output "cluster_context" {
-  value = format("ktew-%s-%s", random_string.lower.result, var.dc_region)
+  value       = format("ktew-%s-%s", random_string.lower.result, var.dc_region)
   description = "kubectl config use-context --context ..."
 }
