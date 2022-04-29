@@ -98,9 +98,17 @@ resource "digitalocean_droplet" "control_plane" {
     ]
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      "export KUBECONFIG=/etc/kubernetes/admin.conf; kubectl apply -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/crds/crd-servicemonitors.yaml",
+    ]
+  }
+
   provisioner "local-exec" {
     command = "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${digitalocean_droplet.control_plane.0.ipv4_address}:/etc/kubernetes/admin.conf $${HOME}/.kube/config_ktew"
   }
+
+  depends_on = [digitalocean_ssh_key.terraform]
 }
 
 #############################
@@ -183,10 +191,9 @@ resource "helm_release" "cilium" {
   version    = "1.11.4"
   namespace  = "kube-system"
 
-#  values = [
-#    file("../kind/cilium-hubble.yaml"),
-#    file("../kind/cilium-service-monitors.yaml")
-#  ]
+  values = [
+    file("helm-values/cilium.yaml")
+  ]
 
   depends_on = [digitalocean_droplet.control_plane]
 }
