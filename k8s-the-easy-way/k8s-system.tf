@@ -32,6 +32,7 @@ data "kubectl_file_documents" "argo_nginx_ingress" {
 
 resource "kubectl_manifest" "argo_nginx_ingress" {
   yaml_body  = data.kubectl_file_documents.argo_nginx_ingress.content
+  wait       = true
   depends_on = [helm_release.argocd]
 }
 
@@ -42,6 +43,19 @@ data "kubectl_file_documents" "argo_gateway_api_crds" {
 resource "kubectl_manifest" "argo_gateway_api_crds" {
   yaml_body  = data.kubectl_file_documents.argo_gateway_api_crds.content
   depends_on = [helm_release.argocd]
+}
+
+# fetch nginx service external ip-address for ingress hosts
+#
+data "kubernetes_service" "ingress-nginx-nginx-ingress-ingress-nginx-controller" {
+  metadata {
+    name      = "nginx-ingress-ingress-nginx-controller"
+    namespace = "ingress-nginx"
+  }
+}
+
+output "ingress_external_ip" {
+  value = data.kubernetes_service.ingress-nginx-nginx-ingress-ingress-nginx-controller.status.0.load_balancer.0.ingress.0.ip
 }
 
 # cert-manager

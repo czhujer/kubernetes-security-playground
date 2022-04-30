@@ -14,17 +14,21 @@ provider "kubectl" {
   config_path = "~/.kube/config_ktew"
 }
 
+provider "kubernetes" {
+  config_path = "~/.kube/config_ktew"
+}
+
 ###########################################################
 #### GENERATE RANDOM STRING FOR UNIQUE KUBECTL CONTEXT ####
 ###########################################################
 
-resource "random_string" "lower" {
-  length  = 6
-  upper   = false
-  lower   = true
-  number  = true
-  special = false
-}
+#resource "random_string" "lower" {
+#  length  = 6
+#  upper   = false
+#  lower   = true
+#  number  = true
+#  special = false
+#}
 
 ######################################
 #### CREATE CONTROL PLANE NODE(S) ####

@@ -5,12 +5,16 @@ terraform {
       source  = "digitalocean/digitalocean"
       version = "~> 2.6.0"
     }
-    null   = { version = "~> 3.1" }
-    random = { version = "~> 3.1" }
-    helm   = { version = "~> 2.5" }
+    null = { version = "~> 3.1" }
+    #    random = { version = "~> 3.1" }
+    helm = { version = "~> 2.5" }
     kubectl = {
       source  = "gavinbunney/kubectl"
       version = ">= 1.14.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.11"
     }
   }
 }

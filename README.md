@@ -14,7 +14,6 @@
 - add Loki stack
 - add/check falco GUI
 - enable k8s audit logging
-- add auto-detect nginx LB external IP and change ingress hosts
 
 # docs
 - https://github.com/falcosecurity/charts/tree/master/falco#introduction
