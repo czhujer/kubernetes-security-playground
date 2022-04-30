@@ -37,6 +37,12 @@ resource "helm_release" "argocd" {
     type  = "string"
   }
 
+  set {
+    name  = "server.ingress.hosts[0]"
+    value = "argocd.67.207.76.143.nip.io"
+    type  = "string"
+  }
+
   depends_on = [helm_release.cilium,
     digitalocean_droplet.worker,
   ]
