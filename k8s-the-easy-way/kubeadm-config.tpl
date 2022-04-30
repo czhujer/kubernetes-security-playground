@@ -19,6 +19,7 @@ apiServer:
   extraArgs:
     default-not-ready-toleration-seconds: "30"
     default-unreachable-toleration-seconds: "30"
+    feature-gates: "EphemeralContainers=True"
 ---
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: JoinConfiguration
