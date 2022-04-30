@@ -204,5 +204,18 @@ resource "helm_release" "cilium" {
     file("helm-values/cilium.yaml")
   ]
 
+  set {
+    name  = "hubble.enabled"
+    value = "false"
+  }
+  set {
+    name  = "hubble.relay.enabled"
+    value = "false"
+  }
+  set {
+    name  = "hubble.ui.enabled"
+    value = "false"
+  }
+
   depends_on = [digitalocean_droplet.control_plane]
 }

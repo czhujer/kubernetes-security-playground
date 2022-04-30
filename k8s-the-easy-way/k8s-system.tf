@@ -14,7 +14,16 @@ stringData:
 YAML
 }
 
-# kubectl apply -f https://raw.githubusercontent.com/digitalocean/digitalocean-cloud-controller-manager/master/releases/v0.1.24.yml
+data "kubectl_file_documents" "ccm_do" {
+  content = file("k8s-manifests/digitalocean-cloud-controller-manager-v0.1.37.yaml")
+}
+
+resource "kubectl_manifest" "ccm_do" {
+  for_each  = data.kubectl_file_documents.ccm_do.manifests
+  yaml_body = each.value
+  depends_on = [helm_release.cilium,
+  kubectl_manifest.ccm_secret]
+}
 
 # ingress
 data "kubectl_file_documents" "argo_nginx_ingress" {

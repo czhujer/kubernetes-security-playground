@@ -4,6 +4,12 @@ bootstrapTokens:
 - token: wi19h5.n18aqn376cwny601
   description: "kubeadm bootstrap token"
   ttl: "1h"
+nodeRegistration:
+  kubeletExtraArgs:
+    cloud-provider: external
+    node-labels: "ingress-ready=true"
+    seccomp-default: "true"
+    feature-gates: "SeccompDefault=true"
 ---
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
@@ -19,7 +25,9 @@ apiServer:
   extraArgs:
     default-not-ready-toleration-seconds: "30"
     default-unreachable-toleration-seconds: "30"
-    feature-gates: "EphemeralContainers=True"
+    feature-gates: "EphemeralContainers=True,SeccompDefault=True,ServerSideApply=True"
+#        enable-admission-plugins: NodeRestriction,PodSecurityPolicy
+
 ---
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: JoinConfiguration
@@ -30,6 +38,9 @@ discovery:
     unsafeSkipCAVerification: true
   timeout: 5m0s
   tlsBootstrapToken: wi19h5.n18aqn376cwny601
+nodeRegistration:
+  kubeletExtraArgs:
+    cloud-provider: external
 ---
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
