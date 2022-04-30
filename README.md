@@ -10,9 +10,11 @@
 # TODO
 ## terraform 
 - remove docker
-- add ServiceMonitor/Metrics for CCM
+- enable hubble for cilium
 - add Loki stack
-- add/check falco GUI
+- add falco exporter
+- add starboard exporter
+- add ServiceMonitor/Metrics for CCM
 - enable k8s audit logging
 
 # docs

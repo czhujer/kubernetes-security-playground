@@ -32,5 +32,6 @@ data "kubectl_file_documents" "argocd_falco" {
 resource "kubectl_manifest" "argocd_falco" {
   for_each   = data.kubectl_file_documents.argocd_falco.manifests
   yaml_body  = each.value
+  wait       = true
   depends_on = [helm_release.argocd]
 }
