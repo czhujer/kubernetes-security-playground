@@ -41,8 +41,8 @@ data "kubectl_file_documents" "argocd_loki" {
 }
 
 resource "kubectl_manifest" "argocd_loki" {
-  for_each  = data.kubectl_file_documents.argocd_loki.manifests
-  yaml_body = each.value
-  wait      = true
+  for_each   = data.kubectl_file_documents.argocd_loki.manifests
+  yaml_body  = each.value
+  wait       = true
   depends_on = [helm_release.argocd]
 }

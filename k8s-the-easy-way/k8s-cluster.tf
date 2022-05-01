@@ -101,7 +101,7 @@ resource "digitalocean_droplet" "control_plane" {
   provisioner "remote-exec" {
     inline = [
       "kubectl apply -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/crds/crd-servicemonitors.yaml",
-#      "kubectl taint nodes --all node-role.kubernetes.io/master- || true"
+      #      "kubectl taint nodes --all node-role.kubernetes.io/master- || true"
     ]
   }
 

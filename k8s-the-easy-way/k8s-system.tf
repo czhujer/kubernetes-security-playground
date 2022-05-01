@@ -1,9 +1,9 @@
 ## system stuff
 #
 
-# CCM
+# DO TOKEN
 resource "kubectl_manifest" "ccm_secret" {
-  yaml_body = <<YAML
+  yaml_body  = <<YAML
 apiVersion: v1
 kind: Secret
 metadata:
@@ -15,6 +15,40 @@ YAML
   depends_on = [digitalocean_droplet.control_plane]
 }
 
+# CSI
+data "http" "do_csi_crds" {
+  url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-v4.0.0/crds.yaml"
+
+  request_headers = {
+    Accept = "application/json"
+  }
+}
+
+resource "kubectl_manifest" "do_csi_crds" {
+  # Create a map { "yaml_doc" => yaml_doc } from the multi-document yaml text.
+  # Each element is a separate kubernetes resource.
+  # Must use \n---\n to avoid splitting on strings and comments containing "---".
+  # YAML allows "---" to be the first and last line of a file, so make sure
+  # raw yaml begins and ends with a newline.
+  # The "---" can be followed by spaces, so need to remove those too.
+  # Skip blocks that are empty or comments-only in case yaml began with a comment before "---".
+  for_each = {
+    for value in [
+      for yaml in split(
+        "\n---\n",
+        "\n${replace(data.http.do_csi_crds.body, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
+      ) :
+      yaml
+      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
+    ] : "${value}" => value
+  }
+  yaml_body = each.value
+  wait      = true
+  depends_on = [digitalocean_droplet.control_plane,
+  kubectl_manifest.ccm_secret]
+}
+
+# CCM
 data "kubectl_file_documents" "ccm_do" {
   content = file("k8s-manifests/digitalocean-cloud-controller-manager-v0.1.37.yaml")
 }
