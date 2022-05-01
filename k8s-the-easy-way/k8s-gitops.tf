@@ -37,11 +37,11 @@ resource "helm_release" "argocd" {
     type  = "string"
   }
 
-  set {
-    name  = "server.ingress.hosts[0]"
-    value = "argocd.${data.kubernetes_service.ingress-nginx-nginx-ingress-ingress-nginx-controller.status.0.load_balancer.0.ingress.0.ip}.nip.io"
-    type  = "string"
-  }
+#  set {
+#    name  = "server.ingress.hosts[0]"
+#    value = "argocd.${data.kubernetes_service.ingress-nginx-nginx-ingress-ingress-nginx-controller.status.0.load_balancer.0.ingress.0.ip}.nip.io"
+#    type  = "string"
+#  }
 
   depends_on = [helm_release.cilium,
     digitalocean_droplet.worker,

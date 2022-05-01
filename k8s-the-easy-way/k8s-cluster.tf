@@ -18,18 +18,6 @@ provider "kubernetes" {
   config_path = "~/.kube/config_ktew"
 }
 
-###########################################################
-#### GENERATE RANDOM STRING FOR UNIQUE KUBECTL CONTEXT ####
-###########################################################
-
-#resource "random_string" "lower" {
-#  length  = 6
-#  upper   = false
-#  lower   = true
-#  number  = true
-#  special = false
-#}
-
 ######################################
 #### CREATE CONTROL PLANE NODE(S) ####
 ######################################
@@ -85,12 +73,14 @@ resource "digitalocean_droplet" "control_plane" {
       "add-apt-repository 'deb [arch=amd64] http://mirrors.digitalocean.com/ubuntu/ focal main restricted universe'",
       # ADD KUBERNETES REPO
       "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -",
-      "add-apt-repository 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
+      "add-apt-repository 'deb https://apt.kubernetes.io/ kubernetes-xenial main'",
       #"echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list",
       # INSTALL DOCKER
-      "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
-      "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
-      "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
+      # "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
+      # "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
+      # "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
+      # INSTALL CONTAINERD
+      "apt install -y containerd",
       # KUBEADM TWEAKS
       "printf 'overlay\nbr_netfilter\n' > /etc/modules-load.d/containerd.conf",
       "modprobe overlay",
@@ -111,7 +101,7 @@ resource "digitalocean_droplet" "control_plane" {
   provisioner "remote-exec" {
     inline = [
       "kubectl apply -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/crds/crd-servicemonitors.yaml",
-      "kubectl taint nodes --all node-role.kubernetes.io/master- || true"
+#      "kubectl taint nodes --all node-role.kubernetes.io/master- || true"
     ]
   }
 
@@ -176,9 +166,11 @@ resource "digitalocean_droplet" "worker" {
       "add-apt-repository 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
       #"echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list",
       # INSTALL DOCKER
-      "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
-      "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
-      "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
+      # "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
+      # "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
+      # "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
+      # INSTALL CONTAINERD
+      "apt install -y containerd",
       # KUBEADM TWEAKS
       "printf 'overlay\nbr_netfilter\n' > /etc/modules-load.d/containerd.conf",
       "modprobe overlay",

@@ -12,6 +12,7 @@ metadata:
 stringData:
   access-token: ${var.do_token}
 YAML
+  depends_on = [digitalocean_droplet.control_plane]
 }
 
 data "kubectl_file_documents" "ccm_do" {
@@ -21,6 +22,7 @@ data "kubectl_file_documents" "ccm_do" {
 resource "kubectl_manifest" "ccm_do" {
   for_each  = data.kubectl_file_documents.ccm_do.manifests
   yaml_body = each.value
+  wait      = true
   depends_on = [helm_release.cilium,
   kubectl_manifest.ccm_secret]
 }
@@ -47,16 +49,16 @@ resource "kubectl_manifest" "argo_gateway_api_crds" {
 
 # fetch nginx service external ip-address for ingress hosts
 #
-data "kubernetes_service" "ingress-nginx-nginx-ingress-ingress-nginx-controller" {
-  metadata {
-    name      = "nginx-ingress-ingress-nginx-controller"
-    namespace = "ingress-nginx"
-  }
-}
+#data "kubernetes_service" "ingress-nginx-nginx-ingress-ingress-nginx-controller" {
+#  metadata {
+#    name      = "nginx-ingress-ingress-nginx-controller"
+#    namespace = "ingress-nginx"
+#  }
+#}
 
-output "ingress_external_ip" {
-  value = data.kubernetes_service.ingress-nginx-nginx-ingress-ingress-nginx-controller.status.0.load_balancer.0.ingress.0.ip
-}
+#output "ingress_external_ip" {
+#  value = data.kubernetes_service.ingress-nginx-nginx-ingress-ingress-nginx-controller.status.0.load_balancer.0.ingress.0.ip
+#}
 
 # cert-manager
 resource "helm_release" "cert-manager" {
@@ -73,5 +75,6 @@ resource "helm_release" "cert-manager" {
 
   depends_on = [digitalocean_droplet.control_plane,
     digitalocean_droplet.worker,
+    kubectl_manifest.ccm_do,
   ]
 }
