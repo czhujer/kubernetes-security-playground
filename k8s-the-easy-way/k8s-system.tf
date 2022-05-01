@@ -15,7 +15,8 @@ YAML
   depends_on = [digitalocean_droplet.control_plane]
 }
 
-# CSI
+# DO CSI
+#
 data "http" "do_csi_crds" {
   url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-v4.0.0/crds.yaml"
 
@@ -47,6 +48,75 @@ resource "kubectl_manifest" "do_csi_crds" {
   depends_on = [digitalocean_droplet.control_plane,
   kubectl_manifest.ccm_secret]
 }
+
+data "http" "do_csi_driver" {
+  url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-v4.0.0/driver.yaml"
+
+  request_headers = {
+    Accept = "application/json"
+  }
+}
+
+resource "kubectl_manifest" "do_csi_driver" {
+  # Create a map { "yaml_doc" => yaml_doc } from the multi-document yaml text.
+  # Each element is a separate kubernetes resource.
+  # Must use \n---\n to avoid splitting on strings and comments containing "---".
+  # YAML allows "---" to be the first and last line of a file, so make sure
+  # raw yaml begins and ends with a newline.
+  # The "---" can be followed by spaces, so need to remove those too.
+  # Skip blocks that are empty or comments-only in case yaml began with a comment before "---".
+  for_each = {
+    for value in [
+      for yaml in split(
+        "\n---\n",
+        "\n${replace(data.http.do_csi_driver.body, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
+      ) :
+      yaml
+      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
+    ] : "${value}" => value
+  }
+  yaml_body = each.value
+  wait      = true
+  depends_on = [digitalocean_droplet.control_plane,
+    kubectl_manifest.ccm_secret,
+    kubectl_manifest.do_csi_crds]
+}
+
+data "http" "do_csi_snapshot_controller" {
+  url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-v4.0.0/snapshot-controller.yaml"
+
+  request_headers = {
+    Accept = "application/json"
+  }
+}
+
+resource "kubectl_manifest" "do_csi_snapshot_controller" {
+  # Create a map { "yaml_doc" => yaml_doc } from the multi-document yaml text.
+  # Each element is a separate kubernetes resource.
+  # Must use \n---\n to avoid splitting on strings and comments containing "---".
+  # YAML allows "---" to be the first and last line of a file, so make sure
+  # raw yaml begins and ends with a newline.
+  # The "---" can be followed by spaces, so need to remove those too.
+  # Skip blocks that are empty or comments-only in case yaml began with a comment before "---".
+  for_each = {
+    for value in [
+      for yaml in split(
+        "\n---\n",
+        "\n${replace(data.http.do_csi_snapshot_controller.body, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
+      ) :
+      yaml
+      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
+    ] : "${value}" => value
+  }
+  yaml_body = each.value
+  wait      = true
+  depends_on = [digitalocean_droplet.control_plane,
+    kubectl_manifest.ccm_secret,
+    kubectl_manifest.do_csi_crds]
+}
+
+# TODO: add snapshot-validation-webhook
+# https://github.com/digitalocean/csi-digitalocean/blob/master/deploy/kubernetes/releases/csi-digitalocean-v4.0.0/snapshot-validation-webhook.yaml
 
 # CCM
 data "kubectl_file_documents" "ccm_do" {
