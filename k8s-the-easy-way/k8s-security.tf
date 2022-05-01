@@ -20,8 +20,6 @@ resource "kubectl_manifest" "argocd_starboard_app" {
 
 # falco security
 #
-# -set falcosidekick.enabled=true
-# --set falcosidekick.webui.enabled=true
 data "kubectl_file_documents" "argocd_falco" {
   content = format("%s---\n%s",
     file("../argocd/projects/security-falco.yaml"),

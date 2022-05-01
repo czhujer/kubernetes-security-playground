@@ -9,13 +9,14 @@
 
 # TODO
 ## terraform 
-- remove docker
 - enable hubble for cilium
 - add Loki stack
 - add falco exporter
 - add starboard exporter
 - add ServiceMonitor/Metrics for CCM
 - enable k8s audit logging
+- fix fetching external ip from ingress svc
+- add CSI stuff
 
 # docs
 - https://github.com/falcosecurity/charts/tree/master/falco#introduction
