@@ -32,3 +32,17 @@ resource "kubectl_manifest" "argocd_prometheus" {
 
 # Loki stack
 #
+data "kubectl_file_documents" "argocd_loki" {
+  content = format("%s---\n%s---\n%s",
+    file("../argocd/projects/system-logging.yaml"),
+    file("../argocd/logging-loki.yaml"),
+    file("../argocd/logging-promtail.yaml")
+  )
+}
+
+resource "kubectl_manifest" "argocd_loki" {
+  for_each  = data.kubectl_file_documents.argocd_loki.manifests
+  yaml_body = each.value
+  wait      = true
+  depends_on = [helm_release.argocd]
+}
