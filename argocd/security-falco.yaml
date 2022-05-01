@@ -11,8 +11,36 @@ spec:
     targetRevision: 1.18.2
     helm:
       values: |
-#        trivy:
-#          ignoreUnfixed: true
+        falco:
+          grpc:
+            enabled: true
+          grpcOutput:
+            enabled: true
+        falcosidekick:
+          enabled: true
+          ingress:
+            enabled: true
+            hosts:
+              - host: falcosidekick.157.245.20.216.nip.io
+                paths:
+                  - path: /
+          webui:
+            enabled: true
+            darkmode: true
+            ingress:
+              enabled: true
+              hosts:
+              - host: falcosidekick-ui.157.245.20.216.nip.io
+                paths:
+                - path: /ui
+                  # -- pathType (e.g. ImplementationSpecific, Prefix, .. etc.)
+                  # pathType: Prefix
+                - path: /events
+                  # pathType: Prefix
+                - path: /healthz
+                  # pathType: Prefix
+                - path: /ws
+                  # pathType: Prefix
   destination:
     server: https://kubernetes.default.svc
     namespace: falco-system
