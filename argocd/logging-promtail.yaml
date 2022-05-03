@@ -20,7 +20,18 @@ spec:
     targetRevision: 4.2.0
     helm:
       values: |
-        config:
-          lokiAddress: http://loki:3100/loki/api/v1/push
         serviceMonitor:
           enabled: true
+        config:
+          lokiAddress: http://loki:3100/loki/api/v1/push
+          snippets:
+            extraScrapeConfigs: |
+              # https://github.com/WoodProgrammer/kubernetes-audit-dashboards/blob/master/promtail/promtail.yaml
+              - job_name: system
+                static_configs:
+                  - targets:
+                      - localhost
+                    labels:
+                      job: k8s-audit-logs
+                      agent: promtail
+                      __path__: /var/log/kubernetes/k8s-audit.log
