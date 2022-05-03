@@ -20,9 +20,16 @@ spec:
     targetRevision: 2.11.1
     helm:
       values: |
-        ingress:
+        persistence:
           enabled: true
-          hosts:
-            - host: loki.68.183.240.164.nip.io
+          size: 10Gi
+        ingress:
+          enabled: false
+          # hosts:
+          #  - host: loki.68.183.240.164.nip.io
+          #    paths: 
+          #    - /
         serviceMonitor:
           enabled: true
+          prometheusRule:
+            enabled: false

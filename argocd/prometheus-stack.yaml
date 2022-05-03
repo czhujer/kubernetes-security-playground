@@ -34,6 +34,38 @@ spec:
             dashboards:
               searchNamespace: ALL
             enableUniqueFilenames: true
+          datasources:
+            datasources.yaml:
+              apiVersion: 1
+              datasources:
+              - name: Loki
+                type: loki
+                access: proxy
+                url: http://loki.logging.svc:3100
+                jsonData:
+                  maxLines: 1000
+          dashboardProviders:
+            dashboardproviders.yaml:
+              apiVersion: 1
+              providers:
+              - name: 'system'
+                orgId: 1
+                folder: 'System'
+                type: file
+                disableDeletion: false
+                editable: true
+                options:
+                  path: /var/lib/grafana/dashboards/system
+          dashboards:
+            system:
+              ingress:
+                gnetId: 9614
+                revision: 1
+                datasource: Prometheus
+              prometheus-stats:
+                gnetId: 2
+                revision: 2
+                datasource: Prometheus
         prometheus:
           enabled: true
           ingress:

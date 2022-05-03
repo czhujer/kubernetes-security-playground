@@ -20,5 +20,7 @@ spec:
     targetRevision: 4.2.0
     helm:
       values: |
+        config:
+          lokiAddress: http://loki:3100/loki/api/v1/push
         serviceMonitor:
           enabled: true
