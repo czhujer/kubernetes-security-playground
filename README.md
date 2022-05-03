@@ -12,10 +12,12 @@
 - re-enable hubble for cilium
 - improve config of Loki stack
   - add sending audit logs into Loki
-- add falco exporter
+- falco
+  - add falco exporter
+  - seding audit logs into falco
+    - https://sysdig.com/blog/kubernetes-audit-log-falco/
 - add starboard exporter
 - add ServiceMonitor/Metrics for CCM
-- enable k8s audit logging
 - fix fetching external ip from ingress svc
 - add non-hardcoded token
   - https://github.com/weibeld/terraform-aws-kubeadm/blob/master/main.tf#L109-L129

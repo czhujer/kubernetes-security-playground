@@ -61,6 +61,11 @@ resource "digitalocean_droplet" "control_plane" {
     destination = "/tmp/kubeadm-config.yaml"
   }
 
+  provisioner "file" {
+    content     = "${path.module}/audit-policy.yaml"
+    destination = "/etc/kubernetes/audit-policy.yaml"
+  }
+
   ###################################################
   #### INSTALL CONTROL PLANE DOCKER / KUBERNETES ####
   ###################################################
@@ -79,8 +84,8 @@ resource "digitalocean_droplet" "control_plane" {
       # "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
       # "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
       # "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
-      # INSTALL CONTAINERD
-      "apt install -y containerd",
+      # INSTALL CONTAINERD AND TOOLS
+      "apt install -y containerd jq",
       # KUBEADM TWEAKS
       "printf 'overlay\nbr_netfilter\n' > /etc/modules-load.d/containerd.conf",
       "modprobe overlay",
@@ -169,8 +174,8 @@ resource "digitalocean_droplet" "worker" {
       # "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
       # "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
       # "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
-      # INSTALL CONTAINERD
-      "apt install -y containerd",
+      # INSTALL CONTAINERD AND TOOLS
+      "apt install -y containerd jq",
       # KUBEADM TWEAKS
       "printf 'overlay\nbr_netfilter\n' > /etc/modules-load.d/containerd.conf",
       "modprobe overlay",

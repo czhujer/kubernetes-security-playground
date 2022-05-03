@@ -1,0 +1,44 @@
+apiVersion: audit.k8s.io/v1 # This is required.
+kind: Policy
+# Don't generate audit events for all requests in RequestReceived stage.
+omitStages:
+  - "RequestReceived"
+rules:
+  - level: None
+    verbs: ["watch"]
+    resources:
+      - group: "argoproj.io"
+        resources:
+          - applications
+          - applicationsets
+          - appprojects
+          - argocdextensions
+  - level: None
+    userGroups:
+     - "system:serviceaccounts:argocd"
+    resources:
+      - group: "argoproj.io"
+        resources:
+          - applications
+          - applicationsets
+          - appprojects
+          - argocdextensions
+  - level: None
+    users:
+      - "system:kube-controller-manager"
+    resources:
+      - group: "argoproj.io"
+        resources:
+          - applications
+          - applicationsets
+          - appprojects
+          - argocdextensions
+  - level: Metadata
+    resources:
+      - group: "argoproj.io"
+        resources:
+        - applications
+        - applicationsets
+        - appprojects
+        - argocdextensions
+  - level: None

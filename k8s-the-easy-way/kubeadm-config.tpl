@@ -25,9 +25,26 @@ apiServer:
   extraArgs:
     default-not-ready-toleration-seconds: "30"
     default-unreachable-toleration-seconds: "30"
+    # FG
     feature-gates: "EphemeralContainers=True,SeccompDefault=True,ServerSideApply=True"
-#        enable-admission-plugins: NodeRestriction,PodSecurityPolicy
-
+    # enable-admission-plugins: NodeRestriction,PodSecurityPolicy
+    # Audit
+    audit-log-path: /var/log/kubernetes/k8s-audit.log
+    audit-policy-file: /etc/kubernetes/audit-policy.yaml
+    audit-log-maxage: "1"
+    audit-log-maxsize: "100"
+    audit-log-maxbackup: "1"
+  extraVolumes:
+    - name: audit-policy
+      hostPath: /etc/kubernetes/audit-policy.yaml
+      mountPath: /etc/kubernetes/audit-policy.yaml
+      readOnly: true
+      pathType: File
+    - name: audit-log
+      hostPath: /var/log/kubernetes
+      mountPath: /var/log/kubernetes
+      readOnly: false
+      pathType: DirectoryOrCreate
 ---
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: JoinConfiguration
