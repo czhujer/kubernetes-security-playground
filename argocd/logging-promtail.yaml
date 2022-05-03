@@ -22,6 +22,18 @@ spec:
       values: |
         serviceMonitor:
           enabled: true
+        extraArgs:
+          - -client.external-labels=hostname=$(HOSTNAME)
+          - -config.expand-env=true
+        extraVolumes:
+          - name: k8s-audit-log
+            hostPath:
+              path: /var/log/kubernetes
+              type: DirectoryOrCreate
+        extraVolumeMounts:
+          - name: k8s-audit-log
+            mountPath: /var/log/kubernetes
+            readOnly: true
         config:
           lokiAddress: http://loki:3100/loki/api/v1/push
           snippets:
@@ -34,4 +46,5 @@ spec:
                     labels:
                       job: k8s-audit-logs
                       agent: promtail
+                      host: ${HOSTNAME}
                       __path__: /var/log/kubernetes/k8s-audit.log
