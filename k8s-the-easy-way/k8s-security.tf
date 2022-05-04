@@ -18,6 +18,15 @@ resource "kubectl_manifest" "argocd_starboard_app" {
   depends_on = [kubectl_manifest.argocd_starboard_project]
 }
 
+data "kubectl_file_documents" "argocd_starboard_exporter" {
+  content = file("../argocd/security-starboard-exporter.yaml")
+}
+
+resource "kubectl_manifest" "argocd_starboard_expoter" {
+  yaml_body  = data.kubectl_file_documents.argocd_starboard_exporter.content
+  depends_on = [kubectl_manifest.argocd_starboard_app]
+}
+
 # falco security
 #
 data "kubectl_file_documents" "argocd_falco" {

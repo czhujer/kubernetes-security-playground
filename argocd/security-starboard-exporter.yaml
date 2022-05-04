@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: starboard-exporter
+  namespace: argocd
+spec:
+  project: security-starboard
+  source:
+    chart: starboard-exporter
+    repoURL: https://giantswarm.github.io/giantswarm-catalog
+    targetRevision: 0.4.1
+    helm:
+      values: |
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: starboard-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
