@@ -11,6 +11,9 @@ spec:
     targetRevision: 0.10.4
     helm:
       values: |
+        operator:
+          vulnerabilityScannerScanOnlyCurrentRevisions: true
+          configAuditScannerScanOnlyCurrentRevisions: true
 #        trivy:
 #          ignoreUnfixed: true
   destination:
