@@ -91,7 +91,8 @@ resource "digitalocean_droplet" "control_plane" {
       # "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
       # "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
       # INSTALL CONTAINERD AND TOOLS
-      "apt install -y containerd jq",
+      "apt install -y containerd jq apparmor-utils curl etcd-client lsb-release mc strace tree",
+      "printf 'runtime-endpoint: unix:///run/containerd/containerd.sock\n' > /etc/crictl.yaml",
       # KUBEADM TWEAKS
       "printf 'overlay\nbr_netfilter\n' > /etc/modules-load.d/containerd.conf",
       "modprobe overlay",
@@ -180,8 +181,17 @@ resource "digitalocean_droplet" "worker" {
       # "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
       # "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
       # "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
+      # FIX LOGGING
+      "systemctl restart systemd-journald",
+      # ADD REPO FOR NEWER CONTAINERD
+      "echo '' >> /etc/apt/sources.list",
+      "echo '#deb http://archive.ubuntu.com/ubuntu/ focal multiverse' >> /etc/apt/sources.list",
+      "echo '#deb http://archive.ubuntu.com/ubuntu/ focal-updates multiverse' >> /etc/apt/sources.list",
+      "echo 'deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted' >>  /etc/apt/sources.list",
+      "apt-get update",
       # INSTALL CONTAINERD AND TOOLS
-      "apt install -y containerd jq",
+      "apt install -y containerd jq apparmor-utils curl etcd-client lsb-release mc strace tree",
+      "printf 'runtime-endpoint: unix:///run/containerd/containerd.sock\n' > /etc/crictl.yaml",
       # KUBEADM TWEAKS
       "printf 'overlay\nbr_netfilter\n' > /etc/modules-load.d/containerd.conf",
       "modprobe overlay",
@@ -190,8 +200,25 @@ resource "digitalocean_droplet" "worker" {
       "sysctl --system",
       # INSTALL KUBEADM
       "apt install -y kubectl=${var.kubernetes_version}-00 kubelet=${var.kubernetes_version}-00 kubeadm=${var.kubernetes_version}-00 -f",
+      # INSTALL GVISOR
+#      "set -e",
+#      "ARCH=$(uname -m)",
+#      "URL=https://storage.googleapis.com/gvisor/releases/release/latest/$${ARCH}",
+#      "wget $${URL}/runsc $${URL}/runsc.sha512 $${URL}/containerd-shim-runsc-v1 $${URL}/containerd-shim-runsc-v1.sha512",
+#      "sha512sum -c runsc.sha512 -c containerd-shim-runsc-v1.sha512",
+#      "rm -f *.sha512",
+#      "chmod a+rx runsc containerd-shim-runsc-v1",
+#      "sudo mv runsc containerd-shim-runsc-v1 /usr/local/bin",
+      # INSTALL GVISOR FROM APT
+      "curl -fsSL https://gvisor.dev/archive.key | sudo gpg --dearmor -o /usr/share/keyrings/gvisor-archive-keyring.gpg",
+      "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/gvisor-archive-keyring.gpg] https://storage.googleapis.com/gvisor/releases release main\" | sudo tee /etc/apt/sources.list.d/gvisor.list",
+      "apt-get update && apt-get install -y runsc",
+      # CONFIGURE CONTAINERD (w gvisor)
+      "mkdir -p /etc/containerd",
+      "printf 'version = 2\n[plugins.\"io.containerd.runtime.v1.linux\"]\n  shim_debug = true\n[plugins.\"io.containerd.grpc.v1.cri\".containerd.runtimes.runc]\n  runtime_type = \"io.containerd.runc.v2\"\n[plugins.\"io.containerd.grpc.v1.cri\".containerd.runtimes.runsc]\n  runtime_type = \"io.containerd.runsc.v1\"\n' > /etc/containerd/config.toml",
+      "systemctl restart containerd",
       # KUBEADM JOIN THE WORKER
-      "kubeadm join --config=/tmp/kubeadm-config.yaml"
+      "kubeadm join --config=/tmp/kubeadm-config.yaml",
     ]
   }
 }

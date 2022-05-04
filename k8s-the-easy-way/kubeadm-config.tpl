@@ -5,6 +5,7 @@ bootstrapTokens:
   description: "kubeadm bootstrap token"
   ttl: "1h"
 nodeRegistration:
+  criSocket: /run/containerd/containerd.sock
   kubeletExtraArgs:
     cloud-provider: external
     node-labels: "ingress-ready=true"

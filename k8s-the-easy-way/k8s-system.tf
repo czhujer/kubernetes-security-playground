@@ -1,6 +1,30 @@
 ## system stuff
 #
 
+# GVISOR AND RUNTIMECLASS
+resource "null_resource" "set_label_for_gvisor" {
+  provisioner "local-exec" {
+    command = "export KUBECONFIG=$${HOME}/.kube/config_ktew; kubectl label node ${digitalocean_droplet.worker.0.name} runtimeclass=gvisor && kubectl label node ${digitalocean_droplet.worker.1.name} runtimeclass=gvisor"
+  }
+  depends_on = [digitalocean_droplet.control_plane,
+    helm_release.cilium]
+}
+
+resource "kubectl_manifest" "runtimeclass_gvisor" {
+  yaml_body = <<YAML
+apiVersion: node.k8s.io/v1
+kind: RuntimeClass
+metadata:
+  name: gvisor
+handler: runsc
+scheduling:
+  nodeSelector:
+    runtimeclass: gvisor
+YAML
+  depends_on = [digitalocean_droplet.control_plane,
+    helm_release.cilium]
+}
+
 # DO TOKEN
 resource "kubectl_manifest" "ccm_secret" {
   yaml_body = <<YAML

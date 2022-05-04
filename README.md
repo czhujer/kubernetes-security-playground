@@ -10,19 +10,16 @@
 # TODO
 ## terraform 
 - re-enable hubble for cilium
-- improve config of Loki stack
-  - add sending audit logs into Loki
 - falco
   - add falco exporter
   - seding audit logs into falco
     - https://sysdig.com/blog/kubernetes-audit-log-falco/
-- add starboard exporter
 - add ServiceMonitor/Metrics for CCM
 - fix fetching external ip from ingress svc
 - add non-hardcoded token
   - https://github.com/weibeld/terraform-aws-kubeadm/blob/master/main.tf#L109-L129
 - add IPv6
-- add g-visor
+- fix gvisor (sandbox notReady)
 - add Grafana Tempo
 
 # docs
@@ -34,3 +31,8 @@
 - https://github.com/WoodProgrammer/kubernetes-audit-dashboards
 - https://groups.google.com/g/lokiproject/c/PJNvHcTAJy0
 - https://codersociety.com/blog/articles/loki-kubernetes-logging
+- https://github.com/ruzickap/cks-notes
+- https://github.com/google/gvisor
+- https://gvisor.dev/docs/
+- https://gvisor.dev/docs/user_guide/containerd/quick_start/
+- https://github.com/killer-sh/cks-course-environment/blob/master/course-content/microservice-vulnerabilities/container-runtimes/gvisor/install_gvisor.sh
