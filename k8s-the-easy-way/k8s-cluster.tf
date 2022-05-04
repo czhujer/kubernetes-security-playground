@@ -61,8 +61,14 @@ resource "digitalocean_droplet" "control_plane" {
     destination = "/tmp/kubeadm-config.yaml"
   }
 
+  # prepare file(s) for kubernetes
+  #
+  provisioner "remote-exec" {
+    inline = ["mkdir -p /etc/kubernetes"]
+  }
+
   provisioner "file" {
-    content     = "${path.module}/audit-policy.yaml"
+    content     = file("${path.module}/audit-policy.yaml")
     destination = "/etc/kubernetes/audit-policy.yaml"
   }
 

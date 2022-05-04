@@ -3,7 +3,7 @@
 
 # DO TOKEN
 resource "kubectl_manifest" "ccm_secret" {
-  yaml_body  = <<YAML
+  yaml_body = <<YAML
 apiVersion: v1
 kind: Secret
 metadata:
@@ -12,7 +12,8 @@ metadata:
 stringData:
   access-token: ${var.do_token}
 YAML
-  depends_on = [digitalocean_droplet.control_plane]
+  depends_on = [digitalocean_droplet.control_plane,
+  helm_release.cilium]
 }
 
 # DO CSI
@@ -79,7 +80,7 @@ resource "kubectl_manifest" "do_csi_driver" {
   wait      = true
   depends_on = [digitalocean_droplet.control_plane,
     kubectl_manifest.ccm_secret,
-    kubectl_manifest.do_csi_crds]
+  kubectl_manifest.do_csi_crds]
 }
 
 data "http" "do_csi_snapshot_controller" {
@@ -112,7 +113,7 @@ resource "kubectl_manifest" "do_csi_snapshot_controller" {
   wait      = true
   depends_on = [digitalocean_droplet.control_plane,
     kubectl_manifest.ccm_secret,
-    kubectl_manifest.do_csi_crds]
+  kubectl_manifest.do_csi_crds]
 }
 
 # TODO: add snapshot-validation-webhook
