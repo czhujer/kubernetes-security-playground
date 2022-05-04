@@ -11,6 +11,7 @@ spec:
     targetRevision: 0.4.1
     helm:
       values: |
+        monitoring.grafanaDashboard.namespace: monitoring
   destination:
     server: https://kubernetes.default.svc
     namespace: starboard-system
