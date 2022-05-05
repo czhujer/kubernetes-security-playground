@@ -101,6 +101,7 @@ resource "digitalocean_droplet" "control_plane" {
       "sysctl --system",
       # INSTALL KUBEADM
       "apt install -y kubectl=${var.kubernetes_version}-00 kubelet=${var.kubernetes_version}-00 kubeadm=${var.kubernetes_version}-00 -f",
+      "apt-mark hold kubelet kubeadm kubectl",
       # KUBEADM INIT THE CONTROL PLANE
       "kubeadm init --config=/tmp/kubeadm-config.yaml",
       # SETUP KUBECTL REMOTELY
@@ -200,6 +201,7 @@ resource "digitalocean_droplet" "worker" {
       "sysctl --system",
       # INSTALL KUBEADM
       "apt install -y kubectl=${var.kubernetes_version}-00 kubelet=${var.kubernetes_version}-00 kubeadm=${var.kubernetes_version}-00 -f",
+      "apt-mark hold kubelet kubeadm kubectl",
       # INSTALL GVISOR
 #      "set -e",
 #      "ARCH=$(uname -m)",

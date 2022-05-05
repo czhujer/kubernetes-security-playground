@@ -21,6 +21,7 @@ spec:
     helm:
       values: |
         controller:
+          replicaCount: 2
           ingressClassResource:
             default: true
           watchIngressWithoutClass: true

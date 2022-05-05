@@ -43,6 +43,24 @@ resource "helm_release" "argocd" {
     type  = "string"
   }
 
+  set {
+    name  = "server.ingress.tls[0].secretName"
+    value = "argocd-tls-certificate"
+    type  = "string"
+  }
+
+  set {
+    name  = "server.ingress.tls[0].hosts[0]"
+    value = "argocd.143.244.206.70.nip.io"
+    type  = "string"
+  }
+
+  set {
+    name = "server.ingress.annotations.cert-manager\\.io/cluster-issuer"
+    value = "selfsigned-issuer"
+    type = "string"
+  }
+
   depends_on = [helm_release.cilium,
     digitalocean_droplet.worker,
     kubectl_manifest.ccm_do

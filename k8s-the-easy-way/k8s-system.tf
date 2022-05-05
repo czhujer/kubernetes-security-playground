@@ -207,3 +207,24 @@ resource "helm_release" "cert-manager" {
     kubectl_manifest.ccm_do,
   ]
 }
+
+# cluster issuer + CA(s)
+data "kubectl_file_documents" "cm_cluster_issuer_self_signed" {
+  content = file("k8s-manifests/cert-manager-cluster-issuer-self-signed.yaml")
+}
+
+resource "kubectl_manifest" "cm_cluster_issuer_self_signed" {
+  yaml_body  = data.kubectl_file_documents.cm_cluster_issuer_self_signed.content
+  wait       = true
+  depends_on = [helm_release.cert-manager]
+}
+
+data "kubectl_file_documents" "cm_cert_ca_hujer_info_selfsigned" {
+  content = file("k8s-manifests/cert-manager-certificate-ca-hujer.info-selfsigned.yaml")
+}
+
+resource "kubectl_manifest" "cm_cert_ca_hujer_info_selfsigned" {
+  yaml_body  = data.kubectl_file_documents.cm_cert_ca_hujer_info_selfsigned.content
+  wait       = true
+  depends_on = [helm_release.cert-manager]
+}

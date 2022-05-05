@@ -19,8 +19,7 @@
 - add non-hardcoded token
   - https://github.com/weibeld/terraform-aws-kubeadm/blob/master/main.tf#L109-L129
 - add IPv6
-- fix gvisor (sandbox notReady)
-- add Grafana Tempo
+- add Grafana Tempo/Jaeger/OTEL
 
 # docs
 - https://github.com/falcosecurity/charts/tree/master/falco#introduction
