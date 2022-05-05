@@ -46,3 +46,19 @@ resource "kubectl_manifest" "argocd_loki" {
   wait       = true
   depends_on = [helm_release.argocd]
 }
+
+# tempo stack
+data "kubectl_file_documents" "argocd_tempo" {
+  content = format("%s---\n%s---\n%s",
+    file("../argocd/projects/system-tracing.yaml"),
+    file("../argocd/tracing-tempo.yaml"),
+    file("../argocd/tracing-opentelemetry-operator.yaml")
+  )
+}
+
+resource "kubectl_manifest" "argocd_tempo" {
+  for_each   = data.kubectl_file_documents.argocd_tempo.manifests
+  yaml_body  = each.value
+  wait       = true
+  depends_on = [helm_release.argocd]
+}

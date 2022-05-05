@@ -16,10 +16,15 @@
     - https://sysdig.com/blog/kubernetes-audit-log-falco/
 - add ServiceMonitor/Metrics for CCM
 - fix fetching external ip from ingress svc
-- add non-hardcoded token
+- add non-hardcoded token(s) in IaC
   - https://github.com/weibeld/terraform-aws-kubeadm/blob/master/main.tf#L109-L129
 - add IPv6
-- add Grafana Tempo/Jaeger/OTEL
+- tracing
+  - add OTEL collector
+  - fix tempo/otel collector
+  - enable tracing in prometheus/k8s API/....
+- enable Grafana Exemplars
+  - https://grafana.com/docs/grafana/latest/datasources/tempo/#provision-the-tempo-data-source
 
 # docs
 - https://github.com/falcosecurity/charts/tree/master/falco#introduction
@@ -35,3 +40,7 @@
 - https://gvisor.dev/docs/
 - https://gvisor.dev/docs/user_guide/containerd/quick_start/
 - https://github.com/killer-sh/cks-course-environment/blob/master/course-content/microservice-vulnerabilities/container-runtimes/gvisor/install_gvisor.sh
+- https://isitobservable.io/open-telemetry/what-is-the-opentelemetry-operator
+- https://grafana.com/blog/2021/04/13/how-to-send-traces-to-grafana-clouds-tempo-service-with-opentelemetry-collector/
+- https://grafana.com/docs/grafana/latest/basics/exemplars/
+- 

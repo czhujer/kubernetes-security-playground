@@ -44,6 +44,21 @@ spec:
                 url: http://loki.logging.svc:3100
                 jsonData:
                   maxLines: 1000
+              - name: Tempo
+                type: tempo
+                access: proxy
+                url: http://tempo.tracing.svc:3100
+              - name: 'Jaeger (Tempo)'
+                type: jaeger
+                access: proxy
+                orgId: 1
+                url: http://tempo.tracing.svc:16686
+                basicAuth: false
+                isDefault: false
+                version: 1
+                editable: false
+                apiVersion: 1
+                uid: jaeger-tempo
           dashboardProviders:
             dashboardproviders.yaml:
               apiVersion: 1
