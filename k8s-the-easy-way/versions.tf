@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 0.14"
+  required_version = ">= 1.1"
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
@@ -19,6 +19,10 @@ terraform {
     http = {
       source  = "hashicorp/http"
       version = "~> 2.1"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.2"
     }
   }
 }

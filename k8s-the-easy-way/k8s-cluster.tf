@@ -90,6 +90,14 @@ resource "digitalocean_droplet" "control_plane" {
       # "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
       # "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
       # "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
+      # FIX LOGGING
+      "systemctl restart systemd-journald",
+      # ADD REPO FOR NEWER CONTAINERD
+      "echo '' >> /etc/apt/sources.list",
+      "echo '#deb http://archive.ubuntu.com/ubuntu/ focal multiverse' >> /etc/apt/sources.list",
+      "echo '#deb http://archive.ubuntu.com/ubuntu/ focal-updates multiverse' >> /etc/apt/sources.list",
+      "echo 'deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted' >>  /etc/apt/sources.list",
+      "apt-get update",
       # INSTALL CONTAINERD AND TOOLS
       "apt install -y containerd jq apparmor-utils curl etcd-client lsb-release mc strace tree",
       "printf 'runtime-endpoint: unix:///run/containerd/containerd.sock\n' > /etc/crictl.yaml",
