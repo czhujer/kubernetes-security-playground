@@ -145,7 +145,10 @@ resource "kubectl_manifest" "do_csi_snapshot_controller" {
 
 # CCM
 data "kubectl_file_documents" "ccm_do" {
-  content = file("k8s-manifests/digitalocean-cloud-controller-manager-v0.1.37.yaml")
+  content = format("%s---\n%s",
+    file("k8s-manifests/digitalocean-cloud-controller-manager-v0.1.37.yaml"),
+    file("k8s-manifests/digitalocean-cloud-controller-manager-service-monitor.yaml")
+  )
 }
 
 resource "kubectl_manifest" "ccm_do" {

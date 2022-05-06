@@ -44,12 +44,35 @@ spec:
           requests:
             cpu: 100m
             memory: 50Mi
+        ports:
+          - containerPort: 8080
+            name: prometheus
+            protocol: TCP
         env:
+          - name: METRICS_ADDR
+            value: "0.0.0.0:8080"
           - name: DO_ACCESS_TOKEN
             valueFrom:
               secretKeyRef:
                 name: digitalocean
                 key: access-token
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: digitalocean-cloud-controller-manager
+  name: digitalocean-cloud-controller-manager
+  namespace: kube-system
+spec:
+  selector:
+    app: digitalocean-cloud-controller-manager
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
 
 ---
 apiVersion: v1
