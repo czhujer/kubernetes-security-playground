@@ -8,20 +8,19 @@
 - originally forked from: https://github.com/jimangel/kubernetes-the-easy-way
 
 # TODO
-## terraform 
+## terraform-based stack
 - re-enable hubble for cilium
 - falco
   - add falco exporter
   - seding audit logs into falco
     - https://sysdig.com/blog/kubernetes-audit-log-falco/
-- add ServiceMonitor/Metrics for CCM
-- fix fetching external ip from ingress svc
-- add non-hardcoded token(s) in IaC
+- terraform: fix fetching external ip from ingress svc
+- terraform: add non-hardcoded token(s) in IaC
   - https://github.com/weibeld/terraform-aws-kubeadm/blob/master/main.tf#L109-L129
 - add IPv6
 - tracing
-  - add OTEL collector
-  - fix tempo/otel collector
+  - add OTEL collector chart and remove otel operator
+  - check/fix tempo/otel collector
   - enable tracing in prometheus/k8s API/....
 - enable Grafana Exemplars
   - https://grafana.com/docs/grafana/latest/datasources/tempo/#provision-the-tempo-data-source
