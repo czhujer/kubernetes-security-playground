@@ -56,9 +56,9 @@ resource "helm_release" "argocd" {
   }
 
   set {
-    name = "server.ingress.annotations.cert-manager\\.io/cluster-issuer"
+    name  = "server.ingress.annotations.cert-manager\\.io/cluster-issuer"
     value = "selfsigned-issuer"
-    type = "string"
+    type  = "string"
   }
 
   depends_on = [helm_release.cilium,

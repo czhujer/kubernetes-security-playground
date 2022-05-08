@@ -70,9 +70,9 @@ data "kubectl_file_documents" "otel_collector" {
 }
 
 resource "kubectl_manifest" "otel_collector" {
-  for_each   = data.kubectl_file_documents.otel_collector.manifests
-  yaml_body  = each.value
-  wait       = true
+  for_each  = data.kubectl_file_documents.otel_collector.manifests
+  yaml_body = each.value
+  wait      = true
   depends_on = [helm_release.argocd,
     kubectl_manifest.argocd_tempo
   ]

@@ -30,7 +30,7 @@ resource "digitalocean_droplet" "control_plane" {
   # wait to reboot and "handle it"
   provisioner "remote-exec" {
     on_failure = continue
-    inline     = [
+    inline = [
       "set -o errexit",
       "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
     ]
@@ -38,7 +38,7 @@ resource "digitalocean_droplet" "control_plane" {
 
   provisioner "remote-exec" {
     on_failure = continue
-    inline     = [
+    inline = [
       "set -o errexit",
       "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
     ]
@@ -62,7 +62,7 @@ resource "digitalocean_droplet" "control_plane" {
         kubernetes_version = var.kubernetes_version,
         pod_subnet         = var.pod_subnet,
         control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address
-      })
+    })
     destination = "/tmp/kubeadm-config.yaml"
   }
 
@@ -140,7 +140,7 @@ resource "digitalocean_droplet" "worker" {
   # wait to reboot and "handle it"
   provisioner "remote-exec" {
     on_failure = continue
-    inline     = [
+    inline = [
       "set -o errexit",
       "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
     ]
@@ -148,7 +148,7 @@ resource "digitalocean_droplet" "worker" {
 
   provisioner "remote-exec" {
     on_failure = continue
-    inline     = [
+    inline = [
       "set -o errexit",
       "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
     ]
@@ -189,14 +189,14 @@ resource "digitalocean_droplet" "worker" {
       "apt install -y kubectl=${var.kubernetes_version}-00 kubelet=${var.kubernetes_version}-00 kubeadm=${var.kubernetes_version}-00 -f",
       "apt-mark hold kubelet kubeadm kubectl",
       # INSTALL GVISOR
-#      "set -e",
-#      "ARCH=$(uname -m)",
-#      "URL=https://storage.googleapis.com/gvisor/releases/release/latest/$${ARCH}",
-#      "wget $${URL}/runsc $${URL}/runsc.sha512 $${URL}/containerd-shim-runsc-v1 $${URL}/containerd-shim-runsc-v1.sha512",
-#      "sha512sum -c runsc.sha512 -c containerd-shim-runsc-v1.sha512",
-#      "rm -f *.sha512",
-#      "chmod a+rx runsc containerd-shim-runsc-v1",
-#      "sudo mv runsc containerd-shim-runsc-v1 /usr/local/bin",
+      #      "set -e",
+      #      "ARCH=$(uname -m)",
+      #      "URL=https://storage.googleapis.com/gvisor/releases/release/latest/$${ARCH}",
+      #      "wget $${URL}/runsc $${URL}/runsc.sha512 $${URL}/containerd-shim-runsc-v1 $${URL}/containerd-shim-runsc-v1.sha512",
+      #      "sha512sum -c runsc.sha512 -c containerd-shim-runsc-v1.sha512",
+      #      "rm -f *.sha512",
+      #      "chmod a+rx runsc containerd-shim-runsc-v1",
+      #      "sudo mv runsc containerd-shim-runsc-v1 /usr/local/bin",
       # INSTALL GVISOR FROM APT
       "curl -fsSL https://gvisor.dev/archive.key | sudo gpg --dearmor -o /usr/share/keyrings/gvisor-archive-keyring.gpg",
       "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/gvisor-archive-keyring.gpg] https://storage.googleapis.com/gvisor/releases release main\" | sudo tee /etc/apt/sources.list.d/gvisor.list",
