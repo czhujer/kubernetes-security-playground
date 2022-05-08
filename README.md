@@ -27,20 +27,27 @@
 - add cloudflare DNS records for instances
 
 # docs
-- https://github.com/falcosecurity/charts/tree/master/falco#introduction
+## github actions
+- https://github.com/ruzickap/k8s-tf-eks-gitops/tree/main/.github/workflows
+## digital ocean
 - https://github.com/digitalocean/digitalocean-cloud-controller-manager#expose-prometheus-metrics
 - https://blog.scottlowe.org/2021/10/12/using-the-external-aws-cloud-provider-for-kubernetes/
-- https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/
-- https://www.bionconsulting.com/blog/monitoring-and-gathering-metrics-from-kubernetes-auditlogs
-- https://github.com/WoodProgrammer/kubernetes-audit-dashboards
+## logging
 - https://groups.google.com/g/lokiproject/c/PJNvHcTAJy0
 - https://codersociety.com/blog/articles/loki-kubernetes-logging
-- https://github.com/ruzickap/cks-notes
+## tracing
+- https://isitobservable.io/open-telemetry/what-is-the-opentelemetry-operator
+- https://grafana.com/blog/2021/04/13/how-to-send-traces-to-grafana-clouds-tempo-service-with-opentelemetry-collector/
+- https://grafana.com/docs/grafana/latest/basics/exemplars/
+## gVisor
 - https://github.com/google/gvisor
 - https://gvisor.dev/docs/
 - https://gvisor.dev/docs/user_guide/containerd/quick_start/
 - https://github.com/killer-sh/cks-course-environment/blob/master/course-content/microservice-vulnerabilities/container-runtimes/gvisor/install_gvisor.sh
-- https://isitobservable.io/open-telemetry/what-is-the-opentelemetry-operator
-- https://grafana.com/blog/2021/04/13/how-to-send-traces-to-grafana-clouds-tempo-service-with-opentelemetry-collector/
-- https://grafana.com/docs/grafana/latest/basics/exemplars/
+## others
+- https://github.com/falcosecurity/charts/tree/master/falco#introduction
+- https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/
+- https://www.bionconsulting.com/blog/monitoring-and-gathering-metrics-from-kubernetes-auditlogs
+- https://github.com/WoodProgrammer/kubernetes-audit-dashboards
+- https://github.com/ruzickap/cks-notes
 - 
