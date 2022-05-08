@@ -1,0 +1,23 @@
+#cloud-config
+
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+  - unattended-upgrades
+  - linux-virtual-hwe-20.04-edge
+  - containerd
+  - jq
+  - apparmor-utils
+  - curl
+  - etcd-client
+  - lsb-release
+  - mc
+  - strace
+  - tree

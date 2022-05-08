@@ -1,31 +1,11 @@
-##################################
-#### CONFIGURE CLOUD PROVIDER ####
-##################################
 
-provider "digitalocean" { token = var.do_token }
-
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config_ktew"
-  }
-}
-
-provider "kubectl" {
-  config_path = "~/.kube/config_ktew"
-}
-
-provider "kubernetes" {
-  config_path = "~/.kube/config_ktew"
-}
-
-######################################
-#### CREATE CONTROL PLANE NODE(S) ####
-######################################
-
-# Use SSH key
 resource "digitalocean_ssh_key" "terraform" {
   name       = "terraform-tf-cloud"
   public_key = var.pub_key
+}
+
+data "template_file" "cloud-init-yaml" {
+  template = file("${path.module}/files/cloud-init.yaml")
 }
 
 resource "digitalocean_droplet" "control_plane" {
@@ -35,6 +15,7 @@ resource "digitalocean_droplet" "control_plane" {
   region             = var.dc_region
   size               = var.droplet_size
   private_networking = true
+  user_data          = data.template_file.cloud-init-yaml.rendered
   ssh_keys           = [digitalocean_ssh_key.terraform.id]
 
   connection {
@@ -42,23 +23,25 @@ resource "digitalocean_droplet" "control_plane" {
     host        = self.ipv4_address
     type        = "ssh"
     private_key = var.pvt_key
-    timeout     = "2m"
+    timeout     = "10m"
     agent       = false
   }
 
-  ###############################
-  #### RENDER KUBEADM CONFIG ####
-  ###############################
+  # wait to reboot and "handle it"
+  provisioner "remote-exec" {
+    on_failure = continue
+    inline     = [
+      "set -o errexit",
+      "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
+    ]
+  }
 
-  provisioner "file" {
-    content = templatefile("${path.module}/kubeadm-config.tpl",
-      {
-        cluster_name       = format("ktew-%s", var.dc_region),
-        kubernetes_version = var.kubernetes_version,
-        pod_subnet         = var.pod_subnet,
-        control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address
-    })
-    destination = "/tmp/kubeadm-config.yaml"
+  provisioner "remote-exec" {
+    on_failure = continue
+    inline     = [
+      "set -o errexit",
+      "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
+    ]
   }
 
   # prepare file(s) for kubernetes
@@ -72,34 +55,30 @@ resource "digitalocean_droplet" "control_plane" {
     destination = "/etc/kubernetes/audit-policy.yaml"
   }
 
-  ###################################################
-  #### INSTALL CONTROL PLANE DOCKER / KUBERNETES ####
-  ###################################################
+  provisioner "file" {
+    content = templatefile("${path.module}/files/kubeadm-config.tpl",
+      {
+        cluster_name       = format("ktew-%s", var.dc_region),
+        kubernetes_version = var.kubernetes_version,
+        pod_subnet         = var.pod_subnet,
+        control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address
+      })
+    destination = "/tmp/kubeadm-config.yaml"
+  }
 
+  # bootstrap control-plane
+  #
   provisioner "remote-exec" {
     inline = [
-      # GENERAL REPO SPEEDUP
+      "set -o errexit",
       "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
-      "echo '' > /etc/apt/sources.list",
-      "add-apt-repository 'deb [arch=amd64] http://mirrors.digitalocean.com/ubuntu/ focal main restricted universe'",
       # ADD KUBERNETES REPO
       "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -",
-      "add-apt-repository 'deb https://apt.kubernetes.io/ kubernetes-xenial main'",
-      #"echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list",
-      # INSTALL DOCKER
-      # "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
-      # "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
-      # "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
+      "echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list",
+      "apt-get update -qq",
       # FIX LOGGING
       "systemctl restart systemd-journald",
-      # ADD REPO FOR NEWER CONTAINERD
-      "echo '' >> /etc/apt/sources.list",
-      "echo '#deb http://archive.ubuntu.com/ubuntu/ focal multiverse' >> /etc/apt/sources.list",
-      "echo '#deb http://archive.ubuntu.com/ubuntu/ focal-updates multiverse' >> /etc/apt/sources.list",
-      "echo 'deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted' >>  /etc/apt/sources.list",
-      "apt-get update",
-      # INSTALL CONTAINERD AND TOOLS
-      "apt install -y containerd jq apparmor-utils curl etcd-client lsb-release mc strace tree",
+      # CONTAINERD TWEAKS
       "printf 'runtime-endpoint: unix:///run/containerd/containerd.sock\n' > /etc/crictl.yaml",
       # KUBEADM TWEAKS
       "printf 'overlay\nbr_netfilter\n' > /etc/modules-load.d/containerd.conf",
@@ -147,22 +126,38 @@ resource "digitalocean_droplet" "worker" {
   size               = var.droplet_size
   private_networking = true
   ssh_keys           = [digitalocean_ssh_key.terraform.id]
+  user_data          = data.template_file.cloud-init-yaml.rendered
 
   connection {
     user        = "root"
     host        = self.ipv4_address
     type        = "ssh"
     private_key = var.pvt_key
-    timeout     = "2m"
+    timeout     = "10m"
     agent       = false
   }
 
-  ###############################
-  #### RENDER KUBEADM CONFIG ####
-  ############################### 
+  # wait to reboot and "handle it"
+  provisioner "remote-exec" {
+    on_failure = continue
+    inline     = [
+      "set -o errexit",
+      "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
+    ]
+  }
 
+  provisioner "remote-exec" {
+    on_failure = continue
+    inline     = [
+      "set -o errexit",
+      "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
+    ]
+  }
+
+  # prepare file(s) for kubernetes
+  #
   provisioner "file" {
-    content = templatefile("${path.module}/kubeadm-config.tpl",
+    content = templatefile("${path.module}/files/kubeadm-config.tpl",
       {
         cluster_name       = format("ktew-%s", var.dc_region),
         kubernetes_version = var.kubernetes_version,
@@ -172,34 +167,17 @@ resource "digitalocean_droplet" "worker" {
     destination = "/tmp/kubeadm-config.yaml"
   }
 
-  ############################################
-  #### INSTALL WORKER DOCKER / KUBERNETES ####
-  ############################################
-
+  # boostrap k8s node(s)
   provisioner "remote-exec" {
     inline = [
-      # GENERAL REPO SPEEDUP
       "until [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
-      "echo '' > /etc/apt/sources.list",
-      "add-apt-repository 'deb [arch=amd64] http://mirrors.digitalocean.com/ubuntu/ focal main restricted universe'",
       # ADD KUBERNETES REPO
       "curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -",
-      "add-apt-repository 'deb http://apt.kubernetes.io/ kubernetes-xenial main'",
-      #"echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list",
-      # INSTALL DOCKER
-      # "curl -s https://download.docker.com/linux/ubuntu/gpg | apt-key add -",
-      # "add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'",
-      # "apt install -y docker-ce=5:${var.docker_version}~3-0~ubuntu-focal",
+      "echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' | sudo tee -a /etc/apt/sources.list.d/kubernetes.list",
+      "apt-get update -qq",
       # FIX LOGGING
       "systemctl restart systemd-journald",
-      # ADD REPO FOR NEWER CONTAINERD
-      "echo '' >> /etc/apt/sources.list",
-      "echo '#deb http://archive.ubuntu.com/ubuntu/ focal multiverse' >> /etc/apt/sources.list",
-      "echo '#deb http://archive.ubuntu.com/ubuntu/ focal-updates multiverse' >> /etc/apt/sources.list",
-      "echo 'deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted' >>  /etc/apt/sources.list",
-      "apt-get update",
-      # INSTALL CONTAINERD AND TOOLS
-      "apt install -y containerd jq apparmor-utils curl etcd-client lsb-release mc strace tree",
+      # CONTAINERD TWEAKS
       "printf 'runtime-endpoint: unix:///run/containerd/containerd.sock\n' > /etc/crictl.yaml",
       # KUBEADM TWEAKS
       "printf 'overlay\nbr_netfilter\n' > /etc/modules-load.d/containerd.conf",
@@ -243,6 +221,7 @@ resource "helm_release" "cilium" {
   chart      = "cilium"
   version    = var.cilium_helm_chart_version
   namespace  = "kube-system"
+  wait       = true
 
   values = [
     file("helm-values/cilium.yaml")

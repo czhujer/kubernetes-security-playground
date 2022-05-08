@@ -24,6 +24,7 @@
   - enable tracing in prometheus/k8s API/....
 - enable Grafana Exemplars
   - https://grafana.com/docs/grafana/latest/datasources/tempo/#provision-the-tempo-data-source
+- add cloudflare DNS records for instances
 
 # docs
 - https://github.com/falcosecurity/charts/tree/master/falco#introduction
