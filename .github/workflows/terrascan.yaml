@@ -2,6 +2,11 @@ name: terrascan
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches-ignore:
+      - main
+    paths:
+      - k8s-the-easy-way/**
   push:
     branches-ignore:
       - main
