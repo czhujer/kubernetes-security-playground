@@ -3,7 +3,7 @@ name: tfsec
 on:
   workflow_dispatch:
   pull_request:
-    branches-ignore:
+    branches:
       - main
     paths:
       - k8s-the-easy-way/**
