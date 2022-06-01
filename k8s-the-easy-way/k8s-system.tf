@@ -7,7 +7,7 @@ resource "null_resource" "set_label_for_gvisor" {
     command = "export KUBECONFIG=$${HOME}/.kube/config_ktew; kubectl label node ${digitalocean_droplet.worker.0.name} runtimeclass=gvisor && kubectl label node ${digitalocean_droplet.worker.1.name} runtimeclass=gvisor"
   }
   depends_on = [digitalocean_droplet.control_plane,
-    helm_release.cilium]
+  helm_release.cilium]
 }
 
 resource "kubectl_manifest" "runtimeclass_gvisor" {
@@ -22,7 +22,7 @@ scheduling:
     runtimeclass: gvisor
 YAML
   depends_on = [digitalocean_droplet.control_plane,
-    helm_release.cilium]
+  helm_release.cilium]
 }
 
 # DO TOKEN

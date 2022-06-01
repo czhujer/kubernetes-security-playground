@@ -25,5 +25,5 @@ resource "kubectl_manifest" "gadget" {
   yaml_body = each.value
   wait      = true
   depends_on = [digitalocean_droplet.control_plane,
-    helm_release.cilium]
+  helm_release.cilium]
 }
