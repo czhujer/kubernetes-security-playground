@@ -47,6 +47,11 @@ jobs:
 #           ignore-unfixed: true
 #           # severity: 'CRITICAL,HIGH'
 
+      - name: Run Trivy 2
+        continue-on-error: true
+        run: |
+          trivy fs --security-checks vuln,config,secret -f sarif --output trivy-results.sarif .
+
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v1
         with:
