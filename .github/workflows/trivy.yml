@@ -1,4 +1,8 @@
 name: trivy check
+env:
+  TRIVY_VERSION: 0.28.1
+  TRIVY_EXIT_CODE: 1
+  TRIVY_IGNORE_UNFIXED: true
 
 on:
   workflow_dispatch:
@@ -24,18 +28,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'config'
-          hide-progress: false
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          # severity: 'CRITICAL,HIGH'
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${{ env.TRIVY_VERSION }}
+
+      - name: Run Trivy
+        continue-on-error: true
+        run: |
+          trivy fs --security-checks vuln,config,secret -f table .
+
+#       - name: Run Trivy vulnerability scanner in IaC mode
+#         uses: aquasecurity/trivy-action@master
+#         with:
+#           scan-type: 'config'
+#           hide-progress: false
+#           format: 'table'
+#           exit-code: '1'
+#           ignore-unfixed: true
+#           # severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v1
-        continue-on-error: true
         with:
           sarif_file: 'trivy-results.sarif'
