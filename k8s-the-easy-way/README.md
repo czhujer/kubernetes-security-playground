@@ -18,10 +18,9 @@ The default configuration will create (3) 2CPUx2GB nodes ($15 a month or $0.0223
 
 ### Cluster details
 
-* [kubernetes](https://github.com/kubernetes/kubernetes) v1.22.1
-* [docker](https://github.com/docker/docker-ce) v20.10.8
-* [cilium cni](https://github.com/cilium/cilium) v1.10.4
-* [ubuntu](https://ubuntu.com/) 20.04 LTS
+* [kubernetes](https://github.com/kubernetes/kubernetes)
+* [cilium cni](https://github.com/cilium/cilium)
+* [ubuntu](https://ubuntu.com/)
 
 ### Assumptions
 
