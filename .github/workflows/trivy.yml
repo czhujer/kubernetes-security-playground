@@ -30,13 +30,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${{ env.TRIVY_VERSION }}
+        run: curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v${{ env.TRIVY_VERSION }}
 
-      - name: Run Trivy
+      - name: Show version
+        run: trivy --version
+
+      - name: Run Scan
         continue-on-error: true
-        run: |
-          trivy conf -f table .
+        run: trivy conf -f table .
 
 #       - name: Run Trivy vulnerability scanner in IaC mode
 #         uses: aquasecurity/trivy-action@master
@@ -48,20 +49,20 @@ jobs:
 #           ignore-unfixed: true
 #           # severity: 'CRITICAL,HIGH'
 
-      - name: Run Trivy 2
+      - name: Run Scan
         continue-on-error: true
-        run: |
-          trivy conf -f sarif --output trivy-results.sarif .
+        run: trivy conf -f sarif --output trivy-results.sarif .
 
-      - name: Upload output file
-        if: ${{ github.actor!= 'dependabot[bot]' }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: trivy-results.sarif
-          path: trivy-results.sarif
+#       - name: Upload output file
+#         if: ${{ github.actor!= 'dependabot[bot]' }}
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: trivy-results.sarif
+#           path: trivy-results.sarif
 
       - name: Upload Trivy scan results to GitHub Security tab
         if: ${{ github.actor!= 'dependabot[bot]' }}
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
+          category: trivy
