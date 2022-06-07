@@ -62,17 +62,29 @@ jobs:
         run: echo "::set-output name=matrix::$(find ./results -maxdepth 1 -type d)"
     # here, we save the result of this 1st phase to the "outputs"
     outputs:
-        matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   upload_scans:
     runs-on: ubuntu-latest
+
     permissions:
       actions: read
       contents: read
       security-events: write
+
+    needs: scan_charts
+
+    strategy:
+      # ↓ the real magic happens here - create dynamic matrix from the json
+      matrix:
+        folder: ${{ fromJson(needs.scan_charts.outputs.matrix) }}
+
     steps:
       - name: check results folders
         run: find ./results -maxdepth 1 -type d
+
+      - name: check matrix vars
+        run: echo "${{ matrix.folder }}"
 
 #       - name: Upload SARIF file
 #         if: ${{ github.actor!= 'dependabot[bot]' }}
