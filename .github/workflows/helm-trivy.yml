@@ -1,5 +1,4 @@
 name: helm-trivy
-env:
 
 on:
   workflow_dispatch:
