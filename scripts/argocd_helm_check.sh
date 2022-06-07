@@ -97,7 +97,7 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         while IFS= read -r i; do
           if [ "$i" != "---" ]; then
             echo "scanning image: $i"
-            trivy image --ignore-unfixed "$i"
+            trivy image --no-progress --ignore-unfixed "$i"
           fi;
         done < <(cat images.list)
       else
@@ -106,7 +106,8 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         check_ret_val=$?
       fi;
 
-      rm images.list
+      rm images.list || true
+
       echo "helm return value: $check_ret_val"
 
       if [ "$check_ret_val" -gt "$global_ret_val" ]; then
