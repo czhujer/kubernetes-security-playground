@@ -107,5 +107,5 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "./results/${{ matrix.value }}"
-          category: trivy_image
+          category: trivy-image
           wait-for-processing: true
