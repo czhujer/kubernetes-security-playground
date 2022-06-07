@@ -1,4 +1,6 @@
 name: helm-trivy
+env:
+  CI_PROJECT_DIR: "."
 
 on:
   workflow_dispatch:
@@ -32,6 +34,9 @@ jobs:
             sudo add-apt-repository ppa:rmescandon/yq
             sudo apt update
             sudo apt install yq -y
+
+      - name: Install helm-trivy
+        run: helm plugin install  https://github.com/ovdii/helm-trivy
 
       - name: Show yq version
         run: yq --version
