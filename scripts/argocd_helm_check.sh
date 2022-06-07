@@ -97,7 +97,19 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         while IFS= read -r i; do
           if [ "$i" != "---" ]; then
             echo "scanning image: $i"
-            trivy image --no-progress --ignore-unfixed "$i"
+            image_name=$(echo "${app_name}_${i}" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/_/g | sed -r s/^-+\|-+$//g)
+            trivy image \
+              --no-progress \
+              --ignore-unfixed \
+              "$i"
+
+            echo "sarif file: ${CI_PROJECT_DIR}/${image_name}.sarif"
+            trivy image \
+              --no-progress \
+              --ignore-unfixed \
+              --format sarif \
+              --output "${CI_PROJECT_DIR}/${image_name}.sarif" \
+              "$i"
           fi;
         done < <(cat images.list)
       else
