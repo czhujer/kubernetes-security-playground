@@ -15,6 +15,8 @@ fi;
 
 echo "CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
 
+mkdir -p "${CI_PROJECT_DIR}/results"
+
 # detect/set environment vars
 env=""
 while getopts e: flag
@@ -103,12 +105,12 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
               --ignore-unfixed \
               "$i"
 
-            echo "sarif file: ${CI_PROJECT_DIR}/${image_name}.sarif"
+            echo "sarif file: ${CI_PROJECT_DIR}/results/${image_name}.sarif"
             trivy image \
               --no-progress \
               --ignore-unfixed \
               --format sarif \
-              --output "${CI_PROJECT_DIR}/${image_name}.sarif" \
+              --output "${CI_PROJECT_DIR}/results/${image_name}.sarif" \
               "$i"
           fi;
         done < <(cat images.list)
