@@ -90,6 +90,8 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         echo "running helm template"
         helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u > images.list
         check_ret_val=$?
+        echo "printing image list"
+        cat images.list
 
         while IFS= read -r i; do
           echo "scanning image: $i"
