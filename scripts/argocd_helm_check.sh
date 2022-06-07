@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ueo pipefail -x
+set -ueo pipefail
 
 ARGO_DIR="argocd"
 
@@ -88,14 +88,20 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
       pwd
       if test -f "Chart.yaml"; then
         echo "running helm template"
-        helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u
+        helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u > images.list
         check_ret_val=$?
+
+        while IFS= read -r i; do
+          echo "scanning image: $i"
+          trivy image --ignore-unfixed "$i"
+        done < <(cat images.list)
       else
         echo "kustomize"
         echo "T.B.A."
         check_ret_val=$?
       fi;
 
+      rm images.list
       echo "helm return value: $check_ret_val"
 
       if [ "$check_ret_val" -gt "$global_ret_val" ]; then
