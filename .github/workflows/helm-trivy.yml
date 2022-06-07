@@ -32,6 +32,7 @@ jobs:
             sudo add-apt-repository ppa:rmescandon/yq
             sudo apt update
             sudo apt install yq -y
+#
 
 #       - name: Install helm-trivy
 #         run: helm plugin install https://github.com/ovdii/helm-trivy
