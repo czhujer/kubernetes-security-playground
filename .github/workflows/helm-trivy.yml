@@ -1,6 +1,5 @@
 name: helm-trivy
 env:
-  CI_PROJECT_DIR: "."
 
 on:
   workflow_dispatch:
