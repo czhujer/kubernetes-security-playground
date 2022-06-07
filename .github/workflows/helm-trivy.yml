@@ -64,7 +64,7 @@ jobs:
       # here we create the json, we need the "id:" so we can use it in "outputs" bellow
       -
         id: set-matrix
-        run: echo "::set-output name=matrix::$(find ./results -maxdepth 1 -type d)"
+        run: echo "::set-output name=matrix::$(find ./results -maxdepth 1 -type d | cut -d / -f 3)"
     # here, we save the result of this 1st phase to the "outputs"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
