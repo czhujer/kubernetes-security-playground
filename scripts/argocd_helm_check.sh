@@ -93,9 +93,12 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         echo "printing image list"
         cat images.list
 
+        echo "running trivy scan"
         while IFS= read -r i; do
-          echo "scanning image: $i"
-          trivy image --ignore-unfixed "$i"
+          if [ "$i" != "---" ]; then
+            echo "scanning image: $i"
+            # trivy image --ignore-unfixed "$i"
+          fi;
         done < <(cat images.list)
       else
         echo "kustomize"
