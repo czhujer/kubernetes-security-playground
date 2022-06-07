@@ -19,7 +19,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-      security-events: write
+#       security-events: write
 
     steps:
       - name: Clone repo
@@ -56,8 +56,23 @@ jobs:
       - name: run scan
         run: scripts/argocd_helm_check.sh
 
+      # here we create the json, we need the "id:" so we can use it in "outputs" bellow
+      -
+        id: set-matrix
+        run: echo "::set-output name=matrix::$(find ./results -maxdepth 1 -type d)"
+    # here, we save the result of this 1st phase to the "outputs"
+    outputs:
+        matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  upload_scans:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
       - name: check results folders
-        run: find "./results" -maxdepth 1 -type d
+        run: find ./results -maxdepth 1 -type d
 
 #       - name: Upload SARIF file
 #         if: ${{ github.actor!= 'dependabot[bot]' }}
