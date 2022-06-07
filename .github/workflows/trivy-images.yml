@@ -63,9 +63,10 @@ jobs:
           path: results
 
       # here we create the json, we need the "id:" so we can use it in "outputs" bellow
-      -
+      - name: generate output values
         id: set-matrix
         run: readarray -t a <<< "$(find ./results/* -maxdepth 1 -type d | cut -d / -f3)"; echo -n "::set-output name=matrix::["; printf '"%s", ' "${a[@]}"; echo -n "]";
+
     # here, we save the result of this 1st phase to the "outputs"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -98,10 +99,10 @@ jobs:
       - name: check matrix vars
         run: echo "./results/${{ matrix.value }}"
 
-#       - name: Upload SARIF file
-#         if: ${{ github.actor!= 'dependabot[bot]' }}
-#         uses: github/codeql-action/upload-sarif@v1
-#         with:
-#           sarif_file: results
-#           category: trivy_image
-#           wait-for-processing: true
+      - name: Upload SARIF file(s)
+        if: ${{ github.actor!= 'dependabot[bot]' }}
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: "./results/${{ matrix.value }}"
+          category: trivy_image
+          wait-for-processing: true
