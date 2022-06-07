@@ -56,7 +56,8 @@ jobs:
       - name: run scan
         run: scripts/argocd_helm_check.sh
 
-      - uses: actions/upload-artifact@master
+      - name: save results files
+        uses: actions/upload-artifact@master
         with:
           name: trivy-image-results
           path: results
@@ -85,7 +86,8 @@ jobs:
         value: ${{ fromJson(needs.scan_charts.outputs.matrix) }}
 
     steps:
-      - uses: actions/download-artifact@master
+      - name: restore results files
+        uses: actions/download-artifact@master
         with:
           name: trivy-image-results
           path: results
@@ -94,7 +96,7 @@ jobs:
         run: find ./results -maxdepth 1 -type d
 
       - name: check matrix vars
-        run: echo "${{ matrix.folder }}"
+        run: echo "./results/${{ matrix.value }}"
 
 #       - name: Upload SARIF file
 #         if: ${{ github.actor!= 'dependabot[bot]' }}
