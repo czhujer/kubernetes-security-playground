@@ -35,8 +35,8 @@ jobs:
             sudo apt update
             sudo apt install yq -y
 
-      - name: Install helm-trivy
-        run: helm plugin install https://github.com/ovdii/helm-trivy
+#       - name: Install helm-trivy
+#         run: helm plugin install https://github.com/ovdii/helm-trivy
 
       - name: Show yq version
         run: yq --version
@@ -44,8 +44,8 @@ jobs:
       - name: show helm version
         run: helm version
 
-      - name: show helm plugins
-        run: helm plugin list
+#       - name: show helm plugins
+#         run: helm plugin list
 
       - name: run script
         run: scripts/argocd_helm_check.sh

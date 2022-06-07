@@ -79,7 +79,10 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
       fi;
 
       # check for generating artefact(s)
-      helm trivy -trivyargs '--severity HIGH,CRITICAL' .
+      # helm trivy -trivyargs '--severity HIGH,CRITICAL' .
+      # helm template . --namespace "$ARGO_NS_VERIFY" --values "$values_file" > "${CI_PROJECT_DIR}/helm-template-rendered-with-extra-values.yaml"
+      helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u
+
       helm_ret_val=$?
       echo "helm return value: $helm_ret_val"
 
