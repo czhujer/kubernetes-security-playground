@@ -97,7 +97,7 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         while IFS= read -r i; do
           if [ "$i" != "---" ]; then
             echo "scanning image: $i"
-            # trivy image --ignore-unfixed "$i"
+            trivy image --ignore-unfixed "$i"
           fi;
         done < <(cat images.list)
       else
