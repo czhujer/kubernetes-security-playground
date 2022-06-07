@@ -1,4 +1,4 @@
-name: helm-trivy
+name: trivy-images
 
 on:
   workflow_dispatch:
@@ -82,7 +82,7 @@ jobs:
     strategy:
       # ↓ the real magic happens here - create dynamic matrix from the json
       matrix:
-        folder: ${{ fromJson(needs.scan_charts.outputs.matrix) }}
+        value: ${{ fromJson(needs.scan_charts.outputs.matrix) }}
 
     steps:
       - uses: actions/download-artifact@master
