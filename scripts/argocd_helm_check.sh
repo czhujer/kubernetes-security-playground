@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ueo pipefail
+set -ueo pipefail -x
 
 ARGO_DIR="argocd"
 
@@ -8,6 +8,11 @@ YQ="yq"
 global_ret_val=0
 
 echo "running argocd-helm check script.."
+
+if [ -z "${CI_PROJECT_DIR-}" ]; then
+  CI_PROJECT_DIR=$(pwd)
+fi;
+
 echo "CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
 
 # detect/set environment vars
@@ -65,9 +70,9 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         echo "INFO: helm chart from git repo.."
 
         git config --global advice.detachedHead false
-        git clone --depth=1 "$repo_url" "$app_name"
+        git clone --branch "$target_revision" --depth=1 "$repo_url" "$app_name"
         cd "$app_name"
-        git checkout "$target_revision"
+        # git checkout "$target_revision"
 
         if [ -n "$path" ] && [ "$path" != "null" ] && [ "$path" != "." ]; then
           cd "$path";
@@ -78,19 +83,26 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         cd "$chart_name"
       fi;
 
-      # check for generating artefact(s)
+      # check for images in chart
       # helm trivy -trivyargs '--severity HIGH,CRITICAL' .
-      # helm template . --namespace "$ARGO_NS_VERIFY" --values "$values_file" > "${CI_PROJECT_DIR}/helm-template-rendered-with-extra-values.yaml"
-      helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u
+      pwd
+      if test -f "Chart.yaml"; then
+        echo "running helm template"
+        helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u
+        check_ret_val=$?
+      else
+        echo "kustomize"
+        echo "T.B.A."
+        check_ret_val=$?
+      fi;
 
-      helm_ret_val=$?
-      echo "helm return value: $helm_ret_val"
+      echo "helm return value: $check_ret_val"
 
-      if [ "$helm_ret_val" -gt "$global_ret_val" ]; then
-        global_ret_val=$helm_ret_val
+      if [ "$check_ret_val" -gt "$global_ret_val" ]; then
+        global_ret_val=$check_ret_val
       fi;
     fi;
-
+  cd "${CI_PROJECT_DIR}"
   done < <(find "${ARGO_DIR}" -maxdepth 1 -type f)
 fi;
 
