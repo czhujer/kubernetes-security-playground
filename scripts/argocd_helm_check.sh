@@ -15,8 +15,6 @@ fi;
 
 echo "CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
 
-mkdir -p "${CI_PROJECT_DIR}/results"
-
 # detect/set environment vars
 env=""
 while getopts e: flag
@@ -99,18 +97,22 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         while IFS= read -r i; do
           if [ "$i" != "---" ]; then
             echo "scanning image: $i"
-            image_name=$(echo "${app_name}_${i}" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/_/g | sed -r s/^-+\|-+$//g)
             trivy image \
               --no-progress \
               --ignore-unfixed \
               "$i"
 
-            echo "sarif file: ${CI_PROJECT_DIR}/results/${image_name}.sarif"
+            echo "scanning image with sarif file: $i"
+
+            image_name=$(echo "${i}" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/_/g | sed -r s/^-+\|-+$//g)
+            mkdir -p "${CI_PROJECT_DIR}/results/${app_name}"
+            echo "sarif file: ${CI_PROJECT_DIR}/results/${app_name}/${image_name}.sarif"
+
             trivy image \
               --no-progress \
               --ignore-unfixed \
               --format sarif \
-              --output "${CI_PROJECT_DIR}/results/${image_name}.sarif" \
+              --output "${CI_PROJECT_DIR}/results/${app_name}/${image_name}.sarif" \
               "$i"
           fi;
         done < <(cat images.list)

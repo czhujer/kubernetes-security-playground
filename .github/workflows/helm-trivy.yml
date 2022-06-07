@@ -14,8 +14,7 @@ on:
 #       - argocd/**
 
 jobs:
-  helm-trivy:
-    name: Run helm-trivy
+  scan_charts:
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -54,13 +53,16 @@ jobs:
 #       - name: show helm plugins
 #         run: helm plugin list
 
-      - name: run script
+      - name: run scan
         run: scripts/argocd_helm_check.sh
 
-      - name: Upload SARIF file
-        if: ${{ github.actor!= 'dependabot[bot]' }}
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: results
-          category: trivy_image
-          wait-for-processing: true
+      - name: check results folders
+        run: find "./results" -maxdepth 1 -type d
+
+#       - name: Upload SARIF file
+#         if: ${{ github.actor!= 'dependabot[bot]' }}
+#         uses: github/codeql-action/upload-sarif@v1
+#         with:
+#           sarif_file: results
+#           category: trivy_image
+#           wait-for-processing: true
