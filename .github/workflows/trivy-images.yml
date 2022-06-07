@@ -87,6 +87,9 @@ jobs:
         value: ${{ fromJson(needs.scan_charts.outputs.matrix) }}
 
     steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
       - name: restore results files
         uses: actions/download-artifact@master
         with:
