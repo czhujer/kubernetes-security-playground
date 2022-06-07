@@ -1,0 +1,111 @@
+name: trivy-images
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+#     paths:
+#       - argocd/**
+  push:
+    branches-ignore:
+      - main
+#     paths:
+#       - argocd/**
+
+jobs:
+  scan_charts:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+#       security-events: write
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: Install yq
+        run: |
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
+            sudo add-apt-repository ppa:rmescandon/yq
+            sudo apt update
+            sudo apt install yq -y
+#
+
+      - name: install trivy
+        run: |
+            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+            echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+            sudo apt-get update
+            sudo apt-get install trivy
+#
+
+#       - name: Install helm-trivy
+#         run: helm plugin install https://github.com/ovdii/helm-trivy
+
+      - name: Show yq version
+        run: yq --version
+
+      - name: show helm version
+        run: helm version
+
+#       - name: show helm plugins
+#         run: helm plugin list
+
+      - name: run scan
+        run: scripts/argocd_helm_check.sh
+
+      - name: save results files
+        uses: actions/upload-artifact@master
+        with:
+          name: trivy-image-results
+          path: results
+
+      # here we create the json, we need the "id:" so we can use it in "outputs" bellow
+      - name: generate output values
+        id: set-matrix
+        run: readarray -t a <<< "$(find ./results/* -maxdepth 1 -type d | cut -d / -f3)"; echo -n "::set-output name=matrix::["; printf '"%s", ' "${a[@]}"; echo -n "]";
+
+    # here, we save the result of this 1st phase to the "outputs"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+  upload_scans:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    needs: scan_charts
+
+    strategy:
+      # ↓ the real magic happens here - create dynamic matrix from the json
+      matrix:
+        value: ${{ fromJson(needs.scan_charts.outputs.matrix) }}
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: restore results files
+        uses: actions/download-artifact@master
+        with:
+          name: trivy-image-results
+          path: results
+
+      - name: check results folders
+        run: find ./results -maxdepth 1 -type d
+
+      - name: check matrix vars
+        run: echo "./results/${{ matrix.value }}"
+
+      - name: Upload SARIF file(s)
+        if: ${{ github.actor!= 'dependabot[bot]' }}
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: "./results/${{ matrix.value }}"
+          category: trivy-image
+          wait-for-processing: true
