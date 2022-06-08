@@ -14,9 +14,12 @@ on:
       - k8s-the-easy-way/**
 
 jobs:
-  terrascan_job:
+  terrascan:
     runs-on: ubuntu-latest
-    name: terrascan-action
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
