@@ -3,6 +3,7 @@ export CLUSTER_NAME?=security-playground
 export CILIUM_VERSION?=1.11.4
 export CERT_MANAGER_CHART_VERSION=1.8.0
 export ARGOCD_CHART_VERSION=4.5.7
+export SPO_VERSION=0.4.3
 export TRIVY_IMAGE_CHECK=0
 
 export ARGOCD_OPTS="--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
@@ -145,7 +146,7 @@ spo-deploy:
 #	kubectl -n argocd apply -f argocd/projects/security-profiles-operator.yaml
 #	kubectl -n argocd apply -f argocd/security-profiles-operator.yaml
 	# install over kubectl
-	kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/security-profiles-operator/v0.4.2/deploy/operator.yaml
+	kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/security-profiles-operator/v$(SPO_VERSION)/deploy/operator.yaml
 	# wait to spo up and running
 	sleep 2
 	kubectl -n security-profiles-operator wait --for condition=ready ds/spod
