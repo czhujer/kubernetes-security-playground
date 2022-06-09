@@ -15,10 +15,6 @@ variable "do_token" {}
 variable "pub_key" {}
 variable "pvt_key" {}
 
-variable "cilium_helm_chart_version" {
-  default = "1.11.4"
-}
-
 variable "do_csi_version" {
   default = "v4.0.0"
 }
