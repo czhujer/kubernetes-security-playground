@@ -51,3 +51,35 @@ resource "kubectl_manifest" "argocd_falco" {
   wait       = true
   depends_on = [helm_release.argocd]
 }
+
+# SPO
+data "http" "spo" {
+  url = "https://raw.githubusercontent.com/kubernetes-sigs/security-profiles-operator/v${var.security_profiles_operator_version}/deploy/operator.yaml"
+  request_headers = {
+    Accept = "application/json"
+  }
+}
+
+resource "kubectl_manifest" "spo" {
+  # Create a map { "yaml_doc" => yaml_doc } from the multi-document yaml text.
+  # Each element is a separate kubernetes resource.
+  # Must use \n---\n to avoid splitting on strings and comments containing "---".
+  # YAML allows "---" to be the first and last line of a file, so make sure
+  # raw yaml begins and ends with a newline.
+  # The "---" can be followed by spaces, so need to remove those too.
+  # Skip blocks that are empty or comments-only in case yaml began with a comment before "---".
+  for_each = {
+    for value in [
+      for yaml in split(
+        "\n---\n",
+        "\n${replace(data.http.spo.body, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
+      ) :
+      yaml
+      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
+    ] : "${value}" => value
+  }
+  yaml_body = each.value
+  wait      = true
+  depends_on = [helm_release.cilium,
+    kubectl_manifest.ccm_secret]
+}

@@ -26,3 +26,7 @@ variable "do_csi_version" {
 variable "do_ccm_version" {
   default = "v0.1.37"
 }
+
+variable "security_profiles_operator_version" {
+  default = "0.4.3"
+}
