@@ -63,7 +63,7 @@ resource "helm_release" "argocd" {
 
   depends_on = [helm_release.cilium,
     digitalocean_droplet.worker,
-    kubectl_manifest.ccm_do
+    kubectl_manifest.do_ccm
   ]
 }
 
