@@ -43,7 +43,7 @@ YAML
 # DO CSI
 #
 data "http" "do_csi_crds" {
-  url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-v4.0.0/crds.yaml"
+  url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-${var.do_csi_version}/crds.yaml"
 
   request_headers = {
     Accept = "application/json"
@@ -75,7 +75,7 @@ resource "kubectl_manifest" "do_csi_crds" {
 }
 
 data "http" "do_csi_driver" {
-  url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-v4.0.0/driver.yaml"
+  url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-${var.do_csi_version}/driver.yaml"
 
   request_headers = {
     Accept = "application/json"
@@ -108,7 +108,7 @@ resource "kubectl_manifest" "do_csi_driver" {
 }
 
 data "http" "do_csi_snapshot_controller" {
-  url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-v4.0.0/snapshot-controller.yaml"
+  url = "https://raw.githubusercontent.com/digitalocean/csi-digitalocean/master/deploy/kubernetes/releases/csi-digitalocean-${var.do_csi_version}/snapshot-controller.yaml"
 
   request_headers = {
     Accept = "application/json"
@@ -141,18 +141,50 @@ resource "kubectl_manifest" "do_csi_snapshot_controller" {
 }
 
 # TODO: add snapshot-validation-webhook
-# https://github.com/digitalocean/csi-digitalocean/blob/master/deploy/kubernetes/releases/csi-digitalocean-v4.0.0/snapshot-validation-webhook.yaml
+# https://github.com/digitalocean/csi-digitalocean/blob/master/deploy/kubernetes/releases/csi-digitalocean-${var.do_csi_version}/snapshot-validation-webhook.yaml
 
 # CCM
-data "kubectl_file_documents" "ccm_do" {
-  content = format("%s---\n%s",
-    file("k8s-manifests/digitalocean-cloud-controller-manager-v0.1.37.yaml"),
+#
+data "http" "do_ccm" {
+  url = "https://raw.githubusercontent.com/digitalocean/digitalocean-cloud-controller-manager/${var.do_ccm_version}/releases/${var.do_ccm_version}.yml"
+
+  request_headers = {
+    Accept = "application/json"
+  }
+}
+
+resource "kubectl_manifest" "do_ccm" {
+  # Create a map { "yaml_doc" => yaml_doc } from the multi-document yaml text.
+  # Each element is a separate kubernetes resource.
+  # Must use \n---\n to avoid splitting on strings and comments containing "---".
+  # YAML allows "---" to be the first and last line of a file, so make sure
+  # raw yaml begins and ends with a newline.
+  # The "---" can be followed by spaces, so need to remove those too.
+  # Skip blocks that are empty or comments-only in case yaml began with a comment before "---".
+  for_each = {
+    for value in [
+      for yaml in split(
+        "\n---\n",
+        "\n${replace(data.http.do_ccm.body, "/(?m)^---[[:blank:]]*(#.*)?$/", "---")}\n"
+      ) :
+      yaml
+      if trimspace(replace(yaml, "/(?m)(^[[:blank:]]*(#.*)?$)+/", "")) != ""
+    ] : "${value}" => value
+  }
+  yaml_body = each.value
+  wait      = true
+  depends_on = [helm_release.cilium,
+    kubectl_manifest.ccm_secret]
+}
+
+data "kubectl_file_documents" "do_ccm_sm" {
+  content = format("%s---\n",
     file("k8s-manifests/digitalocean-cloud-controller-manager-service-monitor.yaml")
   )
 }
 
-resource "kubectl_manifest" "ccm_do" {
-  for_each  = data.kubectl_file_documents.ccm_do.manifests
+resource "kubectl_manifest" "do_ccm_sm" {
+  for_each  = data.kubectl_file_documents.do_ccm_sm.manifests
   yaml_body = each.value
   wait      = true
   depends_on = [helm_release.cilium,
@@ -207,7 +239,7 @@ resource "helm_release" "cert-manager" {
 
   depends_on = [digitalocean_droplet.control_plane,
     digitalocean_droplet.worker,
-    kubectl_manifest.ccm_do,
+    kubectl_manifest.do_ccm,
   ]
 }
 
