@@ -70,3 +70,14 @@ resource "kubectl_manifest" "argocd_spo_app" {
   yaml_body  = data.kubectl_file_documents.argocd_spo_app.content
   depends_on = [kubectl_manifest.argocd_spo_project]
 }
+
+# https://github.com/kubernetes-sigs/security-profiles-operator/blob/v0.4.1/deploy/base/service.yaml
+data "kubectl_file_documents" "spo_svc_metrics" {
+  content = file("./k8s-manifests/spo-svc-metrics.yaml")
+}
+
+resource "kubectl_manifest" "spo_svc_metrics" {
+  yaml_body  = data.kubectl_file_documents.spo_svc_metrics.content
+  wait      = true
+  depends_on = [kubectl_manifest.argocd_spo_app]
+}
