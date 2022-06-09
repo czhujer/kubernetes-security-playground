@@ -51,3 +51,22 @@ resource "kubectl_manifest" "argocd_falco" {
   wait       = true
   depends_on = [helm_release.argocd]
 }
+
+# SPO
+data "kubectl_file_documents" "argocd_spo_project" {
+  content = file("../argocd/projects/security-profiles-operator.yaml")
+}
+
+data "kubectl_file_documents" "argocd_spo_app" {
+  content = file("../argocd/security-profiles-operator.yaml")
+}
+
+resource "kubectl_manifest" "argocd_spo_project" {
+  yaml_body  = data.kubectl_file_documents.argocd_spo_project.content
+  depends_on = [helm_release.argocd]
+}
+
+resource "kubectl_manifest" "argocd_spo_app" {
+  yaml_body  = data.kubectl_file_documents.argocd_spo_app.content
+  depends_on = [kubectl_manifest.argocd_spo_project]
+}
