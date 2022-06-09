@@ -53,6 +53,16 @@ resource "kubectl_manifest" "argocd_falco" {
 }
 
 # SPO
+data "kubectl_file_documents" "spo_ns" {
+  content = file("./k8s-manifests/spo-ns.yaml")
+}
+
+resource "kubectl_manifest" "spo_ns" {
+  yaml_body  = data.kubectl_file_documents.spo_ns.content
+  wait       = true
+  depends_on = [helm_release.argocd]
+}
+
 data "kubectl_file_documents" "argocd_spo_project" {
   content = file("../argocd/projects/security-profiles-operator.yaml")
 }
