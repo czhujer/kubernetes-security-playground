@@ -9,6 +9,12 @@
 
 # TODO
 ## terraform-based stack
+- upgrade k8s 1.23 -> 1.24
+- switch PSP -> PSA
+- tracing
+  - add OTEL collector chart and remove otel operator
+  - check/fix tempo/otel collector
+  - enable tracing in prometheus/k8s API/....
 - re-enable hubble for cilium
 - falco
   - add falco exporter
@@ -18,13 +24,11 @@
 - terraform: add non-hardcoded token(s) in IaC
   - https://github.com/weibeld/terraform-aws-kubeadm/blob/master/main.tf#L109-L129
 - add IPv6
-- tracing
-  - add OTEL collector chart and remove otel operator
-  - check/fix tempo/otel collector
-  - enable tracing in prometheus/k8s API/....
 - enable Grafana Exemplars
   - https://grafana.com/docs/grafana/latest/datasources/tempo/#provision-the-tempo-data-source
 - add cloudflare DNS records for instances
+- test firecracker
+  - https://github.com/firecracker-microvm/firecracker-containerd
 
 # docs
 ## github actions
