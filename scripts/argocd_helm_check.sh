@@ -41,11 +41,11 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
 
     app_name=$(echo "$i" | sed "s/^${ARGO_DIR}\/\(.*\).yaml$/\1/")
     echo "found helm chart from app: ${app_name}"
-    chart_name=$($YQ eval '.spec.source.chart'  "${ARGO_DIR}/${app_name}.yaml" )
-    repo_url=$($YQ eval '.spec.source.repoURL'  "${ARGO_DIR}/${app_name}.yaml" )
-    target_revision=$($YQ eval '.spec.source.targetRevision'  "${ARGO_DIR}/${app_name}.yaml" )
-    path=$($YQ eval '.spec.source.path'  "${ARGO_DIR}/${app_name}.yaml" )
-    extra_values=$($YQ eval '.spec.source.helm.values'  "${ARGO_DIR}/${app_name}.yaml" )
+    chart_name=$($YQ eval '.spec.source.chart' "${ARGO_DIR}/${app_name}.yaml")
+    repo_url=$($YQ eval '.spec.source.repoURL' "${ARGO_DIR}/${app_name}.yaml")
+    target_revision=$($YQ eval '.spec.source.targetRevision' "${ARGO_DIR}/${app_name}.yaml")
+    path=$($YQ eval '.spec.source.path' "${ARGO_DIR}/${app_name}.yaml")
+    extra_values=$($YQ eval '.spec.source.helm.values' "${ARGO_DIR}/${app_name}.yaml")
 
     echo " parsed app name: \"$app_name\""
     echo " parsed chart name: \"$chart_name\" (optional)"
@@ -56,14 +56,14 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
     values_file="${CI_PROJECT_DIR}/extra-values-${app_name}.yaml"
     echo "$extra_values" >"$values_file"
 
-    if [ -z "$repo_url" ] \
-        || [ "$repo_url" == "null" ] \
-        || [ -z "$target_revision" ] \
-        || [ "$target_revision" == "null" ]; then
-      echo "ERROR: parsing repoURL or targetRevision failed";
+    if [ -z "$repo_url" ] ||
+      [ "$repo_url" == "null" ] ||
+      [ -z "$target_revision" ] ||
+      [ "$target_revision" == "null" ]; then
+      echo "ERROR: parsing repoURL or targetRevision failed"
       if [ "12" -gt "$global_ret_val" ]; then
         global_ret_val="12"
-      fi;
+      fi
     else
       # check if we are using helm repo or git repo
       if [ -z "$chart_name" ] || [ "$chart_name" == "null" ]; then
