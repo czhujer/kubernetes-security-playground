@@ -77,3 +77,14 @@ resource "kubectl_manifest" "argo_cd_crds" {
   yaml_body  = data.kubectl_file_documents.argo_cd_crds.content
   depends_on = [helm_release.argocd]
 }
+
+## argocd-image-updater
+#
+data "kubectl_file_documents" "argocd_image_updater" {
+  content = file("../argocd/argocd-image-updater.yaml")
+}
+
+resource "kubectl_manifest" "argocd_image_updater" {
+  yaml_body  = data.kubectl_file_documents.argocd_image_updater.content
+  depends_on = [helm_release.argocd]
+}
