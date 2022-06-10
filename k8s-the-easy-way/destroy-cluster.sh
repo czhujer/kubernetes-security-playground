@@ -19,7 +19,7 @@ terraform init
 terraform destroy -var "do_token=${DO_PAT}"
 
 # check the number of loadbalancers running
-LB_COUNT=$(curl -s -H "Authorization: Bearer $DO_PAT" "https://api.digitalocean.com/v2/load_balancers" |  jq -r .meta.total)
+LB_COUNT=$(curl -s -H "Authorization: Bearer $DO_PAT" "https://api.digitalocean.com/v2/load_balancers" | jq -r .meta.total)
 
 # if running more than 0, error
 if [ "$LB_COUNT" -ne 0 ]; then printf "\n\n***\nWARNING: You have running loadbalancers in DigitalOcean which you are paying for. You may not have removed all loadbalancers created by the CCM, check Digital Ocean if not intended\n***\n\n"; fi

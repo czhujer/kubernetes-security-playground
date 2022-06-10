@@ -75,20 +75,20 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         # git checkout "$target_revision"
 
         if [ -n "$path" ] && [ "$path" != "null" ] && [ "$path" != "." ]; then
-          cd "$path";
-        fi;
+          cd "$path"
+        fi
       else
         echo "INFO: helm chart form helm repo.."
-        $HELM pull "$chart_name" --version "${target_revision}"  --repo "${repo_url}" --untar
+        $HELM pull "$chart_name" --version "${target_revision}" --repo "${repo_url}" --untar
         cd "$chart_name"
-      fi;
+      fi
 
       # check for images in chart
       # helm trivy -trivyargs '--severity HIGH,CRITICAL' .
       pwd
       if test -f "Chart.yaml"; then
         echo "running helm template"
-        helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u > images.list
+        helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u >images.list
         check_ret_val=$?
         echo "printing image list"
         cat images.list
@@ -114,13 +114,13 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
               --format sarif \
               --output "${CI_PROJECT_DIR}/results/${app_name}/${image_name}.sarif" \
               "$i"
-          fi;
+          fi
         done < <(cat images.list)
       else
         echo "kustomize"
         echo "T.B.A."
         check_ret_val=$?
-      fi;
+      fi
 
       rm images.list || true
 
@@ -128,10 +128,10 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
 
       if [ "$check_ret_val" -gt "$global_ret_val" ]; then
         global_ret_val=$check_ret_val
-      fi;
-    fi;
-  cd "${CI_PROJECT_DIR}"
+      fi
+    fi
+    cd "${CI_PROJECT_DIR}"
   done < <(find "${ARGO_DIR}" -maxdepth 1 -type f)
-fi;
+fi
 
 exit "$global_ret_val"
