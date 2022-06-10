@@ -39,7 +39,7 @@ resource "helm_release" "argocd" {
 
   set {
     name  = "server.ingress.hosts[0]"
-    value = "argocd.68.183.240.164.nip.io"
+    value = "argocd.${var.do_external_lb_ip}.nip.io"
     type  = "string"
   }
 
@@ -51,7 +51,7 @@ resource "helm_release" "argocd" {
 
   set {
     name  = "server.ingress.tls[0].hosts[0]"
-    value = "argocd.143.244.206.70.nip.io"
+    value = "argocd.${var.do_external_lb_ip}.nip.io"
     type  = "string"
   }
 

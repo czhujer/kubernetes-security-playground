@@ -22,3 +22,7 @@ variable "do_csi_version" {
 variable "do_ccm_version" {
   default = "v0.1.37"
 }
+
+variable "do_external_lb_ip" {
+  default = "157.245.18.119"
+}
