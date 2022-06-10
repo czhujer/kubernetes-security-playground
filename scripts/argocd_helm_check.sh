@@ -17,12 +17,13 @@ echo "CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
 
 # detect/set environment vars
 env=""
-while getopts e: flag
-do
+while getopts e: flag; do
   case "${flag}" in
-    e) env=${OPTARG};;
-    *) echo "usage: $0 [-e ENVIRONMENT] " >&2
-         exit 1 ;;
+    e) env=${OPTARG} ;;
+    *)
+      echo "usage: $0 [-e ENVIRONMENT] " >&2
+      exit 1
+      ;;
   esac
 done
 
