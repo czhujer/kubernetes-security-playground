@@ -3,6 +3,14 @@ kind: Application
 metadata:
   name: nginx-ingress
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: controller=k8s.gcr.io/ingress-nginx/controller:~1, certgen=k8s.gcr.io/ingress-nginx/kube-webhook-certgen:~1
+    argocd-image-updater.argoproj.io/controller.helm.image-name: controller.image.repository
+    argocd-image-updater.argoproj.io/controller.helm.image-tag: controller.image.tag
+    argocd-image-updater.argoproj.io/controller.update-strategy: digest
+    argocd-image-updater.argoproj.io/certgen.helm.image-name: controller.admissionWebhooks.patch.image.repository
+    argocd-image-updater.argoproj.io/certgen.helm.image-tag: controller.admissionWebhooks.patch.image.tag
+    argocd-image-updater.argoproj.io/certgen.update-strategy: digest
 spec:
   destination:
     namespace: ingress-nginx
