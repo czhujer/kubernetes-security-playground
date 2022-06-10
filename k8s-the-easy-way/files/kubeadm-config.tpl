@@ -1,54 +1,76 @@
-apiVersion: kubeadm.k8s.io/v1beta2
-kind: InitConfiguration
+apiVersion: kubeadm.k8s.io/v1beta3
 bootstrapTokens:
-- token: wi19h5.n18aqn376cwny601
-  description: "kubeadm bootstrap token"
-  ttl: "1h"
+- description: kubeadm bootstrap token
+  groups:
+  - system:bootstrappers:kubeadm:default-node-token
+  token: wi19h5.n18aqn376cwny601
+  ttl: 1h0m0s
+  usages:
+  - signing
+  - authentication
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: ${control_plane_ip}
+  bindPort: 6443
 nodeRegistration:
-  criSocket: /run/containerd/containerd.sock
+  criSocket: unix:///var/run/containerd/containerd.sock
+  imagePullPolicy: IfNotPresent
   kubeletExtraArgs:
     cloud-provider: external
-    node-labels: "ingress-ready=true"
+    feature-gates: SeccompDefault=true
+    node-labels: ingress-ready=true
     seccomp-default: "true"
-    feature-gates: "SeccompDefault=true"
+  name: ${control_plane_name}
+  taints:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
 ---
-apiVersion: kubeadm.k8s.io/v1beta2
-kind: ClusterConfiguration
-clusterName: ${cluster_name}
-kubernetesVersion: ${kubernetes_version}
-networking:
-  podSubnet: "${pod_subnet}"
-controllerManager:
-  extraArgs:
-    node-monitor-grace-period: "16s"
-    node-monitor-period: "2s"
 apiServer:
   extraArgs:
-    default-not-ready-toleration-seconds: "30"
-    default-unreachable-toleration-seconds: "30"
-    # FG
-    feature-gates: "EphemeralContainers=True,SeccompDefault=True,ServerSideApply=True"
-    # enable-admission-plugins: NodeRestriction,PodSecurityPolicy
-    # Audit
+    audit-log-maxage: "1"
+    audit-log-maxbackup: "1"
+    audit-log-maxsize: "100"
     audit-log-path: /var/log/kubernetes/k8s-audit.log
     audit-policy-file: /etc/kubernetes/audit-policy.yaml
-    audit-log-maxage: "1"
-    audit-log-maxsize: "100"
-    audit-log-maxbackup: "1"
+    default-not-ready-toleration-seconds: "30"
+    default-unreachable-toleration-seconds: "30"
+    feature-gates: EphemeralContainers=True,SeccompDefault=True,ServerSideApply=True
   extraVolumes:
-    - name: audit-policy
-      hostPath: /etc/kubernetes/audit-policy.yaml
-      mountPath: /etc/kubernetes/audit-policy.yaml
-      readOnly: true
-      pathType: File
-    - name: audit-log
-      hostPath: /var/log/kubernetes
-      mountPath: /var/log/kubernetes
-      readOnly: false
-      pathType: DirectoryOrCreate
+  - hostPath: /etc/kubernetes/audit-policy.yaml
+    mountPath: /etc/kubernetes/audit-policy.yaml
+    name: audit-policy
+    pathType: File
+    readOnly: true
+  - hostPath: /var/log/kubernetes
+    mountPath: /var/log/kubernetes
+    name: audit-log
+    pathType: DirectoryOrCreate
+  timeoutForControlPlane: 4m0s
+apiVersion: kubeadm.k8s.io/v1beta3
+certificatesDir: /etc/kubernetes/pki
+clusterName: ${cluster_name}
+controllerManager:
+  extraArgs:
+    node-monitor-grace-period: 16s
+    node-monitor-period: 2s
+dns: {}
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+imageRepository: k8s.gcr.io
+kind: ClusterConfiguration
+kubernetesVersion: ${kubernetes_version}
+networking:
+  dnsDomain: cluster.local
+  podSubnet: ${pod_subnet}
+  serviceSubnet: 10.96.0.0/12
+scheduler: {}
 ---
-apiVersion: kubeadm.k8s.io/v1beta2
+apiVersion: kubeadm.k8s.io/v1beta3
 kind: JoinConfiguration
+caCertPath: /etc/kubernetes/pki/ca.crt
 discovery:
   bootstrapToken:
     apiServerEndpoint: ${control_plane_ip}:6443
@@ -57,9 +79,8 @@ discovery:
   timeout: 5m0s
   tlsBootstrapToken: wi19h5.n18aqn376cwny601
 nodeRegistration:
+  criSocket: unix:///var/run/containerd/containerd.sock
+  imagePullPolicy: IfNotPresent
   kubeletExtraArgs:
     cloud-provider: external
----
-kind: KubeletConfiguration
-apiVersion: kubelet.config.k8s.io/v1beta1
-cgroupDriver: cgroupfs
+  taints: null

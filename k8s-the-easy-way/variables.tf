@@ -1,7 +1,7 @@
 # https://github.com/kubernetes/sig-release/blob/master/releases/patch-releases.md#timelines
-variable "kubernetes_version" { default = "1.23.5" }
+variable "kubernetes_version" { default = "1.24.1" }
 # https://docs.docker.com/engine/release-notes/
-variable "docker_version" { default = "20.10.8" }
+# variable "docker_version" { default = "20.10.8" }
 # k8s cluster bootstrap
 variable "pod_subnet" { default = "10.217.0.0/16" }
 # https://www.digitalocean.com/docs/platform/availability-matrix/#datacenter-regions
@@ -24,5 +24,5 @@ variable "do_ccm_version" {
 }
 
 variable "do_external_lb_ip" {
-  default = "157.245.18.119"
+  default = "68.183.240.71"
 }

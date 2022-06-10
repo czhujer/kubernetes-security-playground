@@ -9,7 +9,6 @@
 
 # TODO
 ## terraform-based stack
-- upgrade k8s 1.23 -> 1.24
 - switch PSP -> PSA
 - tracing
   - add OTEL collector chart and remove otel operator
