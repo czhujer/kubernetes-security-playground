@@ -11,22 +11,23 @@ echo "running argocd-helm check script.."
 
 if [ -z "${CI_PROJECT_DIR-}" ]; then
   CI_PROJECT_DIR=$(pwd)
-fi;
+fi
 
 echo "CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
 
 # detect/set environment vars
 env=""
-while getopts e: flag
-do
+while getopts e: flag; do
   case "${flag}" in
-    e) env=${OPTARG};;
-    *) echo "usage: $0 [-e ENVIRONMENT] " >&2
-         exit 1 ;;
+  e) env=${OPTARG} ;;
+  *)
+    echo "usage: $0 [-e ENVIRONMENT] " >&2
+    exit 1
+    ;;
   esac
 done
 
-if [ "x${env}" == "x" ]; then
+if [ "${env}" == "" ]; then
   echo "ENV: lab"
 else
   echo "ENV: ${env}"
@@ -41,11 +42,11 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
 
     app_name=$(echo "$i" | sed "s/^${ARGO_DIR}\/\(.*\).yaml$/\1/")
     echo "found helm chart from app: ${app_name}"
-    chart_name=$($YQ eval '.spec.source.chart'  "${ARGO_DIR}/${app_name}.yaml" )
-    repo_url=$($YQ eval '.spec.source.repoURL'  "${ARGO_DIR}/${app_name}.yaml" )
-    target_revision=$($YQ eval '.spec.source.targetRevision'  "${ARGO_DIR}/${app_name}.yaml" )
-    path=$($YQ eval '.spec.source.path'  "${ARGO_DIR}/${app_name}.yaml" )
-    extra_values=$($YQ eval '.spec.source.helm.values'  "${ARGO_DIR}/${app_name}.yaml" )
+    chart_name=$($YQ eval '.spec.source.chart' "${ARGO_DIR}/${app_name}.yaml")
+    repo_url=$($YQ eval '.spec.source.repoURL' "${ARGO_DIR}/${app_name}.yaml")
+    target_revision=$($YQ eval '.spec.source.targetRevision' "${ARGO_DIR}/${app_name}.yaml")
+    path=$($YQ eval '.spec.source.path' "${ARGO_DIR}/${app_name}.yaml")
+    extra_values=$($YQ eval '.spec.source.helm.values' "${ARGO_DIR}/${app_name}.yaml")
 
     echo " parsed app name: \"$app_name\""
     echo " parsed chart name: \"$chart_name\" (optional)"
@@ -54,16 +55,16 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
     echo " parsed path: \"$path\""
 
     values_file="${CI_PROJECT_DIR}/extra-values-${app_name}.yaml"
-    echo "$extra_values" > "$values_file"
+    echo "$extra_values" >"$values_file"
 
-    if [ -z "$repo_url" ] \
-        || [ "$repo_url" == "null" ] \
-        || [ -z "$target_revision" ] \
-        || [ "$target_revision" == "null" ]; then
-      echo "ERROR: parsing repoURL or targetRevision failed";
+    if [ -z "$repo_url" ] ||
+      [ "$repo_url" == "null" ] ||
+      [ -z "$target_revision" ] ||
+      [ "$target_revision" == "null" ]; then
+      echo "ERROR: parsing repoURL or targetRevision failed"
       if [ "12" -gt "$global_ret_val" ]; then
         global_ret_val="12"
-      fi;
+      fi
     else
       # check if we are using helm repo or git repo
       if [ -z "$chart_name" ] || [ "$chart_name" == "null" ]; then
@@ -75,20 +76,20 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
         # git checkout "$target_revision"
 
         if [ -n "$path" ] && [ "$path" != "null" ] && [ "$path" != "." ]; then
-          cd "$path";
-        fi;
+          cd "$path"
+        fi
       else
         echo "INFO: helm chart form helm repo.."
-        $HELM pull "$chart_name" --version "${target_revision}"  --repo "${repo_url}" --untar
+        $HELM pull "$chart_name" --version "${target_revision}" --repo "${repo_url}" --untar
         cd "$chart_name"
-      fi;
+      fi
 
       # check for images in chart
       # helm trivy -trivyargs '--severity HIGH,CRITICAL' .
       pwd
       if test -f "Chart.yaml"; then
         echo "running helm template"
-        helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u > images.list
+        helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u >images.list
         check_ret_val=$?
         echo "printing image list"
         cat images.list
@@ -114,13 +115,13 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
               --format sarif \
               --output "${CI_PROJECT_DIR}/results/${app_name}/${image_name}.sarif" \
               "$i"
-          fi;
+          fi
         done < <(cat images.list)
       else
         echo "kustomize"
         echo "T.B.A."
         check_ret_val=$?
-      fi;
+      fi
 
       rm images.list || true
 
@@ -128,10 +129,10 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
 
       if [ "$check_ret_val" -gt "$global_ret_val" ]; then
         global_ret_val=$check_ret_val
-      fi;
-    fi;
-  cd "${CI_PROJECT_DIR}"
+      fi
+    fi
+    cd "${CI_PROJECT_DIR}"
   done < <(find "${ARGO_DIR}" -maxdepth 1 -type f)
-fi;
+fi
 
 exit "$global_ret_val"
