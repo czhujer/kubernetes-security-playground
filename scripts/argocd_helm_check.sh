@@ -120,6 +120,9 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
       else
         echo "kustomize"
         echo "T.B.A."
+        #
+        # TODO: add kustomize build
+        #
         check_ret_val=$?
       fi
 

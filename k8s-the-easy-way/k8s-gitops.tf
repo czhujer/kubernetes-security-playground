@@ -39,7 +39,7 @@ resource "helm_release" "argocd" {
 
   set {
     name  = "server.ingress.hosts[0]"
-    value = "argocd.68.183.240.164.nip.io"
+    value = "argocd.${var.do_external_lb_ip}.nip.io"
     type  = "string"
   }
 
@@ -51,7 +51,7 @@ resource "helm_release" "argocd" {
 
   set {
     name  = "server.ingress.tls[0].hosts[0]"
-    value = "argocd.143.244.206.70.nip.io"
+    value = "argocd.${var.do_external_lb_ip}.nip.io"
     type  = "string"
   }
 
@@ -75,5 +75,16 @@ data "kubectl_file_documents" "argo_cd_crds" {
 
 resource "kubectl_manifest" "argo_cd_crds" {
   yaml_body  = data.kubectl_file_documents.argo_cd_crds.content
+  depends_on = [helm_release.argocd]
+}
+
+## argocd-image-updater
+#
+data "kubectl_file_documents" "argocd_image_updater" {
+  content = file("../argocd/argocd-image-updater.yaml")
+}
+
+resource "kubectl_manifest" "argocd_image_updater" {
+  yaml_body  = data.kubectl_file_documents.argocd_image_updater.content
   depends_on = [helm_release.argocd]
 }
