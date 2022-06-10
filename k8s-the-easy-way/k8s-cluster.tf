@@ -61,8 +61,9 @@ resource "digitalocean_droplet" "control_plane" {
         cluster_name       = format("ktew-%s", var.dc_region),
         kubernetes_version = var.kubernetes_version,
         pod_subnet         = var.pod_subnet,
-        control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address
-    })
+        control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address,
+        control_plane_name = format("control-plane-%s-1", var.dc_region)
+      })
     destination = "/tmp/kubeadm-config.yaml"
   }
 
@@ -162,7 +163,8 @@ resource "digitalocean_droplet" "worker" {
         cluster_name       = format("ktew-%s", var.dc_region),
         kubernetes_version = var.kubernetes_version,
         pod_subnet         = var.pod_subnet,
-        control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address
+        control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address,
+        control_plane_name = format("control-plane-%s-1", var.dc_region)
     })
     destination = "/tmp/kubeadm-config.yaml"
   }
