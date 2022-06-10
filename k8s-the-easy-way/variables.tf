@@ -8,7 +8,7 @@ variable "pod_subnet" { default = "10.217.0.0/16" }
 variable "dc_region" { default = "fra1" }
 # https://developers.digitalocean.com/documentation/v2/#list-all-sizes
 # setting below 2 CPUs will fail kubeadm, ignore with `--ignore-preflight-errors=all`
-variable "droplet_size" { default = "s-2vcpu-2gb" }
+variable "droplet_size" { default = "s-4vcpu-8gb" }
 # set with `export DO_PAT=<API TOKEN>`
 variable "do_token" {}
 # set in `*-cluster.sh` scripts
