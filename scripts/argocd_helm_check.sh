@@ -11,7 +11,7 @@ echo "running argocd-helm check script.."
 
 if [ -z "${CI_PROJECT_DIR-}" ]; then
   CI_PROJECT_DIR=$(pwd)
-fi;
+fi
 
 echo "CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
 
@@ -54,7 +54,7 @@ if [ -n "$(ls -A $ARGO_DIR)" ]; then
     echo " parsed path: \"$path\""
 
     values_file="${CI_PROJECT_DIR}/extra-values-${app_name}.yaml"
-    echo "$extra_values" > "$values_file"
+    echo "$extra_values" >"$values_file"
 
     if [ -z "$repo_url" ] \
         || [ "$repo_url" == "null" ] \
