@@ -6,7 +6,7 @@
 #PRIVATE_KEY="${PRIVATE_KEY:-$HOME/.ssh/id_rsa}"
 
 # error if DigitalOcean Access Token isn't set
-if [[ -z "${DO_PAT}" ]]; then
+if [[ -z ${DO_PAT} ]]; then
     printf "\n*******************************************************\n"
     printf "Makes sure you've exported your DO_PAT token variable\n"
     printf "export DO_PAT=\"<DIGITALOCEAN PERSONAL ACCESS TOKEN>\"\n"

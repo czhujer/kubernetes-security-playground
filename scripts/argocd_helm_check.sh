@@ -26,7 +26,7 @@ do
   esac
 done
 
-if [ "x${env}" == "x" ]; then
+if [ "${env}" == "" ]; then
   echo "ENV: lab"
 else
   echo "ENV: ${env}"
