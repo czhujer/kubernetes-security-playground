@@ -144,8 +144,9 @@ if [ -n "$(ls -A "${ARGO_DIR}")" ]; then
         cd "$chart_name"
       fi
 
-      # check for images in chart
-      pwd
+      pwd=$(pwd)
+      echo "INFO: scan folder: ${pwd}"
+
       parse_images
       check_ret_val=$?
 
