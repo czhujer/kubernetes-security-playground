@@ -40,12 +40,14 @@ parse_argocd_defs() {
   target_revision=$($YQ eval '.spec.source.targetRevision' "${ARGO_DIR}/${app_name}.yaml")
   path=$($YQ eval '.spec.source.path' "${ARGO_DIR}/${app_name}.yaml")
   extra_values=$($YQ eval '.spec.source.helm.values' "${ARGO_DIR}/${app_name}.yaml")
+  dir_include=$($YQ eval '.spec.source.directory.include' "${ARGO_DIR}/${app_name}.yaml")
 
   echo " parsed app name: \"$app_name\""
   echo " parsed chart name: \"$chart_name\" (optional)"
   echo " parsed repoURL: \"$repo_url\""
   echo " parsed targetRevision: \"$target_revision\""
   echo " parsed path: \"$path\""
+  echo " parsed directory include: \"$dir_include\""
 
   values_file="${CI_PROJECT_DIR}/extra-values-${app_name}.yaml"
   echo "$extra_values" >"$values_file"
