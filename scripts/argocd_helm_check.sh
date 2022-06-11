@@ -70,7 +70,7 @@ parse_images() {
     yq eval '..|.image? | select (.) | del(.type, .description)' ./* >images_tmp.list
     check_ret_val=$?
     # fix for CRDs
-    grep <images_tmp.list -v "\-\-\-" | grep -v "image: null"  | sort -u >images.list
+    grep <images_tmp.list -v "\-\-\-" | grep -v "image: null" | sort -u >images.list
   fi
 
   echo "INFO: printing image list"
