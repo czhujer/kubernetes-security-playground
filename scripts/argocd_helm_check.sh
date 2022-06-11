@@ -65,8 +65,10 @@ parse_images() {
     check_ret_val=$?
   else
     echo "INFO: checking raw manifests"
-    find . -not -name "crd-*.yaml"  -type f -exec cat {} \; | yq eval '..|.image? | select(.)' - | sort -u >images.list
+    yq eval '..|.image? | select (.) | del(.type, .description)' ./* >images.list
     check_ret_val=$?
+    # fix for CRDs
+    cat images.list |grep -v "\-\-\-" |grep -v "image: null"  | sort -u >images.list
   fi
 
   echo "INFO: printing image list"
