@@ -70,6 +70,7 @@ parse_images() {
     if [ "$dir_include" == "null" ]; then
       find_name="*.yaml"
     else
+      echo "INFO: setup directory include to: \"$dir_include\""
       find_name="${dir_include}"
     fi
 
