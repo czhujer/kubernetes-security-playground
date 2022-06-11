@@ -58,3 +58,6 @@ jobs:
 
       - name: Show all pods
         run: sleep 20 && kubectl get pods -A
+
+#      - name: install nginx
+#        run: nginx-ingress-deploy

@@ -131,9 +131,8 @@ argocd-deploy:
 		--create-namespace \
 		--version "${ARGOCD_CHART_VERSION}" \
 		-f kind/kind-values-argocd.yaml \
-		-f kind/kind-values-argocd-service-monitors.yaml
-	#	\
-	#	--wait
+		-f kind/kind-values-argocd-service-monitors.yaml \
+		--wait
 	# update CRDs
 	kubectl -n argocd apply -f argocd/argo-cd-crds.yaml
 	# kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo ""
