@@ -1,4 +1,4 @@
-name: trivy-images
+name: trivy-images-2
 
 on:
   workflow_dispatch:
@@ -6,12 +6,12 @@ on:
     branches:
       - main
 #     paths:
-#       - argocd/**
+#       - k8s-the-easy-way/argocd/**
   push:
     branches-ignore:
       - main
 #     paths:
-#       - argocd/**
+#       - k8s-the-easy-way/argocd/**
 
 jobs:
   scan_charts:
@@ -54,13 +54,13 @@ jobs:
 #       - name: show helm plugins
 #         run: helm plugin list
 
-      - name: run scan 1
-        run: scripts/argocd_image_check.sh
+      - name: run scan 2
+        run: scripts/argocd_image_check.sh -f k8s-the-easy-way/argocd
 
       - name: save results files
         uses: actions/upload-artifact@master
         with:
-          name: trivy-image-results
+          name: trivy-image-results-2
           path: results
 
       # here we create the json, we need the "id:" so we can use it in "outputs" bellow
@@ -94,7 +94,7 @@ jobs:
       - name: restore results files
         uses: actions/download-artifact@master
         with:
-          name: trivy-image-results
+          name: trivy-image-results-2
           path: results
 
       - name: check results folders
@@ -108,5 +108,5 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "./results/${{ matrix.value }}"
-          category: trivy-image
+          category: trivy-image-2
           wait-for-processing: true
