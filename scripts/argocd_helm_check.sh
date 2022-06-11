@@ -67,9 +67,14 @@ parse_images() {
     check_ret_val=$?
   else
     echo "INFO: checking raw manifests"
-    # yq eval '..|.image? | select (.) | del(.type, .description)' ./* >images_tmp.list
-    find . -name "*.yaml"  -type f -exec cat {} \; | yq eval '..|.image? | select (.) | del(.type, .description)' - >images_tmp.list
-    check_ret_val=$?
+    if [ "$dir_include" == "null" ]; then
+      # yq eval '..|.image? | select (.) | del(.type, .description)' ./* >images_tmp.list
+      find . -name "*.yaml" -type f -exec cat {} \; | yq eval '..|.image? | select (.) | del(.type, .description)' - >images_tmp.list
+      check_ret_val=$?
+    else
+      # yq eval '..|.image? | select (.) | del(.type, .description)' ./* >images_tmp.list
+      find . -name "${dir_include}" -type f -exec cat {} \; | yq eval '..|.image? | select (.) | del(.type, .description)' - >images_tmp.list
+    fi
     # fix for CRDs
     set +o pipefail
     grep <images_tmp.list -v "\-\-\-" | grep -v "image: null" | sort -u >images.list
