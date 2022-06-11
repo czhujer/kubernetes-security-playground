@@ -17,7 +17,7 @@ echo "CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
 folder=""
 while getopts f: flag; do
   case "${flag}" in
-  e) folder=${OPTARG} ;;
+  f) folder=${OPTARG} ;;
   *)
     echo "usage: $0 [-f folder] " >&2
     exit 1

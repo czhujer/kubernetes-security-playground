@@ -7,11 +7,13 @@ on:
       - main
 #     paths:
 #       - argocd/**
+#       - k8s-the-easy-way/argocd/**
   push:
     branches-ignore:
       - main
 #     paths:
 #       - argocd/**
+#       - k8s-the-easy-way/argocd/**
 
 jobs:
   scan_charts:
