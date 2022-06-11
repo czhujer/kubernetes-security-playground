@@ -25,9 +25,10 @@ jobs:
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.2.0
         with:
-          node_image: kindest/node:v1.24.0@sha256:0866296e693efe1fed79d5e6c7af8df71fc73ae45e3679af05342239cdc5bc8e
-          cluster_name: security-playground
-          version: 0.13.0
+          # cluster_name: security-playground
+          # node_image: kindest/node:v1.24.0@sha256:0866296e693efe1fed79d5e6c7af8df71fc73ae45e3679af05342239cdc5bc8e
+          version: "0.13.0"
+          kubectl_version: "1.22.5"
 
       - name: Show kubectl version
         run: kubectl version
