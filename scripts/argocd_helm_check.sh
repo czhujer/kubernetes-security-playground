@@ -5,7 +5,80 @@ HELM="helm"
 YQ="yq"
 global_ret_val=0
 
-echo "running argocd-helm check script.."
+run_trivy_scan () {
+  echo "running trivy scan"
+  while IFS= read -r i; do
+    if [ "$i" != "---" ]; then
+      echo "scanning image: $i"
+      trivy image \
+        --no-progress \
+        --ignore-unfixed \
+        "$i"
+
+      echo "scanning image with sarif file: $i"
+
+      image_name=$(echo "${i}" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/_/g | sed -r s/^-+\|-+$//g)
+      mkdir -p "${CI_PROJECT_DIR}/results/${app_name}"
+      echo "sarif file: ${CI_PROJECT_DIR}/results/${app_name}/${image_name}.sarif"
+
+      trivy image \
+        --no-progress \
+        --ignore-unfixed \
+        --format sarif \
+        --output "${CI_PROJECT_DIR}/results/${app_name}/${image_name}.sarif" \
+        "$i"
+    fi
+  done < <(cat images.list)
+}
+
+parse_argocd_defs () {
+  ARGO_DIR_E=$(echo "$ARGO_DIR" | sed 's/\//\\\//g')
+  app_name=$(echo "$i" | sed "s/^${ARGO_DIR_E}\/\(.*\).yaml$/\1/")
+  echo "found helm chart from app: ${app_name}"
+  chart_name=$($YQ eval '.spec.source.chart' "${ARGO_DIR}/${app_name}.yaml")
+  repo_url=$($YQ eval '.spec.source.repoURL' "${ARGO_DIR}/${app_name}.yaml")
+  target_revision=$($YQ eval '.spec.source.targetRevision' "${ARGO_DIR}/${app_name}.yaml")
+  path=$($YQ eval '.spec.source.path' "${ARGO_DIR}/${app_name}.yaml")
+  extra_values=$($YQ eval '.spec.source.helm.values' "${ARGO_DIR}/${app_name}.yaml")
+
+  echo " parsed app name: \"$app_name\""
+  echo " parsed chart name: \"$chart_name\" (optional)"
+  echo " parsed repoURL: \"$repo_url\""
+  echo " parsed targetRevision: \"$target_revision\""
+  echo " parsed path: \"$path\""
+
+  values_file="${CI_PROJECT_DIR}/extra-values-${app_name}.yaml"
+  echo "$extra_values" >"$values_file"
+}
+
+parse_images () {
+  if test -f "Chart.yaml"; then
+    echo "INFO: running helm template"
+    helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u >images.list
+    check_ret_val=$?
+
+  elif test -f "kustomization.yaml"; then
+    echo "INFO: running kustomize build"
+    kustomize build . | yq e '..|.image? | select(.)' - | sort -u >images.list
+    check_ret_val=$?
+  else
+    echo "INFO: checking raw manifests"
+
+    yq eval '..|.image? | select(.)' ./* | sort -u >images.list
+    check_ret_val=$?
+  fi
+
+  echo "INFO: printing image list"
+  cat images.list
+
+  run_trivy_scan
+
+  rm images.list || true
+
+  return $check_ret_val
+}
+
+echo "running argocd images check script.."
 
 if [ -z "${CI_PROJECT_DIR-}" ]; then
   CI_PROJECT_DIR=$(pwd)
@@ -34,28 +107,13 @@ else
 fi
 
 echo "########################################"
-echo "# check helm definitions for argo apps #"
+echo "# check definitions for argo apps #"
 echo "########################################"
 #
 if [ -n "$(ls -A "${ARGO_DIR}")" ]; then
   while IFS= read -r i; do
-    ARGO_DIR_E=$(echo "$ARGO_DIR" | sed 's/\//\\\//g')
-    app_name=$(echo "$i" | sed "s/^${ARGO_DIR_E}\/\(.*\).yaml$/\1/")
-    echo "found helm chart from app: ${app_name}"
-    chart_name=$($YQ eval '.spec.source.chart' "${ARGO_DIR}/${app_name}.yaml")
-    repo_url=$($YQ eval '.spec.source.repoURL' "${ARGO_DIR}/${app_name}.yaml")
-    target_revision=$($YQ eval '.spec.source.targetRevision' "${ARGO_DIR}/${app_name}.yaml")
-    path=$($YQ eval '.spec.source.path' "${ARGO_DIR}/${app_name}.yaml")
-    extra_values=$($YQ eval '.spec.source.helm.values' "${ARGO_DIR}/${app_name}.yaml")
 
-    echo " parsed app name: \"$app_name\""
-    echo " parsed chart name: \"$chart_name\" (optional)"
-    echo " parsed repoURL: \"$repo_url\""
-    echo " parsed targetRevision: \"$target_revision\""
-    echo " parsed path: \"$path\""
-
-    values_file="${CI_PROJECT_DIR}/extra-values-${app_name}.yaml"
-    echo "$extra_values" >"$values_file"
+    parse_argocd_defs
 
     if [ -z "$repo_url" ] ||
       [ "$repo_url" == "null" ] ||
@@ -68,7 +126,7 @@ if [ -n "$(ls -A "${ARGO_DIR}")" ]; then
     else
       # check if we are using helm repo or git repo
       if [ -z "$chart_name" ] || [ "$chart_name" == "null" ]; then
-        echo "INFO: helm chart from git repo.."
+        echo "INFO: fetching data from git repo.."
 
         git config --global advice.detachedHead false
         git clone --branch "$target_revision" --depth=1 "$repo_url" "$app_name"
@@ -79,56 +137,17 @@ if [ -n "$(ls -A "${ARGO_DIR}")" ]; then
           cd "$path"
         fi
       else
-        echo "INFO: helm chart form helm repo.."
+        echo "INFO: fetching data form helm repo.."
         $HELM pull "$chart_name" --version "${target_revision}" --repo "${repo_url}" --untar
         cd "$chart_name"
       fi
 
       # check for images in chart
-      # helm trivy -trivyargs '--severity HIGH,CRITICAL' .
       pwd
-      if test -f "Chart.yaml"; then
-        echo "running helm template"
-        helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u >images.list
-        check_ret_val=$?
-        echo "printing image list"
-        cat images.list
+      parse_images
+      check_ret_val=$?
 
-        echo "running trivy scan"
-        while IFS= read -r i; do
-          if [ "$i" != "---" ]; then
-            echo "scanning image: $i"
-            trivy image \
-              --no-progress \
-              --ignore-unfixed \
-              "$i"
-
-            echo "scanning image with sarif file: $i"
-
-            image_name=$(echo "${i}" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/_/g | sed -r s/^-+\|-+$//g)
-            mkdir -p "${CI_PROJECT_DIR}/results/${app_name}"
-            echo "sarif file: ${CI_PROJECT_DIR}/results/${app_name}/${image_name}.sarif"
-
-            trivy image \
-              --no-progress \
-              --ignore-unfixed \
-              --format sarif \
-              --output "${CI_PROJECT_DIR}/results/${app_name}/${image_name}.sarif" \
-              "$i"
-          fi
-        done < <(cat images.list)
-      else
-        echo "kustomize"
-        kustomize build .
-        #
-        # TODO: add kustomize build
-        #
-        check_ret_val=$?
-      fi
-
-      rm images.list || true
-
-      echo "helm return value: $check_ret_val"
+      echo "INFO: parse_images return value: $check_ret_val"
 
       if [ "$check_ret_val" -gt "$global_ret_val" ]; then
         global_ret_val=$check_ret_val
