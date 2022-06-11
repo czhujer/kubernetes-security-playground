@@ -22,6 +22,11 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v3
 
+      - name: Install yq
+        run: |
+          sudo apt update
+          sudo apt install make -y
+
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@main
         with:
@@ -30,6 +35,7 @@ jobs:
           version: "v0.14.0"
           kubectl_version: "v1.24.1"
           config: "kind/kind-config.yaml"
+          wait: 30s
 
       - name: Show kubectl version
         run: kubectl version
@@ -37,4 +43,12 @@ jobs:
       - name: Show all pods
         run: sleep 10 && kubectl get pods -A
 
-      #
+      - name: fix prometheus-operator's CRDs
+        run: make kind-install-crds
+
+      - name: install cilium
+        run: make cilium-install
+
+      - name: Show all pods
+        run: sleep 10 && kubectl get pods -A
+
