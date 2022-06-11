@@ -51,13 +51,13 @@ jobs:
         run: make cilium-install
 
       - name: Show all pods
-        run: sleep 10 && kubectl get pods -A
+        run: sleep 5 && kubectl get pods -A
 
       - name: install ArgoCD
         run: make argocd-deploy
 
-      - name: Show all pods
-        run: sleep 20 && kubectl get pods -A
+      - name: install nginx
+        run: nginx-ingress-deploy
 
-#      - name: install nginx
-#        run: nginx-ingress-deploy
+      - name: Show all pods
+        run: sleep 5 && kubectl get pods -A
