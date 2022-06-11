@@ -55,7 +55,7 @@ jobs:
 #         run: helm plugin list
 
       - name: run scan 2
-        run: scripts/argocd_helm_check.sh -f k8s-the-easy-way/argocd
+        run: scripts/argocd_image_check.sh -f k8s-the-easy-way/argocd
 
       - name: save results files
         uses: actions/upload-artifact@master
