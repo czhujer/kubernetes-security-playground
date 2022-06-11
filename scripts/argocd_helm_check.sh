@@ -1,8 +1,6 @@
 #!/bin/bash
 set -ueo pipefail
 
-ARGO_DIR="argocd"
-
 HELM="helm"
 YQ="yq"
 global_ret_val=0
@@ -16,28 +14,30 @@ fi
 echo "CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
 
 # detect/set environment vars
-env=""
+folder=""
 while getopts e: flag; do
   case "${flag}" in
-  e) env=${OPTARG} ;;
+  e) folder=${OPTARG} ;;
   *)
-    echo "usage: $0 [-e ENVIRONMENT] " >&2
+    echo "usage: $0 [-f folder] " >&2
     exit 1
     ;;
   esac
 done
 
-if [ "${env}" == "" ]; then
-  echo "ENV: lab"
+if [ "${folder}" == "" ]; then
+  echo "folder: argocd"
+  ARGO_DIR="argocd"
 else
-  echo "ENV: ${env}"
+  echo "folder: ${folder}"
+  ARGO_DIR=${folder}
 fi
 
 echo "########################################"
 echo "# check helm definitions for argo apps #"
 echo "########################################"
 #
-if [ -n "$(ls -A $ARGO_DIR)" ]; then
+if [ -n "$(ls -A "${ARGO_DIR}")" ]; then
   while IFS= read -r i; do
 
     app_name=$(echo "$i" | sed "s/^${ARGO_DIR}\/\(.*\).yaml$/\1/")
