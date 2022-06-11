@@ -67,10 +67,10 @@ parse_images() {
     check_ret_val=$?
   else
     echo "INFO: checking raw manifests"
-    yq eval '..|.image? | select (.) | del(.type, .description)' ./* >images.list
+    yq eval '..|.image? | select (.) | del(.type, .description)' ./* >images_tmp.list
     check_ret_val=$?
     # fix for CRDs
-    cat images.list |grep -v "\-\-\-" |grep -v "image: null"  | sort -u >images.list
+    < images_tmp.list grep -v "\-\-\-" | grep -v "image: null"  | sort -u >images.list
   fi
 
   echo "INFO: printing image list"
@@ -79,6 +79,7 @@ parse_images() {
   run_trivy_scan
 
   rm images.list || true
+  rm images_tmp.list || true
 
   return $check_ret_val
 }
