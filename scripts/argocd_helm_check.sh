@@ -119,7 +119,7 @@ if [ -n "$(ls -A "${ARGO_DIR}")" ]; then
         done < <(cat images.list)
       else
         echo "kustomize"
-        echo "T.B.A."
+        kustomize build .
         #
         # TODO: add kustomize build
         #
