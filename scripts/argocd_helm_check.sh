@@ -15,7 +15,7 @@ echo "CI_PROJECT_DIR: ${CI_PROJECT_DIR}"
 
 # detect/set environment vars
 folder=""
-while getopts e: flag; do
+while getopts f: flag; do
   case "${flag}" in
   e) folder=${OPTARG} ;;
   *)
