@@ -23,7 +23,7 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v3
 
-      - name: Install yq
+      - name: Install make
         run: |
           sudo apt update
           sudo apt install make -y
