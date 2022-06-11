@@ -9,13 +9,13 @@ run_trivy_scan() {
   echo "INFO: running trivy scan"
   while IFS= read -r i; do
     if [ "$i" != "---" ]; then
-      echo " scanning image: $i"
+      echo "INFO: scanning image: $i"
       trivy image \
         --no-progress \
         --ignore-unfixed \
         "$i"
 
-      echo " scanning image with sarif file: $i"
+      echo "INFO: scanning image with sarif file: $i"
 
       image_name=$(echo "${i}" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/_/g | sed -r s/^-+\|-+$//g)
       mkdir -p "${CI_PROJECT_DIR}/results/${app_name}"
@@ -49,6 +49,8 @@ parse_argocd_defs() {
 
   values_file="${CI_PROJECT_DIR}/extra-values-${app_name}.yaml"
   echo "$extra_values" >"$values_file"
+  echo "DEBUG: printing helm extra values:"
+  cat "$values_file"
 }
 
 parse_images() {
@@ -99,17 +101,13 @@ while getopts f: flag; do
 done
 
 if [ "${folder}" == "" ]; then
-  echo "folder: argocd"
+  echo "SCAN_FOLDER: argocd"
   ARGO_DIR="argocd"
 else
-  echo "folder: ${folder}"
+  echo "SCAN_FOLDER: ${folder}"
   ARGO_DIR=${folder}
 fi
 
-echo "########################################"
-echo "# check definitions for argo apps #"
-echo "########################################"
-#
 if [ -n "$(ls -A "${ARGO_DIR}")" ]; then
   while IFS= read -r i; do
 
