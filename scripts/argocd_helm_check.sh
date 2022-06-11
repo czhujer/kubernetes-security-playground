@@ -5,17 +5,17 @@ HELM="helm"
 YQ="yq"
 global_ret_val=0
 
-run_trivy_scan () {
-  echo "running trivy scan"
+run_trivy_scan() {
+  echo "INFO: running trivy scan"
   while IFS= read -r i; do
     if [ "$i" != "---" ]; then
-      echo "scanning image: $i"
+      echo " scanning image: $i"
       trivy image \
         --no-progress \
         --ignore-unfixed \
         "$i"
 
-      echo "scanning image with sarif file: $i"
+      echo " scanning image with sarif file: $i"
 
       image_name=$(echo "${i}" | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/_/g | sed -r s/^-+\|-+$//g)
       mkdir -p "${CI_PROJECT_DIR}/results/${app_name}"
@@ -31,7 +31,7 @@ run_trivy_scan () {
   done < <(cat images.list)
 }
 
-parse_argocd_defs () {
+parse_argocd_defs() {
   ARGO_DIR_E=$(echo "$ARGO_DIR" | sed 's/\//\\\//g')
   app_name=$(echo "$i" | sed "s/^${ARGO_DIR_E}\/\(.*\).yaml$/\1/")
   echo "found helm chart from app: ${app_name}"
@@ -51,7 +51,7 @@ parse_argocd_defs () {
   echo "$extra_values" >"$values_file"
 }
 
-parse_images () {
+parse_images() {
   if test -f "Chart.yaml"; then
     echo "INFO: running helm template"
     helm template . --values "$values_file" | yq e '..|.image? | select(.)' - | sort -u >images.list
