@@ -39,8 +39,8 @@ echo "########################################"
 #
 if [ -n "$(ls -A "${ARGO_DIR}")" ]; then
   while IFS= read -r i; do
-
-    app_name=$(echo "$i" | sed "s/^${ARGO_DIR}\/\(.*\).yaml$/\1/")
+    ARGO_DIR_E=$(echo "$ARGO_DIR" | sed 's/\//\\\//g')
+    app_name=$(echo "$i" | sed "s/^${ARGO_DIR_E}\/\(.*\).yaml$/\1/")
     echo "found helm chart from app: ${app_name}"
     chart_name=$($YQ eval '.spec.source.chart' "${ARGO_DIR}/${app_name}.yaml")
     repo_url=$($YQ eval '.spec.source.repoURL' "${ARGO_DIR}/${app_name}.yaml")
