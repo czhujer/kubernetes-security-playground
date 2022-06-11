@@ -2,7 +2,7 @@
 export CLUSTER_NAME?=security-playground
 export CILIUM_VERSION?=1.11.5
 export CERT_MANAGER_CHART_VERSION=1.8.0
-export ARGOCD_CHART_VERSION=4.5.7
+export ARGOCD_CHART_VERSION=4.8.3
 export SPO_VERSION=0.4.3
 export TRIVY_IMAGE_CHECK=0
 
@@ -131,8 +131,9 @@ argocd-deploy:
 		--create-namespace \
 		--version "${ARGOCD_CHART_VERSION}" \
 		-f kind/kind-values-argocd.yaml \
-		-f kind/kind-values-argocd-service-monitors.yaml \
-		--wait
+		-f kind/kind-values-argocd-service-monitors.yaml
+	#	\
+	#	--wait
 	# update CRDs
 	kubectl -n argocd apply -f argocd/argo-cd-crds.yaml
 	# kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo ""
