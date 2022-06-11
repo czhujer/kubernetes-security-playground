@@ -57,7 +57,7 @@ jobs:
         run: make argocd-deploy
 
       - name: install nginx
-        run: nginx-ingress-deploy
+        run: make nginx-ingress-deploy
 
       - name: Show all pods
         run: sleep 5 && kubectl get pods -A
