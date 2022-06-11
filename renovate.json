@@ -1,5 +1,14 @@
 {
   "extends": [
     "config:base"
-  ]
+  ],
+  "kubernetes": {
+    "fileMatch": ["^k8s-the-easy-way/k8s-manifests/.*\\.yaml$"]
+  },
+  "argocd": {
+    "fileMatch": ["argocd/.+\\.yaml$",
+      "argocd/projects/.+\\.yaml$",
+      "k8s-the-easy-way/argocd/.+\\.yaml$"
+    ]
+  }
 }
