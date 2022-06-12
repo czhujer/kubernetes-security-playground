@@ -102,4 +102,4 @@ jobs:
         run: |
           rs=$(make test-network-check-status)
           echo "$rs"
-          echo "$rs" |grep "greetings3 from podinfo"
+          echo "$rs" |grep "greetings from podinfo"
