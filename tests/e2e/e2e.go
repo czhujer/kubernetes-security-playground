@@ -27,14 +27,11 @@ const (
 	frameworkName        string = "certmanager"
 )
 
-func applyManifest(yamlFile string) {
+func applyManifest(testContext *e2ekubectl.TestKubeconfig, yamlFile string) {
 	var stdout, stderr bytes.Buffer
 	var err error
 
-	//e2elog.Logf("run kubectl apply command with file: %v", yamlFile)
-
-	tk := e2ekubectl.NewTestKubeconfig(framework.TestContext.CertDir, framework.TestContext.Host, framework.TestContext.KubeConfig, framework.TestContext.KubeContext, framework.TestContext.KubectlPath, "")
-	cmd := tk.KubectlCmd("apply", "-f", yamlFile)
+	cmd := testContext.KubectlCmd("apply", "-f", yamlFile, "--wait=true")
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
 	err = cmd.Run()
@@ -75,6 +72,8 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 
 	f := framework.NewDefaultFramework(frameworkName)
 
+	tk := e2ekubectl.NewTestKubeconfig(framework.TestContext.CertDir, framework.TestContext.Host, framework.TestContext.KubeConfig, framework.TestContext.KubeContext, framework.TestContext.KubectlPath, "")
+
 	ginkgo.BeforeEach(func() {
 		//ensure if cert-manager and Issuer(s) is installed
 		//ginkgo.By("Executing cert-manager installation")
@@ -85,10 +84,10 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 		framework.ExpectNoError(err)
 
 		ginkgo.By("Executing certs and Issuer objects")
-		applyManifest("../assets/k8s/ca/cert-manager-issuer-kind-test.yaml")
-		applyManifest("../assets/k8s/ca/cert-manager-issuer-kind-ca-test.yaml")
-		applyManifest("../assets/k8s/certs/cert-manager-certificate-test1.yaml")
-		applyManifest("../assets/k8s/certs/cert-manager-certificate-test2.yaml")
+		applyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-test.yaml")
+		applyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-ca-test.yaml")
+		applyManifest(tk, "../assets/k8s/certs/cert-manager-certificate-test1.yaml")
+		applyManifest(tk, "../assets/k8s/certs/cert-manager-certificate-test2.yaml")
 
 	})
 
