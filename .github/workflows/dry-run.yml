@@ -68,3 +68,10 @@ jobs:
 
       - name: Show all pods
         run: sleep 10 && kubectl get pods -A
+
+      - name: init argo-cd
+        uses: clowdhaus/argo-cd-action/@main
+        with:
+          version: 2.3.4
+          command: version
+          options: --client
