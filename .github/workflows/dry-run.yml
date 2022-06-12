@@ -120,5 +120,6 @@ jobs:
 
       - name: run e2e tests
         run: |
+          kind export kubeconfig
           cd tests/e2e
           go test
