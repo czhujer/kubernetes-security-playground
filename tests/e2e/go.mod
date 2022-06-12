@@ -32,8 +32,8 @@ replace (
 )
 
 require (
-	github.com/onsi/ginkgo v1.14.0
-	github.com/onsi/gomega v1.10.1
+	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/gomega v1.19.0
 	k8s.io/apiextensions-apiserver v0.24.1
 	k8s.io/apimachinery v0.24.1
 	k8s.io/client-go v0.24.1
@@ -101,7 +101,6 @@ require (
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220210224613-90d013bbcef8 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20220107163113-42d7afdf6368 // indirect
 	google.golang.org/grpc v1.40.0 // indirect

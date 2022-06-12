@@ -119,10 +119,6 @@ jobs:
           go mod vendor
           go env -w GO111MODULE=auto
 
-# export KUBECONFIG="/home/runner/.kube/config"
-#          stat ~/.kube/config
-#          kubectl get no -o wide --show-labels
-
       - name: run e2e tests
         run: |
           cd tests/e2e
