@@ -3,7 +3,7 @@ name: dry-run in kind
 env:
   kind_version: "v0.14.0"
   kind_kubectl_version: "v1.24.1"
-  argocd_params: "--port-forward-namespace argocd"
+  argocd_params: "--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
 
 on:
   pull_request:
@@ -46,8 +46,8 @@ jobs:
       - name: Show kubectl version
         run: kubectl version
 
-      - name: Show nodes
-        run: kubectl get nodes -o wide
+      - name: Show nodes and cluster-info
+        run: kubectl get nodes -o wide; kubectl cluster-info
 
       - name: fix prometheus-operator's CRDs
         run: make kind-install-crds
