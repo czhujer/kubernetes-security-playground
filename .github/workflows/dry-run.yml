@@ -4,6 +4,7 @@ env:
   kind_version: "v0.14.0"
   kind_kubectl_version: "v1.24.1"
   argocd_params: "--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
+  argocd_version: "2.3.4"
 
 on:
   pull_request:
@@ -79,7 +80,7 @@ jobs:
       - name: init argo-cd
         uses: clowdhaus/argo-cd-action/@main
         with:
-          version: 2.3.4
+          version: ${{ env.argocd_version }}
           command: version
           options: --client
 
