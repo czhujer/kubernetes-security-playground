@@ -119,4 +119,6 @@ jobs:
           go env -w GO111MODULE=auto
 
       - name: run e2e tests
-        run: go test
+        run: |
+          cd tests/e2e
+          go test
