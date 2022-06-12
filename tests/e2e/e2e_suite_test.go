@@ -4,10 +4,12 @@ import (
 	"flag"
 	"fmt"
 	e2econfig "k8s.io/kubernetes/test/e2e/framework/config"
+	e2elog "k8s.io/kubernetes/test/e2e/framework/log"
 	"k8s.io/kubernetes/test/e2e/framework/testfiles"
 	"k8s.io/kubernetes/test/utils/image"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/onsi/ginkgo"
@@ -17,6 +19,8 @@ import (
 	"k8s.io/klog"
 	"k8s.io/kubernetes/test/e2e/framework"
 )
+
+const kubeconfigEnvVar = "KUBECONFIG"
 
 // handleFlags sets up all flags and parses the command line.
 func handleFlags() {
@@ -28,6 +32,17 @@ func handleFlags() {
 
 // required due to go1.13 issue: https://github.com/onsi/ginkgo/issues/602
 func TestMain(m *testing.M) {
+
+	// k8s.io/kubernetes/test/e2e/framework requires env KUBECONFIG to be set
+	// it does not fall back to defaults
+	if os.Getenv(kubeconfigEnvVar) == "" {
+		kubeconfig := filepath.Join(os.Getenv("HOME"), ".kube", "config")
+		err := os.Setenv(kubeconfigEnvVar, kubeconfig)
+		if err != nil {
+			e2elog.Logf("Set kubeconfig env finished with error: %v", err)
+		}
+	}
+
 	// Register test flags, then parse flags.
 	handleFlags()
 
