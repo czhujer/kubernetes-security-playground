@@ -3,6 +3,7 @@ name: dry-run in kind
 env:
   kind_version: "v0.14.0"
   kind_kubectl_version: "v1.24.1"
+  argocd_params: "--port-forward-namespace argocd"
 
 on:
   pull_request:
@@ -77,4 +78,4 @@ jobs:
           options: --client
 
       - name: Show all argo-cd apps
-        run: argocd app list
+        run: argocd app list "${{ env.argocd_params }}"
