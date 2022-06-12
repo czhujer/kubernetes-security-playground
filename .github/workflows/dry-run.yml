@@ -31,12 +31,16 @@ jobs:
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@main
         with:
-          cluster_name: security-playground
-          node_image: kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083
-          version: "v0.14.0"
           kubectl_version: "v1.24.1"
-          config: "kind/kind-config.yaml"
-          wait: 30s
+          install_only: true
+#          cluster_name: security-playground
+#          node_image: kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083
+#          version: "v0.14.0"
+#          config: "kind/kind-config.yaml"
+#          wait: 30s
+
+      - name: create cluster
+        run: make kind-create
 
       - name: Show kubectl version
         run: kubectl version
@@ -63,4 +67,4 @@ jobs:
         run: make cert-manager-deploy
 
       - name: Show all pods
-        run: sleep 5 && kubectl get pods -A
+        run: sleep 10 && kubectl get pods -A
