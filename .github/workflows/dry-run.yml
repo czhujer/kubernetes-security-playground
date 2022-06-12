@@ -90,6 +90,11 @@ jobs:
       - name: run test-network test - assets
         run: make test-network-apply-assets
 
+      - name: run test-network test - wait to assets
+        run: |
+          kubectl wait -n test-network --timeout=2m --for=condition=available deployment client
+          kubectl wait -n test-network --timeout=2m --for=condition=available deployment podinfo
+
       - name: run test-network test - debug
         run: kubectl -n test-network get po,svc,cnp
 
