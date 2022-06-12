@@ -193,15 +193,15 @@ falco-deploy:
 	kubectl -n argocd apply -f argocd/projects/security-falco.yaml
 	kubectl -n argocd apply -f argocd/security-falco.yaml
 
-#.PHONY: k8s-apply
-#k8s-apply:
-#	kubectl get ns cilium-linkerd 1>/dev/null 2>/dev/null || kubectl create ns cilium-linkerd
-#	kubectl apply -k k8s/podinfo -n cilium-linkerd
-#	kubectl apply -f k8s/client
-#	kubectl apply -f k8s/networkpolicy
-#
-#.PHONY: check-status
-#check-status:
-#	linkerd top deployment/podinfo --namespace cilium-linkerd
-#	linkerd tap deployment/client --namespace cilium-linkerd
-#	kubectl exec deploy/client -n cilium-linkerd -c client -- curl -s podinfo:9898
+.PHONY: test-network-apply-assets
+k8s-apply:
+	kubectl get ns test-network 1>/dev/null 2>/dev/null || kubectl create ns test-network
+	kubectl apply -n test-network -k tests/assets/k8s/podinfo
+	kubectl apply -n test-network -f tests/assets/k8s/client
+	kubectl apply -n test-network -f tests/assets/k8s/networkpolicy
+
+.PHONY: test-network-check-status
+check-status:
+#	linkerd top deployment/podinfo --namespace test-network
+#	linkerd tap deployment/client --namespace test-network
+	kubectl exec deploy/client -n test-network -c client -- curl -s podinfo:9898
