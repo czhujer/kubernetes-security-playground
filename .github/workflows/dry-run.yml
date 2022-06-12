@@ -78,4 +78,4 @@ jobs:
           options: --client
 
       - name: Show all argo-cd apps
-        run: argocd app list "${{ env.argocd_params }}"
+        run: argocd app list ${{ env.argocd_params }}
