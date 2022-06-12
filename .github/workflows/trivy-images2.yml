@@ -5,13 +5,13 @@ on:
   pull_request:
     branches:
       - main
-#     paths:
-#       - k8s-the-easy-way/argocd/**
+    paths:
+      - k8s-the-easy-way/argocd/**
   push:
     branches-ignore:
       - main
-#     paths:
-#       - k8s-the-easy-way/argocd/**
+    paths:
+      - k8s-the-easy-way/argocd/**
 
 jobs:
   scan_charts:

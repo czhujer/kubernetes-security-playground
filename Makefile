@@ -2,7 +2,7 @@
 export CLUSTER_NAME?=security-playground
 export CILIUM_VERSION?=1.11.5
 export CERT_MANAGER_CHART_VERSION=1.8.0
-export ARGOCD_CHART_VERSION=4.5.7
+export ARGOCD_CHART_VERSION=4.8.3
 export SPO_VERSION=0.4.3
 export TRIVY_IMAGE_CHECK=0
 
@@ -14,7 +14,7 @@ export ARGOCD_OPTS="--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
 # kindest/node:v1.22.7@sha256:1dfd72d193bf7da64765fd2f2898f78663b9ba366c2aa74be1fd7498a1873166
 # kindest/node:v1.23.4@sha256:0e34f0d0fd448aa2f2819cfd74e99fe5793a6e4938b328f657c8e3f81ee0dfb9
 # kindest/node:v1.23.5@sha256:a69c29d3d502635369a5fe92d8e503c09581fcd406ba6598acc5d80ff5ba81b1"
-export KIND_NODE_IMAGE="kindest/node:v1.24.0@sha256:0866296e693efe1fed79d5e6c7af8df71fc73ae45e3679af05342239cdc5bc8e"
+export KIND_NODE_IMAGE="kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083"
 
 .PHONY: kind-basic
 kind-basic: kind-create kx-kind kind-install-crds cilium-prepare-images cilium-install argocd-deploy nginx-ingress-deploy
@@ -93,14 +93,14 @@ cilium-install:
 .PHONY: cert-manager-deploy
 cert-manager-deploy:
 	# prepare image(s)
-	docker pull quay.io/jetstack/cert-manager-controller:v1.7.1
-	docker pull quay.io/jetstack/cert-manager-webhook:v1.7.1
-	docker pull quay.io/jetstack/cert-manager-cainjector:v1.7.1
-	docker pull quay.io/jetstack/cert-manager-ctl:v1.7.1
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-controller:v1.7.1
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-webhook:v1.7.1
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-cainjector:v1.7.1
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-ctl:v1.7.1
+	docker pull quay.io/jetstack/cert-manager-controller:v$(CERT_MANAGER_CHART_VERSION)
+	docker pull quay.io/jetstack/cert-manager-webhook:v$(CERT_MANAGER_CHART_VERSION)
+	docker pull quay.io/jetstack/cert-manager-cainjector:v$(CERT_MANAGER_CHART_VERSION)
+	docker pull quay.io/jetstack/cert-manager-ctl:v$(CERT_MANAGER_CHART_VERSION)
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-controller:v$(CERT_MANAGER_CHART_VERSION)
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-webhook:v$(CERT_MANAGER_CHART_VERSION)
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-cainjector:v$(CERT_MANAGER_CHART_VERSION)
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-ctl:v$(CERT_MANAGER_CHART_VERSION)
 	#
 	helm repo add cert-manager https://charts.jetstack.io
 	helm upgrade --install \
@@ -114,11 +114,11 @@ cert-manager-deploy:
 .PHONY: argocd-deploy
 argocd-deploy:
 	# prepare image(s)
-	docker pull quay.io/argoproj/argocd:v2.3.3
+	docker pull quay.io/argoproj/argocd:v2.3.4
 	docker pull quay.io/argoproj/argocd-applicationset:v0.4.1
 	docker pull redis:6.2.6-alpine
 	docker pull bitnami/redis-exporter:1.26.0-debian-10-r2
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/argoproj/argocd:v2.3.3
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/argoproj/argocd:v2.3.4
 	kind load docker-image --name $(CLUSTER_NAME) quay.io/argoproj/argocd-applicationset:v0.4.1
 	kind load docker-image --name $(CLUSTER_NAME) redis:6.2.6-alpine
 	kind load docker-image --name $(CLUSTER_NAME) bitnami/redis-exporter:1.26.0-debian-10-r2
@@ -154,12 +154,12 @@ spo-deploy:
 	kubectl -n security-profiles-operator patch deployments.apps security-profiles-operator --type=merge -p '{"spec":{"replicas":1}}'
 	kubectl -n security-profiles-operator patch deployments.apps security-profiles-operator-webhook --type=merge -p '{"spec":{"replicas":1}}'
 	kubectl -n security-profiles-operator patch spod spod --type=merge -p '{"spec":{"hostProcVolumePath":"/hostproc"}}'
-	kubectl -n security-profiles-operator patch spod spod --type=merge -p '{"spec":{"enableLogEnricher":true}}' # DOCKER DESKTOP ONLY
+	kubectl -n security-profiles-operator patch spod spod --type=merge -p '{"spec":{"enableLogEnricher":true}}'
 
 .PHONY: nginx-ingress-deploy
 nginx-ingress-deploy:
-	docker pull k8s.gcr.io/ingress-nginx/controller:v1.2.0
-	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.0
+	docker pull k8s.gcr.io/ingress-nginx/controller:v1.2.1
+	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.1
 	# ingress
 	kubectl -n argocd apply -f argocd/nginx-ingress.yaml
 	kubectl -n argocd apply -f argocd/gateway-api-crds.yaml

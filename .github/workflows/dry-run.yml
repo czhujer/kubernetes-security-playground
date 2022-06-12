@@ -1,0 +1,70 @@
+name: dry-run in kind
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_run:
+    workflows:
+      - "trivy check"
+      - "sh-checker"
+      - "terrascan"
+      - "tflint"
+      - "tfsec"
+    branches: [main]
+    types:
+      - completed
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: Install make
+        run: |
+          sudo apt update
+          sudo apt install make -y
+
+      - name: init kind-action
+        uses: helm/kind-action@main
+        with:
+          version: "v0.14.0"
+          kubectl_version: "v1.24.1"
+          install_only: true
+#          cluster_name: security-playground
+#          node_image: kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083
+#          config: "kind/kind-config.yaml"
+#          wait: 30s
+
+      - name: create cluster
+        run: make kind-create
+
+      - name: Show kubectl version
+        run: kubectl version
+
+      - name: Show nodes
+        run: kubectl get nodes -o wide
+
+      - name: fix prometheus-operator's CRDs
+        run: make kind-install-crds
+
+      - name: install cilium
+        run: make cilium-install
+
+      - name: Show all pods
+        run: sleep 5 && kubectl get pods -A
+
+      - name: install ArgoCD
+        run: make argocd-deploy
+
+      - name: install nginx
+        run: make nginx-ingress-deploy
+
+      - name: install cert-manager
+        run: make cert-manager-deploy
+
+      - name: Show all pods
+        run: sleep 10 && kubectl get pods -A

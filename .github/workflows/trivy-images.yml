@@ -5,13 +5,13 @@ on:
   pull_request:
     branches:
       - main
-#     paths:
-#       - argocd/**
+    paths:
+      - argocd/**
   push:
     branches-ignore:
       - main
-#     paths:
-#       - argocd/**
+    paths:
+      - argocd/**
 
 jobs:
   scan_charts:
