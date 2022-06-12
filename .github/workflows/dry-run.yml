@@ -99,4 +99,7 @@ jobs:
         run: kubectl -n test-network get po,svc,cnp
 
       - name: run test-network test - check
-        run: make test-network-check-status
+        run: |
+          rs=$(make test-network-check-status)
+          echo "$rs"
+          echo "$rs" |grep "greetings from podinfo"
