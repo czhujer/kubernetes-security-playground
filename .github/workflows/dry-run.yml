@@ -112,5 +112,8 @@ jobs:
       - name: show golang version
         run: go version
 
+      - name: install e2e dependencies
+        run: cd tests/e2e && go mod vendor
+
       - name: run e2e tests
-        run: make run-ginkgo
+        run: go test

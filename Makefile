@@ -208,4 +208,4 @@ test-network-check-status:
 
 .PHONY: run-ginkgo
 run-ginkgo:
-	cd tests/e2e && ginkgo
+	cd tests/e2e && go test
