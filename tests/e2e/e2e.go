@@ -8,7 +8,7 @@ import (
 	"github.com/onsi/gomega"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	clientset "k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/klog"
 	"k8s.io/kubernetes/test/e2e/framework"
@@ -22,12 +22,16 @@ const (
 	//podNetworkAnnotation = "k8s.ovn.org/pod-networks"
 	//agnhostImage         = "k8s.gcr.io/e2e-test-images/agnhost:2.26"
 	//certManagerFullYaml = "../assets/cert-manager-full-generated-v1.4.1.yaml"
-	certMangerNamespace = "cert-manager"
+	certManagerNamespace string = "cert-manager"
+	certManagerMinPods   int32  = 3
+	frameworkName        string = "certmanager"
 )
 
 func applyManifest(yamlFile string) {
 	var stdout, stderr bytes.Buffer
 	var err error
+
+	//e2elog.Logf("run kubectl apply command with file: %v", yamlFile)
 
 	tk := e2ekubectl.NewTestKubeconfig(framework.TestContext.CertDir, framework.TestContext.Host, framework.TestContext.KubeConfig, framework.TestContext.KubeContext, framework.TestContext.KubectlPath, "")
 	cmd := tk.KubectlCmd("apply", "-f", yamlFile)
@@ -35,7 +39,7 @@ func applyManifest(yamlFile string) {
 	cmd.Stderr = &stderr
 	err = cmd.Run()
 	if err != nil {
-		e2elog.Logf("Command finished with error: %v", err)
+		e2elog.Logf("kubectl apply command finished with error: %v", err)
 	}
 	//outStr, errStr := string(stdout.Bytes()), string(stderr.Bytes())
 	//klog.Infof("command stdout: %v", outStr)
@@ -44,7 +48,7 @@ func applyManifest(yamlFile string) {
 	framework.ExpectNoError(err)
 }
 
-func getCrdObjects(c clientset.Interface, absPath string) (*apiextensionsv1.CustomResourceDefinitionList, error) {
+func getCrdObjects(c kubernetes.Interface, absPath string) (*apiextensionsv1.CustomResourceDefinitionList, error) {
 	var client restclient.Result
 	finished := make(chan struct{}, 1)
 	go func() {
@@ -68,9 +72,8 @@ func getCrdObjects(c clientset.Interface, absPath string) (*apiextensionsv1.Cust
 }
 
 var _ = ginkgo.Describe("e2e cert-manager", func() {
-	var svcname = "certmanager"
 
-	f := framework.NewDefaultFramework(svcname)
+	f := framework.NewDefaultFramework(frameworkName)
 
 	ginkgo.BeforeEach(func() {
 		//ensure if cert-manager and Issuer(s) is installed
@@ -78,7 +81,7 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 		//applyManifest(certManagerFullYaml)
 
 		ginkgo.By("Waiting to cert-manager's pods ready")
-		err := e2epod.WaitForPodsRunningReady(f.ClientSet, certMangerNamespace, 3, 0, framework.PodStartShortTimeout, make(map[string]string))
+		err := e2epod.WaitForPodsRunningReady(f.ClientSet, certManagerNamespace, certManagerMinPods, 0, framework.PodStartShortTimeout, make(map[string]string))
 		framework.ExpectNoError(err)
 
 		ginkgo.By("Executing certs and Issuer objects")
@@ -91,7 +94,7 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 
 	var _ = ginkgo.Describe("--> Server", func() {
 		ginkgo.It("should pods running", func() {
-			str := framework.RunKubectlOrDie(certMangerNamespace, "get", "pods")
+			str := framework.RunKubectlOrDie(certManagerNamespace, "get", "pods")
 			gomega.Expect(str).Should(gomega.MatchRegexp("cert-manager-"))
 			gomega.Expect(str).Should(gomega.MatchRegexp("cert-manager-cainjector-"))
 			gomega.Expect(str).Should(gomega.MatchRegexp("cert-manager-webhook-"))

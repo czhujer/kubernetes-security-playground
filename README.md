@@ -49,6 +49,8 @@
 - https://github.com/killer-sh/cks-course-environment/blob/master/course-content/microservice-vulnerabilities/container-runtimes/gvisor/install_gvisor.sh
 ## golang
 - https://semaphoreci.com/community/tutorials/getting-started-with-bdd-in-go-using-ginkgo
+- https://github.com/kubernetes-sigs/aws-ebs-csi-driver/tree/master/tests/e2e
+- https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/tests/e2e/suite_test.go
 ## others
 - https://github.com/falcosecurity/charts/tree/master/falco#introduction
 - https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/

@@ -3,6 +3,9 @@ package e2e
 import (
 	"flag"
 	"fmt"
+	e2econfig "k8s.io/kubernetes/test/e2e/framework/config"
+	"k8s.io/kubernetes/test/e2e/framework/testfiles"
+	"k8s.io/kubernetes/test/utils/image"
 	"os"
 	"path"
 	"testing"
@@ -12,11 +15,7 @@ import (
 	"github.com/onsi/ginkgo/reporters"
 	"github.com/onsi/gomega"
 	"k8s.io/klog"
-	"k8s.io/kubectl/pkg/generated"
 	"k8s.io/kubernetes/test/e2e/framework"
-	e2econfig "k8s.io/kubernetes/test/e2e/framework/config"
-	"k8s.io/kubernetes/test/e2e/framework/testfiles"
-	"k8s.io/kubernetes/test/utils/image"
 )
 
 // handleFlags sets up all flags and parses the command line.
@@ -41,6 +40,8 @@ func TestMain(m *testing.M) {
 
 	framework.AfterReadingAllFlags(&framework.TestContext)
 
+	klog.Infof("Using kubeconfig: %s\n", framework.TestContext.KubeConfig)
+
 	// TODO: Deprecating repo-root over time... instead just use gobindata_util.go , see #23987.
 	// Right now it is still needed, for example by
 	// test/e2e/framework/ingress/ingress_utils.go
@@ -51,10 +52,10 @@ func TestMain(m *testing.M) {
 	}
 
 	// Enable bindata file lookup as fallback.
-	testfiles.AddFileSource(testfiles.BindataFileSource{
-		Asset:      generated.Asset,
-		AssetNames: generated.AssetNames,
-	})
+	//testfiles.AddFileSource(testfiles.BindataFileSource{
+	//	Asset:      generated.Asset,
+	//	AssetNames: generated.AssetNames,
+	//})
 	os.Exit(m.Run())
 }
 
