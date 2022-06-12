@@ -113,4 +113,4 @@ jobs:
         run: go version
 
       - name: run e2e tests
-        run: run-ginkgo
+        run: make run-ginkgo
