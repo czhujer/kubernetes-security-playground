@@ -120,6 +120,14 @@ jobs:
           go env -w GO111MODULE=auto
 
       - name: run e2e tests
+        id: runE2eTests
         run: |
           cd tests/e2e
           go test
+
+      - name: debug e2e tests
+        if: failure() && steps.runE2eTests.outcome == 'failure'
+        run: |
+          kubectl get pods -A || true
+          kubectl get issuers -A || true
+          kubectl get certificates -A || true
