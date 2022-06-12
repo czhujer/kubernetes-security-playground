@@ -41,7 +41,7 @@ endif
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/kind/psp/cluster-roles.yaml
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/kind/psp/role-bindings.yaml
 # for more control planes, but no workers
-# kubectl taint nodes --all node-role.kubernetes.io/master- || true
+	kubectl taint nodes --all node-role.kubernetes.io/master- || true
 
 .PHONY: kind-delete
 kind-delete:
