@@ -196,9 +196,9 @@ falco-deploy:
 .PHONY: test-network-apply-assets
 test-network-apply-assets:
 	kubectl get ns test-network 1>/dev/null 2>/dev/null || kubectl create ns test-network
-	kubectl apply -n test-network -k tests/assets/k8s/podinfo
-	kubectl apply -n test-network -f tests/assets/k8s/client
-	kubectl apply -n test-network -f tests/assets/k8s/networkpolicy
+	kubectl apply -n test-network -k tests/assets/k8s/podinfo --wait=true
+	kubectl apply -n test-network -f tests/assets/k8s/client  --wait=true
+	kubectl apply -n test-network -f tests/assets/k8s/networkpolicy --wait=true
 
 .PHONY: test-network-check-status
 test-network-check-status:
