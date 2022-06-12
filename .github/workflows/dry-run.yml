@@ -103,3 +103,14 @@ jobs:
           rs=$(make test-network-check-status)
           echo "$rs"
           echo "$rs" |grep "greetings from podinfo"
+
+      - name: install golang
+        uses: actions/setup-go@v3
+        with:
+          go-version: '>=1.18.0'
+
+      - name: show golang version
+        run: go version
+
+      - name: run e2e tests
+        run: run-ginkgo
