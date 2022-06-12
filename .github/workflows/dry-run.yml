@@ -67,8 +67,14 @@ jobs:
       - name: install cert-manager
         run: make cert-manager-deploy
 
+      - name: wait
+        run: sleep 10
+
       - name: Show all pods
-        run: sleep 10 && kubectl get pods -A
+        run: kubectl get pods -A
+
+      - name: Show all services
+        run: kubectl get svc -A
 
       - name: init argo-cd
         uses: clowdhaus/argo-cd-action/@main
