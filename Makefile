@@ -204,4 +204,4 @@ test-network-apply-assets:
 test-network-check-status:
 #	linkerd top deployment/podinfo --namespace test-network
 #	linkerd tap deployment/client --namespace test-network
-	kubectl exec deploy/client -n test-network -c client -- curl -s podinfo:9898
+	kubectl exec -n test-network deploy/client -c client -- curl -s podinfo:9898

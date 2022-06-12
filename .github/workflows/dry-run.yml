@@ -86,5 +86,11 @@ jobs:
       - name: Show all argo-cd apps
         run: argocd app list ${{ env.argocd_params }}
 
-      - name: run test-network test
+      - name: run test-network test - assets
+        run: make test-network-apply-assets test-network-check-status
+
+      - name: run test-network test - debug
+        run: kubectl -n test-network get po,svc,cnp
+
+      - name: run test-network test - check
         run: make test-network-apply-assets test-network-check-status
