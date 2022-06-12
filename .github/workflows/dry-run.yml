@@ -123,5 +123,6 @@ jobs:
         run: |
           export KUBECONFIG="/home/runner/.kube/config"
           stat ~/.kube/config
+          kubectl get no -o wide --show-labels
           cd tests/e2e
           go test
