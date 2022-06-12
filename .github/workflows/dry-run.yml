@@ -1,10 +1,5 @@
 name: dry-run in kind
 
-env:
-  # kind vars
-  DEFAULT_KUBECTL_VERSION: "v1.24.1"
-  INPUT_INSTALL_ONLY: true
-
 on:
   pull_request:
     branches:
@@ -35,9 +30,9 @@ jobs:
 
       - name: init kind-action
         uses: helm/kind-action@main
-#        with:
-#          kubectl_version: "v1.24.1"
-#          install_only: true
+        with:
+          kubectl_version: "v1.24.1"
+          install_only: true
 #          cluster_name: security-playground
 #          node_image: kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083
 #          version: "v0.14.0"
