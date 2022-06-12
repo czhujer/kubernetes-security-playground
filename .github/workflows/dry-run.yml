@@ -59,5 +59,8 @@ jobs:
       - name: install nginx
         run: make nginx-ingress-deploy
 
+      - name: install cert-manager
+        run: make cert-manager-deploy
+
       - name: Show all pods
         run: sleep 5 && kubectl get pods -A

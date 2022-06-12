@@ -93,14 +93,14 @@ cilium-install:
 .PHONY: cert-manager-deploy
 cert-manager-deploy:
 	# prepare image(s)
-	docker pull quay.io/jetstack/cert-manager-controller:v1.7.1
-	docker pull quay.io/jetstack/cert-manager-webhook:v1.7.1
-	docker pull quay.io/jetstack/cert-manager-cainjector:v1.7.1
-	docker pull quay.io/jetstack/cert-manager-ctl:v1.7.1
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-controller:v1.7.1
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-webhook:v1.7.1
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-cainjector:v1.7.1
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-ctl:v1.7.1
+	docker pull quay.io/jetstack/cert-manager-controller:v$(CERT_MANAGER_CHART_VERSION)
+	docker pull quay.io/jetstack/cert-manager-webhook:v$(CERT_MANAGER_CHART_VERSION)
+	docker pull quay.io/jetstack/cert-manager-cainjector:v$(CERT_MANAGER_CHART_VERSION)
+	docker pull quay.io/jetstack/cert-manager-ctl:v$(CERT_MANAGER_CHART_VERSION)
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-controller:v$(CERT_MANAGER_CHART_VERSION)
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-webhook:v$(CERT_MANAGER_CHART_VERSION)
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-cainjector:v$(CERT_MANAGER_CHART_VERSION)
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-ctl:v$(CERT_MANAGER_CHART_VERSION)
 	#
 	helm repo add cert-manager https://charts.jetstack.io
 	helm upgrade --install \
@@ -154,12 +154,12 @@ spo-deploy:
 	kubectl -n security-profiles-operator patch deployments.apps security-profiles-operator --type=merge -p '{"spec":{"replicas":1}}'
 	kubectl -n security-profiles-operator patch deployments.apps security-profiles-operator-webhook --type=merge -p '{"spec":{"replicas":1}}'
 	kubectl -n security-profiles-operator patch spod spod --type=merge -p '{"spec":{"hostProcVolumePath":"/hostproc"}}'
-	kubectl -n security-profiles-operator patch spod spod --type=merge -p '{"spec":{"enableLogEnricher":true}}' # DOCKER DESKTOP ONLY
+	kubectl -n security-profiles-operator patch spod spod --type=merge -p '{"spec":{"enableLogEnricher":true}}'
 
 .PHONY: nginx-ingress-deploy
 nginx-ingress-deploy:
-	docker pull k8s.gcr.io/ingress-nginx/controller:v1.2.0
-	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.0
+	docker pull k8s.gcr.io/ingress-nginx/controller:v1.2.1
+	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.1
 	# ingress
 	kubectl -n argocd apply -f argocd/nginx-ingress.yaml
 	kubectl -n argocd apply -f argocd/gateway-api-crds.yaml
