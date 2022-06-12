@@ -38,10 +38,6 @@ jobs:
           version: "${{ env.kind_version }}"
           kubectl_version: "${{ env.kind_kubectl_version }}"
           install_only: true
-      #          cluster_name: security-playground
-      #          node_image: kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083
-      #          config: "kind/kind-config.yaml"
-      #          wait: 30s
 
       - name: create cluster
         run: make kind-create
