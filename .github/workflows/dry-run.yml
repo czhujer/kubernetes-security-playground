@@ -87,10 +87,10 @@ jobs:
         run: argocd app list ${{ env.argocd_params }}
 
       - name: run test-network test - assets
-        run: make test-network-apply-assets test-network-check-status
+        run: make test-network-apply-assets
 
       - name: run test-network test - debug
         run: kubectl -n test-network get po,svc,cnp
 
       - name: run test-network test - check
-        run: make test-network-apply-assets test-network-check-status
+        run: make test-network-check-status
