@@ -121,6 +121,6 @@ jobs:
 
       - name: run e2e tests
         run: |
-          export KUBECONFIG="~/.kube/config"
+          export KUBECONFIG="/home/runner/.kube/config"
           cd tests/e2e
           go test
