@@ -75,3 +75,6 @@ jobs:
           version: 2.3.4
           command: version
           options: --client
+
+      - name: Show all argo-cd apps
+        run: argocd app list
