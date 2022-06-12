@@ -5,6 +5,7 @@ env:
   kind_kubectl_version: "v1.24.1"
   argocd_params: "--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
   argocd_version: "2.3.4"
+  go_version: '>=1.18.0'
 
 on:
   pull_request:
@@ -33,6 +34,14 @@ jobs:
         run: |
           sudo apt update
           sudo apt install make -y
+
+      - name: install golang
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.go_version }}
+
+      - name: show golang version
+        run: go version
 
       - name: init kind-action
         uses: helm/kind-action@main
@@ -104,14 +113,6 @@ jobs:
           echo "$rs"
           echo "$rs" |grep "greetings from podinfo"
 
-      - name: install golang
-        uses: actions/setup-go@v3
-        with:
-          go-version: '>=1.18.0'
-
-      - name: show golang version
-        run: go version
-
       - name: install e2e dependencies
         run: |
           cd tests/e2e
@@ -120,6 +121,5 @@ jobs:
 
       - name: run e2e tests
         run: |
-          kind export kubeconfig
           cd tests/e2e
           go test
