@@ -237,7 +237,7 @@ spec:
       containers:
       - name: gadget
         terminationMessagePolicy: FallbackToLogsOnError
-        image: docker.io/kinvolk/gadget:v0.5.0
+        image: docker.io/kinvolk/gadget:v0.5.1
         imagePullPolicy: Always
         command: [ "/entrypoint.sh" ]
         lifecycle:
