@@ -133,7 +133,7 @@ jobs:
         id: runE2eTests
         run: |
           cd tests/e2e
-          go test
+          go test -report-dir=./junit
 
       - name: "e2e tests: debug info"
         if: failure() && steps.runE2eTests.outcome == 'failure'
