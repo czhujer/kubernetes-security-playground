@@ -35,7 +35,7 @@ fi
 
 detect_updated_files() {
   # fix missing branch/history
-#  git fetch origin "${git_original_branch}:${git_original_branch}"
+  git fetch origin "${git_original_branch}:${git_original_branch}"
 
 #  diff_output=$(git diff --name-status "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" -- ./*)
 #  diff_retval=$?
