@@ -100,11 +100,11 @@ jobs:
       - name: "argo-cd: create projects"
         run: kubectl apply -f ${{ env.argocd_projects_dir }}
 
-      - name: "argo-cd: show all apps"
-        run: argocd app list ${{ env.argocd_params }}
-
       - name: "argo-cd: install changed app's defs"
         run: ./scripts/detect_updated_argocd_apps.sh
+
+      - name: "argo-cd: show all apps"
+        run: argocd app list ${{ env.argocd_params }}
 
       - name: run test-network test - assets
         run: make test-network-apply-assets
