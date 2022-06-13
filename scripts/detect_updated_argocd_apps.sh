@@ -36,12 +36,12 @@ detect_updated_files() {
   echo "current git branch: $GITHUB_HEAD_REF"
   git fetch origin "${GITHUB_BASE_REF}:${GITHUB_BASE_REF}"
 
-#  echo "show git remote"
-#  git remote -v
-#  echo "show git branch"
-#  git branch -v
+  #  echo "show git remote"
+  #  git remote -v
+  #  echo "show git branch"
+  #  git branch -v
 
-#  diff_output=$(git diff --name-status "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" -- ./*)
+  #  diff_output=$(git diff --name-status "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" -- ./*)
   diff_output=$(git diff --name-status "origin/$GITHUB_BASE_REF" -- "./${ARGO_DIR}/*")
   diff_retval=$?
 
