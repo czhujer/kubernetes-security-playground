@@ -52,7 +52,9 @@ jobs:
           install_only: true
 
       - name: tmp debug
-        run: ./scripts/detect_updated_argocd_apps.sh
+        run: |
+          ./scripts/detect_updated_argocd_apps.sh
+          false
 
       - name: "cluster create"
         run: make kind-create

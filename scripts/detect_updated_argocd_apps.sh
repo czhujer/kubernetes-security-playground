@@ -44,14 +44,11 @@ detect_updated_files() {
 #  git branch -v
 
 #  diff_output=$(git diff --name-status "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" -- ./*)
-#  diff_retval=$?
-  git diff --name-status "origin/$GITHUB_BASE_REF" -- "./${ARGO_DIR}/*"
+  diff_output=$(git diff --name-status "origin/$GITHUB_BASE_REF" -- "./${ARGO_DIR}/*")
+  diff_retval=$?
 
-#  role_prefix="ansible/roles"
-#  tests_prefix="ansible/molecule"
-
-#  while IFS= read -r file; do
-#    echo "DEBUG: changed file: ${file}"
+  while IFS= read -r file; do
+    echo "DEBUG: changed file: ${file}"
 #    if [[ "${file}" =~ ^.*[[:space:]]"${role_prefix}/k8s-prometheus".*$ ]] \
 #      || [[ "${file}" =~ ^.*[[:space:]]"${tests_prefix}/deploy-prometheus".*$ ]] \
 #    ; then
@@ -80,9 +77,9 @@ detect_updated_files() {
 #    else
 #      echo "INFO: skip non-role file"
 #    fi;
-#  done < <(echo "$diff_output")
-#
-#  echo -e "\ngit diff retval: ${diff_retval}"
+  done < <(echo "$diff_output")
+
+  echo -e "\ngit diff retval: ${diff_retval}"
 
 }
 
