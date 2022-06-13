@@ -5,6 +5,7 @@ env:
   kind_kubectl_version: "v1.24.1"
   argocd_params: "--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
   argocd_version: "2.3.4"
+  argocd_projects_dir: "argocd/projects"
   go_version: '>=1.18.0'
 
 on:
@@ -95,6 +96,9 @@ jobs:
           version: ${{ env.argocd_version }}
           command: version
           options: --client
+
+      - name: create all argo-cd projects
+        run: kubectl apply -f ${{ env.argocd_projects_dir }}
 
       - name: Show all argo-cd apps
         run: argocd app list ${{ env.argocd_params }}
