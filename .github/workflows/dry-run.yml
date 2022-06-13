@@ -1,5 +1,12 @@
 name: dry-run in kind
 
+env:
+  kind_version: "v0.14.0"
+  kind_kubectl_version: "v1.24.1"
+  argocd_params: "--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
+  argocd_version: "2.3.4"
+  go_version: '>=1.18.0'
+
 on:
   pull_request:
     branches:
@@ -28,16 +35,20 @@ jobs:
           sudo apt update
           sudo apt install make -y
 
+      - name: install golang
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.go_version }}
+
+      - name: show golang version
+        run: go version
+
       - name: init kind-action
         uses: helm/kind-action@main
         with:
-          version: "v0.14.0"
-          kubectl_version: "v1.24.1"
+          version: "${{ env.kind_version }}"
+          kubectl_version: "${{ env.kind_kubectl_version }}"
           install_only: true
-#          cluster_name: security-playground
-#          node_image: kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083
-#          config: "kind/kind-config.yaml"
-#          wait: 30s
 
       - name: create cluster
         run: make kind-create
@@ -45,8 +56,8 @@ jobs:
       - name: Show kubectl version
         run: kubectl version
 
-      - name: Show nodes
-        run: kubectl get nodes -o wide
+      - name: Show nodes and cluster-info
+        run: kubectl get nodes -o wide; kubectl cluster-info
 
       - name: fix prometheus-operator's CRDs
         run: make kind-install-crds
@@ -66,5 +77,57 @@ jobs:
       - name: install cert-manager
         run: make cert-manager-deploy
 
+      - name: wait
+        run: sleep 10
+
       - name: Show all pods
-        run: sleep 10 && kubectl get pods -A
+        run: kubectl get pods -A
+
+      - name: Show all services
+        run: kubectl get svc -A
+
+      - name: init argo-cd
+        uses: clowdhaus/argo-cd-action/@main
+        with:
+          version: ${{ env.argocd_version }}
+          command: version
+          options: --client
+
+      - name: Show all argo-cd apps
+        run: argocd app list ${{ env.argocd_params }}
+
+      - name: run test-network test - assets
+        run: make test-network-apply-assets
+
+      - name: run test-network test - wait to assets
+        run: |
+          kubectl wait -n test-network --timeout=2m --for=condition=available deployment client
+          kubectl wait -n test-network --timeout=2m --for=condition=available deployment podinfo
+
+      - name: run test-network test - debug
+        run: kubectl -n test-network get po,svc,cnp
+
+      - name: run test-network test - check
+        run: |
+          rs=$(make test-network-check-status)
+          echo "$rs"
+          echo "$rs" |grep "greetings from podinfo"
+
+      - name: install e2e dependencies
+        run: |
+          cd tests/e2e
+          go mod vendor
+          go env -w GO111MODULE=auto
+
+      - name: run e2e tests
+        id: runE2eTests
+        run: |
+          cd tests/e2e
+          go test
+
+      - name: debug e2e tests
+        if: failure() && steps.runE2eTests.outcome == 'failure'
+        run: |
+          kubectl get pods -A || true
+          kubectl get issuers -A || true
+          kubectl get certificates -A || true

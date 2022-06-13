@@ -1,0 +1,36 @@
+# https://cert-manager.io/docs/usage/certificate/
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: certificate-test2
+  namespace: cert-manager-local-ca2
+spec:
+  # Secret names are always required.
+  secretName: test2-tls
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  subject:
+    organizations:
+      - jetstack
+  # The use of the common name field has been deprecated since 2000 and is
+  # discouraged from being used.
+  commonName: test2.com
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  usages:
+    - server auth
+    - client auth
+  # At least one of a DNS Name, URI, or IP address is required.
+  dnsNames:
+    - example-test2.com
+    - www.example-test2.com
+  # ipAddresses:
+  #  - 192.168.0.5
+  issuerRef:
+    name: ca-issuer
+    kind: Issuer
+    group: cert-manager.io

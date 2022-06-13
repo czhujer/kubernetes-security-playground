@@ -41,7 +41,7 @@ endif
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/kind/psp/cluster-roles.yaml
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/kind/psp/role-bindings.yaml
 # for more control planes, but no workers
-# kubectl taint nodes --all node-role.kubernetes.io/master- || true
+	kubectl taint nodes --all node-role.kubernetes.io/master- || true
 
 .PHONY: kind-delete
 kind-delete:
@@ -193,15 +193,19 @@ falco-deploy:
 	kubectl -n argocd apply -f argocd/projects/security-falco.yaml
 	kubectl -n argocd apply -f argocd/security-falco.yaml
 
-#.PHONY: k8s-apply
-#k8s-apply:
-#	kubectl get ns cilium-linkerd 1>/dev/null 2>/dev/null || kubectl create ns cilium-linkerd
-#	kubectl apply -k k8s/podinfo -n cilium-linkerd
-#	kubectl apply -f k8s/client
-#	kubectl apply -f k8s/networkpolicy
-#
-#.PHONY: check-status
-#check-status:
-#	linkerd top deployment/podinfo --namespace cilium-linkerd
-#	linkerd tap deployment/client --namespace cilium-linkerd
-#	kubectl exec deploy/client -n cilium-linkerd -c client -- curl -s podinfo:9898
+.PHONY: test-network-apply-assets
+test-network-apply-assets:
+	kubectl get ns test-network 1>/dev/null 2>/dev/null || kubectl create ns test-network
+	kubectl apply -n test-network -k tests/assets/k8s/podinfo --wait=true
+	kubectl apply -n test-network -f tests/assets/k8s/client  --wait=true
+	kubectl apply -n test-network -f tests/assets/k8s/networkpolicy --wait=true
+
+.PHONY: test-network-check-status
+test-network-check-status:
+#	linkerd top deployment/podinfo --namespace test-network
+#	linkerd tap deployment/client --namespace test-network
+	kubectl exec -n test-network deploy/client -c client -- curl -s podinfo:9898
+
+.PHONY: run-ginkgo
+run-ginkgo:
+	cd tests/e2e && go test

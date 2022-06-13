@@ -3,7 +3,8 @@
     "config:base"
   ],
   "kubernetes": {
-    "fileMatch": ["^k8s-the-easy-way/k8s-manifests/.*\\.yaml$"]
+    "fileMatch": ["k8s-the-easy-way/k8s-manifests/.*\\.yaml$",
+    "tests/assets/k8s/.*\\.yaml$"]
   },
   "argocd": {
     "fileMatch": ["argocd/.+\\.yaml$",

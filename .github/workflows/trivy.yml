@@ -4,7 +4,7 @@ env:
   TRIVY_EXIT_CODE: 1
   TRIVY_IGNORE_UNFIXED: true
   TRIVY_SKIP_FILES: "k8s-the-easy-way/k8s-manifests/inspektor-gadget-all.yaml"
-
+  TRIVY_SKIP_DIRS: "tests/assets/k8s"
 on:
   workflow_dispatch:
   pull_request:
