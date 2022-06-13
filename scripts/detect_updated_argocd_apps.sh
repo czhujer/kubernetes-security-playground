@@ -48,6 +48,7 @@ detect_updated_files() {
   diff_retval=$?
 
   while IFS= read -r file; do
+    file=$(echo "$file" | awk -F ' ' '{print $2}')
     echo "DEBUG: changed file: ${file}"
 #    if [[ "${file}" =~ ^.*[[:space:]]"${role_prefix}/k8s-prometheus".*$ ]] \
 #      || [[ "${file}" =~ ^.*[[:space:]]"${tests_prefix}/deploy-prometheus".*$ ]] \
