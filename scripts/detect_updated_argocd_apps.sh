@@ -6,7 +6,6 @@ set -x
 HELM="helm"
 YQ="yq"
 global_ret_val=0
-git_original_branch="main"
 
 echo "running script detect_updated_argocd_apps.sh"
 
@@ -37,20 +36,16 @@ fi
 
 detect_updated_files() {
   echo "current git branch: $GITHUB_HEAD_REF"
+  git fetch origin "${GITHUB_BASE_REF}:${GITHUB_BASE_REF}"
 
-#  echo "fetch original branch (${git_original_branch})"
-  echo "fetching remove branches"
-  git fetch origin "${git_original_branch}:${git_original_branch}"
-#  git fetch origin "${GITHUB_HEAD_REF}:${GITHUB_HEAD_REF}"
-
-  echo "show git remote"
-  git remote -v
-  echo "show git branch"
-  git branch -v
+#  echo "show git remote"
+#  git remote -v
+#  echo "show git branch"
+#  git branch -v
 
 #  diff_output=$(git diff --name-status "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" -- ./*)
 #  diff_retval=$?
-  git diff --name-status "origin/$GITHUB_HEAD_REF" -- "./${ARGO_DIR}/*"
+  git diff --name-status "origin/$GITHUB_BASE_REF" -- "./${ARGO_DIR}/*"
 
 #  role_prefix="ansible/roles"
 #  tests_prefix="ansible/molecule"
