@@ -30,6 +30,9 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v3
 
+      - name: show env vars
+        run: env
+
       - name: Install make
         run: |
           sudo apt update
@@ -128,6 +131,9 @@ jobs:
       - name: debug e2e tests
         if: failure() && steps.runE2eTests.outcome == 'failure'
         run: |
-          kubectl get pods -A || true
+          kubectl get pods -A -o wide || true
+          kubectl get svc -A || true
+          kubectl get cnp -A || true
+          kubectl get ccnp -A || true
           kubectl get issuers -A || true
           kubectl get certificates -A || true
