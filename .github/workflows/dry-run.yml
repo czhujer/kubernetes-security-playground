@@ -5,6 +5,7 @@ env:
   kind_kubectl_version: "v1.24.1"
   argocd_params: "--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
   argocd_version: "2.3.4"
+  argocd_projects_dir: "argocd/projects"
   go_version: '>=1.18.0'
 
 on:
@@ -27,73 +28,82 @@ jobs:
     runs-on: ubuntu-latest
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Clone repo
+      - name: "prepare env: clone repo"
         uses: actions/checkout@v3
 
-      - name: Install make
+#      - name: "prepare env: show vars"
+#        run: env
+
+      - name: "prepare env: install make"
         run: |
           sudo apt update
           sudo apt install make -y
 
-      - name: install golang
+      - name: "prepare env: install golang"
         uses: actions/setup-go@v3
         with:
           go-version: ${{ env.go_version }}
 
-      - name: show golang version
-        run: go version
-
-      - name: init kind-action
+      - name: "prepare env: init kind"
         uses: helm/kind-action@main
         with:
           version: "${{ env.kind_version }}"
           kubectl_version: "${{ env.kind_kubectl_version }}"
           install_only: true
 
-      - name: create cluster
+      - name: "cluster create"
         run: make kind-create
 
-      - name: Show kubectl version
+      - name: "debug info: golang version"
+        run: go version
+
+      - name: "debug info: kubectl version"
         run: kubectl version
 
-      - name: Show nodes and cluster-info
+      - name: "debug info: k8s nodes and cluster-info"
         run: kubectl get nodes -o wide; kubectl cluster-info
 
-      - name: fix prometheus-operator's CRDs
+      - name: "prepare cluster: fix prometheus-operator's CRDs"
         run: make kind-install-crds
 
-      - name: install cilium
+      - name: "prepare cluster: install cilium"
         run: make cilium-install
 
-      - name: Show all pods
+      - name: "prepare cluster: show all pods"
         run: sleep 5 && kubectl get pods -A
 
-      - name: install ArgoCD
+      - name: "prepare cluster: install ArgoCD"
         run: make argocd-deploy
 
-      - name: install nginx
+      - name: "prepare cluster: install nginx"
         run: make nginx-ingress-deploy
 
-      - name: install cert-manager
+      - name: "prepare cluster: install cert-manager"
         run: make cert-manager-deploy
 
-      - name: wait
+      - name: "debug info: wait"
         run: sleep 10
 
-      - name: Show all pods
+      - name: "debug info: show all pods"
         run: kubectl get pods -A
 
-      - name: Show all services
+      - name: "debug info: show all services"
         run: kubectl get svc -A
 
-      - name: init argo-cd
+      - name: "argo-cd: init"
         uses: clowdhaus/argo-cd-action/@main
         with:
           version: ${{ env.argocd_version }}
           command: version
           options: --client
 
-      - name: Show all argo-cd apps
+      - name: "argo-cd: create projects"
+        run: kubectl apply -f ${{ env.argocd_projects_dir }}
+
+      - name: "argo-cd: install changed app's defs"
+        run: ./scripts/detect_updated_argocd_apps.sh
+
+      - name: "argo-cd: show all apps"
         run: argocd app list ${{ env.argocd_params }}
 
       - name: run test-network test - assets
@@ -113,21 +123,25 @@ jobs:
           echo "$rs"
           echo "$rs" |grep "greetings from podinfo"
 
-      - name: install e2e dependencies
+      - name: "e2e tests: install dependencies"
         run: |
           cd tests/e2e
           go mod vendor
           go env -w GO111MODULE=auto
 
-      - name: run e2e tests
+      - name: "e2e tests: run"
         id: runE2eTests
         run: |
           cd tests/e2e
           go test
 
-      - name: debug e2e tests
+      - name: "e2e tests: debug info"
         if: failure() && steps.runE2eTests.outcome == 'failure'
         run: |
-          kubectl get pods -A || true
+          kubectl get pods -A -o wide || true
+          kubectl get svc -A || true
+          kubectl get secrets -A || true
+          kubectl get cnp -A || true
+          kubectl get ccnp -A || true
           kubectl get issuers -A || true
           kubectl get certificates -A || true
