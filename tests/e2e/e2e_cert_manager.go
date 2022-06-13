@@ -13,6 +13,7 @@ import (
 	"k8s.io/kubernetes/test/e2e/framework"
 	e2ekubectl "k8s.io/kubernetes/test/e2e/framework/kubectl"
 	e2epod "k8s.io/kubernetes/test/e2e/framework/pod"
+	"time"
 )
 
 const (
@@ -27,7 +28,7 @@ const (
 var _ = ginkgo.Describe("e2e cert-manager", func() {
 
 	f := framework.NewDefaultFramework(frameworkName)
-	cmFw := cmFramework.NewDefaultFramework("check-issuers")
+	cmFw := cmFramework.NewDefaultFramework(frameworkName)
 	tk := e2ekubectl.NewTestKubeconfig(framework.TestContext.CertDir, framework.TestContext.Host, framework.TestContext.KubeConfig, framework.TestContext.KubeContext, framework.TestContext.KubectlPath, "")
 
 	ginkgo.BeforeEach(func() {
@@ -35,7 +36,7 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 		err := e2epod.WaitForPodsRunningReady(f.ClientSet, certManagerNamespace, certManagerMinPods, 0, framework.PodStartShortTimeout, make(map[string]string))
 		framework.ExpectNoError(err)
 
-		ginkgo.By("Executing certs and Issuer objects")
+		ginkgo.By("creating certs and issuer objects")
 		applyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-test.yaml")
 		applyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-ca-test.yaml")
 		applyManifest(tk, "../assets/k8s/certs/cert-manager-certificate-test1.yaml")
@@ -97,6 +98,13 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 
 	var _ = ginkgo.Describe("--> Certificates/Secrets", func() {
 		ginkgo.It("should provide cert-key for cert-manager-local-ca", func() {
+
+			ginkgo.By("Waiting for the Certificate to be issued...")
+			certContext, _ := cmFw.CertManagerClientSet.CertmanagerV1().Certificates("cert-manager-local-ca").Get(context.TODO(), "certificate-test1", metav1.GetOptions{})
+			_, err := cmFw.Helper().WaitForCertificateReadyAndDoneIssuing(certContext, time.Minute*5)
+			gomega.Expect(err).NotTo(gomega.HaveOccurred())
+
+			ginkgo.By("Fetching secret's details...")
 			ret, err := f.ClientSet.CoreV1().
 				Secrets("cert-manager-local-ca").
 				Get(context.TODO(), "test1-tls", metav1.GetOptions{})
@@ -106,7 +114,15 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 			//klog.Infof("get secret ret: %v", ret)
 			gomega.Expect(ret.Name).Should(gomega.MatchRegexp("test1-tls"))
 		})
+
 		ginkgo.It("should provide cert-key for cert-manager-local-ca2", func() {
+
+			ginkgo.By("Waiting for the Certificate to be issued...")
+			certContext, _ := cmFw.CertManagerClientSet.CertmanagerV1().Certificates("cert-manager-local-ca2").Get(context.TODO(), "certificate-test2", metav1.GetOptions{})
+			_, err := cmFw.Helper().WaitForCertificateReadyAndDoneIssuing(certContext, time.Minute*5)
+			gomega.Expect(err).NotTo(gomega.HaveOccurred())
+
+			ginkgo.By("Fetching secret's details...")
 			ret, err := f.ClientSet.CoreV1().
 				Secrets("cert-manager-local-ca2").
 				Get(context.TODO(), "test2-tls", metav1.GetOptions{})
