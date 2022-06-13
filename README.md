@@ -51,6 +51,7 @@
 - https://semaphoreci.com/community/tutorials/getting-started-with-bdd-in-go-using-ginkgo
 - https://github.com/kubernetes-sigs/aws-ebs-csi-driver/tree/master/tests/e2e
 - https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/tests/e2e/suite_test.go
+- https://github.com/cert-manager/cert-manager/blob/master/test/e2e/suite/issuers/selfsigned/certificate.go#L72-L90
 ## others
 - https://github.com/falcosecurity/charts/tree/master/falco#introduction
 - https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/

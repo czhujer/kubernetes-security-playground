@@ -53,11 +53,6 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 	})
 
 	var _ = ginkgo.Describe("--> Issuers", func() {
-		var issuerNamespace string
-		var issuerName string
-
-		issuerNamespace = "cert-manager-local-ca"
-		issuerName = "kind-test-issuer"
 
 		ginkgo.It("should Issuer exists in namespace cert-manager-local-ca", func() {
 			ret, err := getCrdObjects(f.ClientSet, "/apis/cert-manager.io/v1/namespaces/cert-manager-local-ca/issuers")
@@ -65,13 +60,13 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 				klog.Infof("get crd err: %v", err)
 			}
 			//klog.Infof("XXX crd list: %v", ret)
-			gomega.Expect(ret.Items[0].Name).Should(gomega.MatchRegexp(issuerName))
+			gomega.Expect(ret.Items[0].Name).Should(gomega.MatchRegexp("kind-test-issuer"))
 		})
 
 		ginkgo.It("should Issuer be in ready in namespace cert-manager-local-ca", func() {
 			ginkgo.By("Waiting for Issuer to become Ready")
-			err := cmUtil.WaitForIssuerCondition(cmFw.CertManagerClientSet.CertmanagerV1().Issuers(issuerNamespace),
-				issuerName,
+			err := cmUtil.WaitForIssuerCondition(cmFw.CertManagerClientSet.CertmanagerV1().Issuers("cert-manager-local-ca"),
+				"kind-test-issuer",
 				v1.IssuerCondition{
 					Type:   v1.IssuerConditionReady,
 					Status: cmmeta.ConditionTrue,
@@ -79,22 +74,19 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		})
 
-		issuerNamespace = "cert-manager-local-ca2"
-		issuerName = "ca-issuer"
-
 		ginkgo.It("should Issuer exists in namespace cert-manager-local-ca2", func() {
 			ret, err := getCrdObjects(f.ClientSet, "/apis/cert-manager.io/v1/namespaces/cert-manager-local-ca2/issuers")
 			if err != nil {
 				klog.Infof("get crd err: %v", err)
 			}
 			//klog.Infof("DEBUG: issuers crd list: %v", ret)
-			gomega.Expect(ret.Items[0].Name).Should(gomega.MatchRegexp(issuerName))
+			gomega.Expect(ret.Items[0].Name).Should(gomega.MatchRegexp("ca-issuer"))
 		})
 
 		ginkgo.It("should Issuer be in ready in namespace cert-manager-local-ca2", func() {
 			ginkgo.By("Waiting for Issuer to become Ready")
-			err := cmUtil.WaitForIssuerCondition(cmFw.CertManagerClientSet.CertmanagerV1().Issuers(issuerNamespace),
-				issuerName,
+			err := cmUtil.WaitForIssuerCondition(cmFw.CertManagerClientSet.CertmanagerV1().Issuers("cert-manager-local-ca2"),
+				"ca-issuer",
 				v1.IssuerCondition{
 					Type:   v1.IssuerConditionReady,
 					Status: cmmeta.ConditionTrue,
