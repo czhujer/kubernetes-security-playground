@@ -1,11 +1,9 @@
 #!/bin/bash
 set -ueo pipefail
 
-set -x
-
-HELM="helm"
-YQ="yq"
-global_ret_val=0
+#HELM="helm"
+#YQ="yq"
+#global_ret_val=0
 
 echo "running script detect_updated_argocd_apps.sh"
 
@@ -50,38 +48,16 @@ detect_updated_files() {
   while IFS= read -r file; do
     file=$(echo "$file" | awk -F ' ' '{print $2}')
     echo "DEBUG: changed file: ${file}"
-#    if [[ "${file}" =~ ^.*[[:space:]]"${role_prefix}/k8s-prometheus".*$ ]] \
-#      || [[ "${file}" =~ ^.*[[:space:]]"${tests_prefix}/deploy-prometheus".*$ ]] \
-#    ; then
-#      echo "INFO: add scenario deploy-prometheus to queue"
-#      scenario_queue+=('deploy-prometheus')
-#    elif [[ "${file}" =~ ^.*[[:space:]]"${role_prefix}/k8s-rook-ceph".*$ ]] \
-#      || [[ "${file}" =~ ^.*[[:space:]]"${tests_prefix}/deploy-rook-ceph".*$ ]] \
-#    ; then
-#      echo "INFO: add scenario deploy-rook-ceph to queue"
-#      scenario_queue+=('deploy-rook-ceph')
-#    elif [[ "${file}" =~ ^.*[[:space:]]"${role_prefix}/k8s-jaeger".*$ ]] \
-#      || [[ "${file}" =~ ^.*[[:space:]]"${tests_prefix}/deploy-jaeger".*$ ]] \
-#    ; then
-#      echo "INFO: add scenario deploy-jaeger to queue"
-#      scenario_queue+=('deploy-jaeger')
-#    elif [[ "${file}" =~ ^.*[[:space:]]"${role_prefix}/k8s-argocd".*$ ]] \
-#      || [[ "${file}" =~ ^.*[[:space:]]"${tests_prefix}/deploy-argocd".*$ ]] \
-#    ; then
-#      echo "INFO: add scenario deploy-argocd to queue"
-#      scenario_queue+=('deploy-argocd')
-#    elif [[ "${file}" =~ ^.*[[:space:]]"${role_prefix}/".*$ ]] \
-#    || [[ "${file}" =~ ^.*[[:space:]]"${tests_prefix}/".*$ ]] \
-#    ; then
-#      echo "WARNING: this test scenario doesn't exist"
-#      # TODO: add scenarios for rest of the roles
-#    else
-#      echo "INFO: skip non-role file"
-#    fi;
+
+    # test if file exists
+    if test -f "${file}"; then
+      echo "apply-ing manifest(s).."
+    else
+      echo "ERROR: file not exists"
+    fi
   done < <(echo "$diff_output")
 
   echo -e "\ngit diff retval: ${diff_retval}"
-
 }
 
 detect_updated_files
