@@ -145,3 +145,9 @@ jobs:
           kubectl get ccnp -A || true
           kubectl get issuers -A || true
           kubectl get certificates -A || true
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: 'junit/*.xml'
