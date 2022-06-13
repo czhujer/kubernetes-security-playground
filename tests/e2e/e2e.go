@@ -2,6 +2,10 @@ package e2e
 
 import (
 	"context"
+	v1 "github.com/cert-manager/cert-manager/pkg/apis/certmanager/v1"
+	cmmeta "github.com/cert-manager/cert-manager/pkg/apis/meta/v1"
+	cmFramework "github.com/cert-manager/cert-manager/test/e2e/framework"
+	cmUtil "github.com/cert-manager/cert-manager/test/e2e/util"
 	"github.com/onsi/ginkgo"
 	"github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -23,14 +27,10 @@ const (
 var _ = ginkgo.Describe("e2e cert-manager", func() {
 
 	f := framework.NewDefaultFramework(frameworkName)
-
+	cmFw := cmFramework.NewDefaultFramework("check-issuers")
 	tk := e2ekubectl.NewTestKubeconfig(framework.TestContext.CertDir, framework.TestContext.Host, framework.TestContext.KubeConfig, framework.TestContext.KubeContext, framework.TestContext.KubectlPath, "")
 
 	ginkgo.BeforeEach(func() {
-		//ensure if cert-manager and Issuer(s) is installed
-		//ginkgo.By("Executing cert-manager installation")
-		//applyManifest(certManagerFullYaml)
-
 		ginkgo.By("Waiting to cert-manager's pods ready")
 		err := e2epod.WaitForPodsRunningReady(f.ClientSet, certManagerNamespace, certManagerMinPods, 0, framework.PodStartShortTimeout, make(map[string]string))
 		framework.ExpectNoError(err)
@@ -53,21 +53,53 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 	})
 
 	var _ = ginkgo.Describe("--> Issuers", func() {
+		var issuerNamespace string
+		var issuerName string
+
+		issuerNamespace = "cert-manager-local-ca"
+		issuerName = "kind-test-issuer"
+
 		ginkgo.It("should Issuer exists in namespace cert-manager-local-ca", func() {
 			ret, err := getCrdObjects(f.ClientSet, "/apis/cert-manager.io/v1/namespaces/cert-manager-local-ca/issuers")
 			if err != nil {
 				klog.Infof("get crd err: %v", err)
 			}
 			//klog.Infof("XXX crd list: %v", ret)
-			gomega.Expect(ret.Items[0].Name).Should(gomega.MatchRegexp("kind-test-issuer"))
+			gomega.Expect(ret.Items[0].Name).Should(gomega.MatchRegexp(issuerName))
 		})
+
+		ginkgo.It("should Issuer be in ready in namespace cert-manager-local-ca", func() {
+			ginkgo.By("Waiting for Issuer to become Ready")
+			err := cmUtil.WaitForIssuerCondition(cmFw.CertManagerClientSet.CertmanagerV1().Issuers(issuerNamespace),
+				issuerName,
+				v1.IssuerCondition{
+					Type:   v1.IssuerConditionReady,
+					Status: cmmeta.ConditionTrue,
+				})
+			gomega.Expect(err).NotTo(gomega.HaveOccurred())
+		})
+
+		issuerNamespace = "cert-manager-local-ca2"
+		issuerName = "ca-issuer"
+
 		ginkgo.It("should Issuer exists in namespace cert-manager-local-ca2", func() {
 			ret, err := getCrdObjects(f.ClientSet, "/apis/cert-manager.io/v1/namespaces/cert-manager-local-ca2/issuers")
 			if err != nil {
 				klog.Infof("get crd err: %v", err)
 			}
-			//klog.Infof("XXX crd list: %v", ret)
-			gomega.Expect(ret.Items[0].Name).Should(gomega.MatchRegexp("ca-issuer"))
+			//klog.Infof("DEBUG: issuers crd list: %v", ret)
+			gomega.Expect(ret.Items[0].Name).Should(gomega.MatchRegexp(issuerName))
+		})
+
+		ginkgo.It("should Issuer be in ready in namespace cert-manager-local-ca2", func() {
+			ginkgo.By("Waiting for Issuer to become Ready")
+			err := cmUtil.WaitForIssuerCondition(cmFw.CertManagerClientSet.CertmanagerV1().Issuers(issuerNamespace),
+				issuerName,
+				v1.IssuerCondition{
+					Type:   v1.IssuerConditionReady,
+					Status: cmmeta.ConditionTrue,
+				})
+			gomega.Expect(err).NotTo(gomega.HaveOccurred())
 		})
 	})
 
