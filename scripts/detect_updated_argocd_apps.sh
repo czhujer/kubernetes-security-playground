@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ueo pipefail
 
+set -x
+
 HELM="helm"
 YQ="yq"
 global_ret_val=0
