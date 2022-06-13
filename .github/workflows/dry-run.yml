@@ -27,6 +27,10 @@ jobs:
   dry-run:
     runs-on: ubuntu-latest
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      checks: write
+      pull-requests: write
+
     steps:
       - name: "prepare env: clone repo"
         uses: actions/checkout@v3
