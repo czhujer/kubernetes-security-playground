@@ -48,7 +48,7 @@ detect_updated_files() {
 
 #  diff_output=$(git diff --name-status "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" -- ./*)
 #  diff_retval=$?
-  git diff --name-status "origin/$GITHUB_HEAD_REF" -- "./${ARGO_DIR}/*"
+  git diff --name-status "$GITHUB_HEAD_REF" -- "./${ARGO_DIR}/*"
 
 #  role_prefix="ansible/roles"
 #  tests_prefix="ansible/molecule"
