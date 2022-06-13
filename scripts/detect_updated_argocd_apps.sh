@@ -34,7 +34,12 @@ else
 fi
 
 detect_updated_files() {
-  # fix missing branch/history
+  echo "show git remote"
+  git remote -v
+
+  echo "current git branch: $GITHUB_HEAD_REF"
+
+  echo "fetch original branch (${git_original_branch})"
   git fetch origin "${git_original_branch}:${git_original_branch}"
 
 #  diff_output=$(git diff --name-status "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" -- ./*)
