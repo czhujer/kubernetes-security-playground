@@ -38,6 +38,8 @@ fi
 detect_updated_files() {
   echo "show git remote"
   git remote -v
+  echo "show git branch"
+  git branch -v
 
   echo "current git branch: $GITHUB_HEAD_REF"
 
