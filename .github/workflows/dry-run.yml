@@ -51,6 +51,9 @@ jobs:
           kubectl_version: "${{ env.kind_kubectl_version }}"
           install_only: true
 
+      - name: tmp debug
+        run: ./scripts/detect_updated_argocd_apps.sh
+
       - name: "cluster create"
         run: make kind-create
 
