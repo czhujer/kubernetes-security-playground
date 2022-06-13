@@ -17,7 +17,7 @@ spec:
   source:
     chart: promtail
     repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 4.2.1
+    targetRevision: 5.1.0
     helm:
       values: |
         serviceMonitor:
@@ -35,7 +35,9 @@ spec:
             mountPath: /var/log/kubernetes
             readOnly: true
         config:
-          lokiAddress: http://loki:3100/loki/api/v1/push
+          clients:
+            - url: http://loki:3100/loki/api/v1/push
+              tenant_id: 1
           snippets:
             extraScrapeConfigs: |
               # https://github.com/WoodProgrammer/kubernetes-audit-dashboards/blob/master/promtail/promtail.yaml
