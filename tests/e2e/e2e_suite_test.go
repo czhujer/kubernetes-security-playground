@@ -5,10 +5,8 @@ import (
 	"fmt"
 	cmFramework "github.com/cert-manager/cert-manager/test/e2e/framework"
 	cmAddon "github.com/cert-manager/cert-manager/test/e2e/framework/addon"
-	"github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/config"
-	"github.com/onsi/ginkgo/reporters"
-	"github.com/onsi/gomega"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 	"k8s.io/klog"
 	"k8s.io/kubernetes/test/e2e/framework"
 	e2econfig "k8s.io/kubernetes/test/e2e/framework/config"
@@ -16,7 +14,6 @@ import (
 	"k8s.io/kubernetes/test/e2e/framework/testfiles"
 	"k8s.io/kubernetes/test/utils/image"
 	"os"
-	"path"
 	"path/filepath"
 	"testing"
 )
@@ -102,19 +99,20 @@ func TestMain(m *testing.M) {
 
 func TestE2e(t *testing.T) {
 	// Run tests through the Ginkgo runner with output to console + JUnit for reporting
-	var r []ginkgo.Reporter
-	if framework.TestContext.ReportDir != "" {
-		klog.Infof("Saving reports to %s", framework.TestContext.ReportDir)
-		// TODO: we should probably only be trying to create this directory once
-		// rather than once-per-Ginkgo-node.
-		if err := os.MkdirAll(framework.TestContext.ReportDir, 0755); err != nil {
-			klog.Errorf("Failed creating report directory: %v", err)
-		} else {
-			r = append(r, reporters.NewJUnitReporter(path.Join(framework.TestContext.ReportDir, fmt.Sprintf("junit_%v%02d.xml", framework.TestContext.ReportPrefix, config.GinkgoConfig.ParallelNode))))
-		}
-	} else {
-		klog.Infof("ReportDir is not set")
-	}
-	gomega.RegisterFailHandler(framework.Fail)
-	ginkgo.RunSpecsWithDefaultAndCustomReporters(t, "E2e Suite", r)
+	//var r []ginkgo.Reporter
+	//if framework.TestContext.ReportDir != "" {
+	//	klog.Infof("Saving reports to %s", framework.TestContext.ReportDir)
+	//	// TODO: we should probably only be trying to create this directory once
+	//	// rather than once-per-Ginkgo-node.
+	//	if err := os.MkdirAll(framework.TestContext.ReportDir, 0755); err != nil {
+	//		klog.Errorf("Failed creating report directory: %v", err)
+	//	} else {
+	//		r = append(r, reporters.NewJUnitReporter(path.Join(framework.TestContext.ReportDir, fmt.Sprintf("junit_%v%02d.xml", framework.TestContext.ReportPrefix, config.GinkgoConfig.ParallelNode))))
+	//	}
+	//} else {
+	//	klog.Infof("ReportDir is not set")
+	//}
+	RegisterFailHandler(framework.Fail)
+	// ginkgo.RunSpecsWithDefaultAndCustomReporters(t, "E2e Suite", r)
+	RunSpecs(t, "E2e Suite")
 }
