@@ -51,9 +51,10 @@ detect_updated_files() {
 
     # test if file exists
     if test -f "${file}"; then
-      echo "apply-ing manifest(s).."
+      echo "INFO: apply-ing manifest ${file}"
+      kubectl apply -f "${file}"
     else
-      echo "ERROR: file not exists"
+      echo "ERROR: file (${file}) not exists.. skipping apply"
     fi
   done < <(echo "$diff_output")
 
