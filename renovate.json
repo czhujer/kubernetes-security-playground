@@ -17,7 +17,7 @@
   },
   "gomod": {
     "fileMatch": [
-      "tests/**/go\\.mod$",
+      "tests/.*go\\.mod$",
       "(^|/)go\\.mod$"
     ]
   },
