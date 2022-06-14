@@ -23,8 +23,8 @@ jobs:
 #       security-events: write
 
     steps:
-      - name: end workflow
-        run: "false"
+#      - name: end workflow
+#        run: "false"
 
       - name: Clone repo
         uses: actions/checkout@v3

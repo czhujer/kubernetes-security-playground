@@ -56,14 +56,11 @@ jobs:
       - name: "prepare env: clone repo"
         uses: actions/checkout@v3
 
-      - name: "prepare env: show vars"
-        run: env
+#      - name: "prepare env: show vars"
+#        run: env
 
-      - name: "argo-cd: install changed app's defs"
-        run: ./scripts/detect_updated_argocd_apps.sh
-
-      - name: "debug: end workflow"
-        run: "false"
+#      - name: "debug: end workflow"
+#        run: "false"
 
       - name: "prepare env: install make"
         run: |

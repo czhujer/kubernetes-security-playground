@@ -38,7 +38,6 @@ if [ "${GITHUB_REF_NAME}" == "" ]; then
   exit 12
 fi
 
-
 if [ "${GITHUB_BASE_REF}" == "" ]; then
   echo "WARNING: empty GITHUB_BASE_REF var! defaulting to ${GITHUB_BASE_REF_DEFAULT}"
   GITHUB_BASE_REF="$GITHUB_BASE_REF_DEFAULT"
@@ -46,6 +45,7 @@ fi
 
 detect_updated_files() {
   echo "current git ref: $GITHUB_REF_NAME"
+  echo "fetching base ref from origin:"
   git fetch origin "${GITHUB_BASE_REF}:${GITHUB_BASE_REF}"
 
   #  echo "show git remote"
