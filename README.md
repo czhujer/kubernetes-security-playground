@@ -52,6 +52,12 @@
 - https://github.com/kubernetes-sigs/aws-ebs-csi-driver/tree/master/tests/e2e
 - https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/tests/e2e/suite_test.go
 - https://github.com/cert-manager/cert-manager/blob/master/test/e2e/suite/issuers/selfsigned/certificate.go#L72-L90
+- https://github.com/czhujer/kind-w-cert-manager-demo#ginkgo
+- https://github.com/cilium/cilium/blob/master/test/k8s/net_policies.go
+- https://github.com/cilium/cilium/blob/master/test/k8s/bookinfo.go
+- https://github.com/cilium/cilium/blob/master/test/k8s/health.go
+- https://github.com/kubernetes/kubernetes/blob/master/test/integration/deployment/deployment_test.go
+- 
 ## others
 - https://github.com/falcosecurity/charts/tree/master/falco#introduction
 - https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/

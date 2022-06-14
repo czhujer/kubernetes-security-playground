@@ -1,4 +1,4 @@
-package e2e
+package apps
 
 import (
 	"flag"
@@ -21,11 +21,11 @@ import (
 	"testing"
 )
 
-const kubeconfigEnvVar = "KUBECONFIG"
-
 var (
 	cfg = cmFramework.DefaultConfig
 )
+
+const kubeconfigEnvVar = "KUBECONFIG"
 
 // handleFlags sets up all flags and parses the command line.
 func handleFlags() {
@@ -100,7 +100,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestE2e(t *testing.T) {
+func TestE2eApps(t *testing.T) {
 	// Run tests through the Ginkgo runner with output to console + JUnit for reporting
 	var r []ginkgo.Reporter
 	if framework.TestContext.ReportDir != "" {
@@ -116,5 +116,5 @@ func TestE2e(t *testing.T) {
 		klog.Infof("ReportDir is not set")
 	}
 	gomega.RegisterFailHandler(framework.Fail)
-	ginkgo.RunSpecsWithDefaultAndCustomReporters(t, "E2E Suite", r)
+	ginkgo.RunSpecsWithDefaultAndCustomReporters(t, "E2E Kubernetes Apps Suite", r)
 }

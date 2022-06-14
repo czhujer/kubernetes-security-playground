@@ -7,6 +7,7 @@ env:
   argocd_version: "2.3.4"
   argocd_projects_dir: "argocd/projects"
   go_version: '>=1.18.0'
+  ACK_GINKGO_DEPRECATIONS: "1.16.5"
 
 on:
   pull_request:
@@ -27,6 +28,10 @@ jobs:
   dry-run:
     runs-on: ubuntu-latest
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      checks: write
+      pull-requests: write
+
     steps:
       - name: "prepare env: clone repo"
         uses: actions/checkout@v3
@@ -133,7 +138,7 @@ jobs:
         id: runE2eTests
         run: |
           cd tests/e2e
-          go test
+          go test ./... -report-dir=./junit -v
 
       - name: "e2e tests: debug info"
         if: failure() && steps.runE2eTests.outcome == 'failure'
@@ -145,3 +150,15 @@ jobs:
           kubectl get ccnp -A || true
           kubectl get issuers -A || true
           kubectl get certificates -A || true
+
+#      - name: Publish Test Report
+#        uses: mikepenz/action-junit-report@v3
+#        if: always()
+#        with:
+#          report_paths: 'tests/e2e/junit/*.xml'
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v1
+        if: always()
+        with:
+          files: 'tests/e2e/**/junit_*.xml'
