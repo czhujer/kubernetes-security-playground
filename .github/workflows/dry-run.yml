@@ -187,4 +187,5 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         if: always()
         with:
+          comment_mode: false
           files: 'tests/e2e/**/junit_*.xml'
