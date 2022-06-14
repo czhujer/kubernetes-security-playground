@@ -17,14 +17,15 @@
   },
   "gomod": {
     "fileMatch": [
-      "tests/**/go.mod$",
-      "(^|/)go.mod$"
+      "tests/**/go\\.mod$",
+      "(^|/)go\\.mod$"
     ]
   },
   "helm-values": {
     "fileMatch": [
-      "(^|/)values.yaml$",
-      "kind/kind-values.*.yaml$"
+      "(^|/)values\\.yaml$",
+      "k8s-the-easy-way/helm-values/*\\.yaml",
+      "kind/kind-values.*\\.yaml$"
     ]
   }
 }
