@@ -4,13 +4,17 @@ env:
   go_version: '>=1.18.0'
 
 on:
-  push:
-    tags:
-      - v*
-    branches:
-      - master
-      - main
+  workflow_dispatch:
   pull_request:
+    branches:
+      - main
+    paths:
+      - tests/e2e/**
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - tests/e2e/**
 
 permissions:
   contents: read
