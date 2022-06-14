@@ -9,11 +9,15 @@ on:
     branches:
       - main
     paths:
+      - .github/workflows/golangci-lint.yml
+      - .golangci.yml
       - tests/e2e/**
   push:
     branches-ignore:
       - main
     paths:
+      - .github/workflows/golangci-lint.yml
+      - .golangci.yml
       - tests/e2e/**
 
 permissions:
