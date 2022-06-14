@@ -1,4 +1,4 @@
-package e2e
+package util
 
 import (
 	"bytes"
@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func applyManifest(testContext *e2ekubectl.TestKubeconfig, yamlFile string) {
+func ApplyManifest(testContext *e2ekubectl.TestKubeconfig, yamlFile string) {
 	var stdout, stderr bytes.Buffer
 	var err error
 
@@ -31,7 +31,7 @@ func applyManifest(testContext *e2ekubectl.TestKubeconfig, yamlFile string) {
 	framework.ExpectNoError(err)
 }
 
-func getCrdObjects(c kubernetes.Interface, absPath string) (*apiextensionsv1.CustomResourceDefinitionList, error) {
+func GetCrdObjects(c kubernetes.Interface, absPath string) (*apiextensionsv1.CustomResourceDefinitionList, error) {
 	var client restclient.Result
 	finished := make(chan struct{}, 1)
 	go func() {
@@ -53,3 +53,17 @@ func getCrdObjects(c kubernetes.Interface, absPath string) (*apiextensionsv1.Cus
 		return &apiextensionsv1.CustomResourceDefinitionList{}, fmt.Errorf("Waiting up to %v for getting the list of CRDs", framework.PodStartShortTimeout)
 	}
 }
+
+// https://github.com/cilium/cilium/blob/a8b2af8c9ec421e74fd322c0afcd6ab7d988c2f8/test/ginkgo-ext/scopes.go#L660
+
+// SkipContextIf is a wrapper for the Context block which is being executed
+// if the given condition is NOT met.
+//func SkipContextIf(condition func() bool, text string, body func()) bool {
+//	if condition() {
+//		return ginkgo.It(text, func() {
+//			ginkgo.Skip("skipping due to unmet condition")
+//		})
+//	}
+//
+//	return ginkgo.Context(text, body)
+//}

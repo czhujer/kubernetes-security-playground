@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"context"
+	"e2e/util"
 	v1 "github.com/cert-manager/cert-manager/pkg/apis/certmanager/v1"
 	cmmeta "github.com/cert-manager/cert-manager/pkg/apis/meta/v1"
 	cmFramework "github.com/cert-manager/cert-manager/test/e2e/framework"
@@ -25,22 +26,25 @@ const (
 	frameworkName        string = "certmanager"
 )
 
-var _ = ginkgo.Describe("e2e cert-manager", func() {
+var (
+	f    = framework.NewDefaultFramework(frameworkName)
+	cmFw = cmFramework.NewDefaultFramework(frameworkName)
+)
 
-	f := framework.NewDefaultFramework(frameworkName)
-	cmFw := cmFramework.NewDefaultFramework(frameworkName)
-	tk := e2ekubectl.NewTestKubeconfig(framework.TestContext.CertDir, framework.TestContext.Host, framework.TestContext.KubeConfig, framework.TestContext.KubeContext, framework.TestContext.KubectlPath, "")
+var _ = ginkgo.Describe("e2e cert-manager", func() {
 
 	ginkgo.BeforeEach(func() {
 		ginkgo.By("Waiting to cert-manager's pods ready")
 		err := e2epod.WaitForPodsRunningReady(f.ClientSet, certManagerNamespace, certManagerMinPods, 0, framework.PodStartShortTimeout, make(map[string]string))
 		framework.ExpectNoError(err)
 
+		tk := e2ekubectl.NewTestKubeconfig(framework.TestContext.CertDir, framework.TestContext.Host, framework.TestContext.KubeConfig, framework.TestContext.KubeContext, framework.TestContext.KubectlPath, "")
+
 		ginkgo.By("creating certs and issuer objects")
-		applyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-test.yaml")
-		applyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-ca-test.yaml")
-		applyManifest(tk, "../assets/k8s/certs/cert-manager-certificate-test1.yaml")
-		applyManifest(tk, "../assets/k8s/certs/cert-manager-certificate-test2.yaml")
+		util.ApplyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-test.yaml")
+		util.ApplyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-ca-test.yaml")
+		util.ApplyManifest(tk, "../assets/k8s/certs/cert-manager-certificate-test1.yaml")
+		util.ApplyManifest(tk, "../assets/k8s/certs/cert-manager-certificate-test2.yaml")
 
 	})
 
@@ -56,7 +60,7 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 	var _ = ginkgo.Describe("--> Issuers", func() {
 
 		ginkgo.It("should Issuer exists in namespace cert-manager-local-ca", func() {
-			ret, err := getCrdObjects(f.ClientSet, "/apis/cert-manager.io/v1/namespaces/cert-manager-local-ca/issuers")
+			ret, err := util.GetCrdObjects(f.ClientSet, "/apis/cert-manager.io/v1/namespaces/cert-manager-local-ca/issuers")
 			if err != nil {
 				klog.Infof("get crd err: %v", err)
 			}
@@ -76,7 +80,7 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 		})
 
 		ginkgo.It("should Issuer exists in namespace cert-manager-local-ca2", func() {
-			ret, err := getCrdObjects(f.ClientSet, "/apis/cert-manager.io/v1/namespaces/cert-manager-local-ca2/issuers")
+			ret, err := util.GetCrdObjects(f.ClientSet, "/apis/cert-manager.io/v1/namespaces/cert-manager-local-ca2/issuers")
 			if err != nil {
 				klog.Infof("get crd err: %v", err)
 			}

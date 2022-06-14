@@ -7,6 +7,7 @@ env:
   argocd_version: "2.3.4"
   argocd_projects_dir: "argocd/projects"
   go_version: '>=1.18.0'
+  ACK_GINKGO_DEPRECATIONS: "1.16.5"
 
 on:
   pull_request:
@@ -137,7 +138,7 @@ jobs:
         id: runE2eTests
         run: |
           cd tests/e2e
-          go test -report-dir=./junit
+          go test ./... -report-dir=./junit -v
 
       - name: "e2e tests: debug info"
         if: failure() && steps.runE2eTests.outcome == 'failure'
@@ -160,4 +161,4 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         if: always()
         with:
-          files: 'tests/e2e/junit/*.xml'
+          files: 'tests/e2e/**/junit_*.xml'

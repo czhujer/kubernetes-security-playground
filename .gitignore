@@ -3,3 +3,5 @@
 
 /tests/e2e/vendor/
 /tests/e2e/results/
+/tests/e2e/junit/
+/tests/e2e/kubernetes/apps/junit/
