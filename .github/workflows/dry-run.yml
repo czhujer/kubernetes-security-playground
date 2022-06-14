@@ -11,20 +11,20 @@ env:
 
 on:
   workflow_dispatch:
-#  workflow_run:
-#    workflows:
-#      - "trivy check"
-#      - "sh-checker"
-#      - "terrascan"
-#      - "tflint"
-#      - "tfsec"
-#    branches:
-#      - main
-#    pull_request:
-#      branches:
-#        - main
-#    types:
-#      - completed
+  workflow_run:
+    workflows:
+      - "trivy check"
+      - "sh-checker"
+      - "terrascan"
+      - "tflint"
+      - "tfsec"
+    branches:
+      - main
+    pull_request:
+      branches:
+        - main
+    types:
+      - completed
   pull_request:
     branches:
       - main
@@ -63,7 +63,7 @@ jobs:
         run: ./scripts/detect_updated_argocd_apps.sh
 
       - name: "debug: end workflow"
-        uses: "false"
+        run: "false"
 
       - name: "prepare env: install make"
         run: |

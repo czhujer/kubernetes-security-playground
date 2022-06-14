@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: end workflow
-        uses: "false"
+        run: "false"
 
       - name: Clone repo
         uses: actions/checkout@v3
