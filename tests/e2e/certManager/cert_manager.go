@@ -1,4 +1,4 @@
-package e2e
+package certManager
 
 import (
 	"context"
@@ -41,10 +41,10 @@ var _ = ginkgo.Describe("e2e cert-manager", func() {
 		tk := e2ekubectl.NewTestKubeconfig(framework.TestContext.CertDir, framework.TestContext.Host, framework.TestContext.KubeConfig, framework.TestContext.KubeContext, framework.TestContext.KubectlPath, "")
 
 		ginkgo.By("creating certs and issuer objects")
-		util.ApplyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-test.yaml")
-		util.ApplyManifest(tk, "../assets/k8s/ca/cert-manager-issuer-kind-ca-test.yaml")
-		util.ApplyManifest(tk, "../assets/k8s/certs/cert-manager-certificate-test1.yaml")
-		util.ApplyManifest(tk, "../assets/k8s/certs/cert-manager-certificate-test2.yaml")
+		util.ApplyManifest(tk, "../../assets/k8s/ca/cert-manager-issuer-kind-test.yaml")
+		util.ApplyManifest(tk, "../../assets/k8s/ca/cert-manager-issuer-kind-ca-test.yaml")
+		util.ApplyManifest(tk, "../../assets/k8s/certs/cert-manager-certificate-test1.yaml")
+		util.ApplyManifest(tk, "../../assets/k8s/certs/cert-manager-certificate-test2.yaml")
 
 	})
 

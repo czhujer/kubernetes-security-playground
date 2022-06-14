@@ -116,5 +116,5 @@ func TestE2eApps(t *testing.T) {
 		klog.Infof("ReportDir is not set")
 	}
 	gomega.RegisterFailHandler(framework.Fail)
-	ginkgo.RunSpecsWithDefaultAndCustomReporters(t, "Kubernetes Apps Suite", r)
+	ginkgo.RunSpecsWithDefaultAndCustomReporters(t, "E2E Kubernetes Apps Suite", r)
 }

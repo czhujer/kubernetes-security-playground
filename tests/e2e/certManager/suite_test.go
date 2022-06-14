@@ -1,4 +1,4 @@
-package e2e
+package certManager
 
 import (
 	"flag"
@@ -116,5 +116,5 @@ func TestE2e(t *testing.T) {
 		klog.Infof("ReportDir is not set")
 	}
 	gomega.RegisterFailHandler(framework.Fail)
-	ginkgo.RunSpecsWithDefaultAndCustomReporters(t, "E2E Suite", r)
+	ginkgo.RunSpecsWithDefaultAndCustomReporters(t, "E2E Cert-Manager Suite", r)
 }
