@@ -2,6 +2,9 @@
   "extends": [
     "config:base"
   ],
+  "assignees": [
+    "czhujer"
+  ],
   "kubernetes": {
     "fileMatch": ["k8s-the-easy-way/k8s-manifests/.*\\.yaml$",
     "tests/assets/k8s/.*\\.yaml$"]
@@ -10,6 +13,18 @@
     "fileMatch": ["argocd/.+\\.yaml$",
       "argocd/projects/.+\\.yaml$",
       "k8s-the-easy-way/argocd/.+\\.yaml$"
+    ]
+  },
+  "gomod": {
+    "fileMatch": [
+      "tests/**/go.mod$",
+      "(^|/)go.mod$"
+    ]
+  },
+  "helm-values": {
+    "fileMatch": [
+      "(^|/)values.yaml$",
+      "kind/kind-values.*.yaml$"
     ]
   }
 }
