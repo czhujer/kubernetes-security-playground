@@ -4,6 +4,7 @@ set -ueo pipefail
 #HELM="helm"
 #YQ="yq"
 #global_ret_val=0
+GITHUB_BASE_REF_DEFAULT="main"
 
 echo "running script detect_updated_argocd_apps.sh"
 
@@ -32,8 +33,19 @@ else
   ARGO_DIR=${folder}
 fi
 
+if [ "${GITHUB_REF_NAME}" == "" ]; then
+  echo "ERROR: empty GITHUB_REF_NAME var!"
+  exit 12
+fi
+
+if [ "${GITHUB_BASE_REF}" == "" ]; then
+  echo "WARNING: empty GITHUB_BASE_REF var! defaulting to ${GITHUB_BASE_REF_DEFAULT}"
+  GITHUB_BASE_REF="$GITHUB_BASE_REF_DEFAULT"
+fi
+
 detect_updated_files() {
-  echo "current git branch: $GITHUB_HEAD_REF"
+  echo "current git ref: $GITHUB_REF_NAME"
+  echo "fetching base ref from origin:"
   git fetch origin "${GITHUB_BASE_REF}:${GITHUB_BASE_REF}"
 
   #  echo "show git remote"

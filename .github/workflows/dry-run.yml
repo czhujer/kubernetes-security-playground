@@ -10,9 +10,7 @@ env:
   ACK_GINKGO_DEPRECATIONS: "1.16.5"
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
   workflow_run:
     workflows:
       - "trivy check"
@@ -20,9 +18,31 @@ on:
       - "terrascan"
       - "tflint"
       - "tfsec"
-    branches: [main]
+    branches:
+      - main
+    pull_request:
+      branches:
+        - main
     types:
       - completed
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/dry-run.yml
+      - argocd/**
+      - kind/**
+      - tests/e2e/**
+      - Makefile
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - .github/workflows/dry-run.yml
+      - argocd/**
+      - kind/**
+      - tests/e2e/**
+      - Makefile
 
 jobs:
   dry-run:
@@ -38,6 +58,9 @@ jobs:
 
 #      - name: "prepare env: show vars"
 #        run: env
+
+#      - name: "debug: end workflow"
+#        run: "false"
 
       - name: "prepare env: install make"
         run: |
@@ -161,4 +184,5 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         if: always()
         with:
+          comment_mode: off
           files: 'tests/e2e/**/junit_*.xml'

@@ -1,7 +1,7 @@
 # Set environment variables
 export CLUSTER_NAME?=security-playground
 export CILIUM_VERSION?=1.11.5
-export CERT_MANAGER_CHART_VERSION=1.8.0
+export CERT_MANAGER_CHART_VERSION=1.8.1
 export ARGOCD_CHART_VERSION=4.8.3
 export SPO_VERSION=0.4.3
 export TRIVY_IMAGE_CHECK=0
@@ -105,7 +105,7 @@ cert-manager-deploy:
 	helm repo add cert-manager https://charts.jetstack.io
 	helm upgrade --install \
 		cert-manager cert-manager/cert-manager \
-		--version "${CERT_MANAGER_CHART_VERSION}" \
+		--version "v${CERT_MANAGER_CHART_VERSION}" \
 	   --namespace cert-manager \
 	   --create-namespace \
 	   --values kind/cert-manager.yaml \
