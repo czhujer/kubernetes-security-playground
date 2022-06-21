@@ -9,13 +9,13 @@ data "template_file" "cloud-init-yaml" {
 }
 
 resource "digitalocean_droplet" "control_plane" {
-  count              = 1
-  image              = "ubuntu-20-04-x64"
-  name               = format("control-plane-%s-%v", var.dc_region, count.index + 1)
-  region             = var.dc_region
-  size               = var.droplet_size
-  user_data          = data.template_file.cloud-init-yaml.rendered
-  ssh_keys           = [digitalocean_ssh_key.terraform.id]
+  count     = 1
+  image     = "ubuntu-20-04-x64"
+  name      = format("control-plane-%s-%v", var.dc_region, count.index + 1)
+  region    = var.dc_region
+  size      = var.droplet_size
+  user_data = data.template_file.cloud-init-yaml.rendered
+  ssh_keys  = [digitalocean_ssh_key.terraform.id]
 
   connection {
     user        = "root"
@@ -62,7 +62,7 @@ resource "digitalocean_droplet" "control_plane" {
         pod_subnet         = var.pod_subnet,
         control_plane_ip   = digitalocean_droplet.control_plane[0].ipv4_address,
         control_plane_name = format("control-plane-%s-1", var.dc_region)
-      })
+    })
     destination = "/tmp/kubeadm-config.yaml"
   }
 
@@ -119,13 +119,13 @@ resource "digitalocean_droplet" "control_plane" {
 #############################
 
 resource "digitalocean_droplet" "worker" {
-  count              = 2
-  image              = "ubuntu-20-04-x64"
-  name               = format("worker-%s-%v", var.dc_region, count.index + 1)
-  region             = var.dc_region
-  size               = var.droplet_size
-  ssh_keys           = [digitalocean_ssh_key.terraform.id]
-  user_data          = data.template_file.cloud-init-yaml.rendered
+  count     = 2
+  image     = "ubuntu-20-04-x64"
+  name      = format("worker-%s-%v", var.dc_region, count.index + 1)
+  region    = var.dc_region
+  size      = var.droplet_size
+  ssh_keys  = [digitalocean_ssh_key.terraform.id]
+  user_data = data.template_file.cloud-init-yaml.rendered
 
   connection {
     user        = "root"
