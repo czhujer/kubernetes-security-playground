@@ -7,11 +7,11 @@ on:
       - main
     paths:
       - k8s-the-easy-way/**
-  push:
-    branches-ignore:
-      - main
-    paths:
-      - k8s-the-easy-way/**
+#  push:
+#    branches-ignore:
+#      - main
+#    paths:
+#      - k8s-the-easy-way/**
 
 jobs:
   terrascan:

@@ -174,7 +174,7 @@ resource "kubectl_manifest" "do_ccm" {
   yaml_body = each.value
   wait      = true
   depends_on = [helm_release.cilium,
-    kubectl_manifest.ccm_secret]
+  kubectl_manifest.ccm_secret]
 }
 
 data "kubectl_file_documents" "do_ccm_sm" {

@@ -7,9 +7,9 @@ on:
       - main
 #     paths:
 #       - argocd/**
-  push:
-    branches-ignore:
-      - main
+#  push:
+#    branches-ignore:
+#      - main
 #     paths:
 #       - argocd/**
 
