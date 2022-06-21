@@ -1,5 +1,72 @@
 ## security stuff
 #
+resource "helm_release" "kyverno" {
+  name             = "kyverno"
+  repository       = "https://kyverno.github.io/kyverno"
+  chart            = "kyverno"
+  version          = "2.5.1"
+  namespace        = "kyverno"
+  create_namespace = "true"
+
+  set {
+    name  = "serviceMonitor.enabled"
+    value = "true"
+    type  = "string"
+  }
+}
+
+resource "helm_release" "policies" {
+  name             = "kyverno-policies"
+  repository       = "https://kyverno.github.io/kyverno"
+  chart            = "kyverno-policies"
+  version          = "2.5.1"
+  namespace        = "kyverno"
+  create_namespace = "true"
+
+  # -- Validation failure action (`audit`, `enforce`).
+  # For more info https://kyverno.io/docs/writing-policies/validate.
+  set {
+    name  = "validationFailureAction"
+    value = "audit"
+    type  = "string"
+  }
+
+  depends_on = [helm_release.kyverno]
+}
+
+# https://kyverno.github.io/policy-reporter/guide/02-getting-started/
+# helm repo add policy-reporter https://kyverno.github.io/policy-reporter
+# helm upgrade --install policy-reporter policy-reporter/policy-reporter --create-namespace
+# -n policy-reporter --set metrics.enabled=true --set api.enabled=true
+resource "helm_release" "policy-reporter" {
+  name             = "policy-reporter"
+  repository       = "https://kyverno.github.io/policy-reporter"
+  chart            = "policy-reporter"
+  version          = "2.9.3"
+  namespace        = "policy-reporter"
+  create_namespace = "true"
+  values = [<<-EOF
+metrics:
+  enabled: true
+api:
+  enabled: true
+ui:
+  enabled: true
+  plugins:
+    kyverno: true
+kyvernoPlugin:
+  enabled: true
+monitoring:
+  enabled: true
+  grafana:
+    namespace: monitoring
+EOF
+  ]
+  depends_on = [helm_release.kyverno]
+}
+
+# trivy + starboard
+#
 data "kubectl_file_documents" "argocd_starboard_project" {
   content = file("../argocd/projects/security-starboard.yaml")
 }
@@ -88,6 +155,6 @@ data "kubectl_file_documents" "spo_svc_metrics" {
 
 resource "kubectl_manifest" "spo_svc_metrics" {
   yaml_body  = data.kubectl_file_documents.spo_svc_metrics.content
-  wait      = true
+  wait       = true
   depends_on = [kubectl_manifest.argocd_spo_app]
 }
