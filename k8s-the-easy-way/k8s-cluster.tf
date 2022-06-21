@@ -14,7 +14,6 @@ resource "digitalocean_droplet" "control_plane" {
   name               = format("control-plane-%s-%v", var.dc_region, count.index + 1)
   region             = var.dc_region
   size               = var.droplet_size
-  private_networking = true
   user_data          = data.template_file.cloud-init-yaml.rendered
   ssh_keys           = [digitalocean_ssh_key.terraform.id]
 
@@ -109,7 +108,7 @@ resource "digitalocean_droplet" "control_plane" {
   # copy kubeconfig from remote server to workstation
   #
   provisioner "local-exec" {
-    command = "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${digitalocean_droplet.control_plane.0.ipv4_address}:/etc/kubernetes/admin.conf $${HOME}/.kube/config_ktew"
+    command = "scp -i  ~/.ssh/id_rsa_ktew -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${digitalocean_droplet.control_plane.0.ipv4_address}:/etc/kubernetes/admin.conf $${HOME}/.kube/config_ktew"
   }
 
   depends_on = [digitalocean_ssh_key.terraform]
@@ -125,7 +124,6 @@ resource "digitalocean_droplet" "worker" {
   name               = format("worker-%s-%v", var.dc_region, count.index + 1)
   region             = var.dc_region
   size               = var.droplet_size
-  private_networking = true
   ssh_keys           = [digitalocean_ssh_key.terraform.id]
   user_data          = data.template_file.cloud-init-yaml.rendered
 
