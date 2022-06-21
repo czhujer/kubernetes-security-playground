@@ -1,16 +1,16 @@
 ---
-global:
-  image:
-    tag: "v2.3.4"
-    imagePullPolicy: Never
+#global:
+#  image:
+#    tag: "v2.4.0"
+#    imagePullPolicy: Never
 dex:
   enabled: false
 controller:
   metrics:
     enabled: true
 repoServer:
-  image:
-    imagePullPolicy: Never
+#  image:
+#    imagePullPolicy: Never
   metrics:
     enabled: true
 server:
@@ -28,7 +28,7 @@ server:
 redis:
   metrics:
     enabled: true
-    image:
-      imagePullPolicy: Never
-  image:
-    imagePullPolicy: Never
+#    image:
+#      imagePullPolicy: Never
+#  image:
+#    imagePullPolicy: Never
