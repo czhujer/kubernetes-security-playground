@@ -34,15 +34,15 @@ on:
       - kind/**
       - tests/e2e/**
       - Makefile
-  push:
-    branches-ignore:
-      - main
-    paths:
-      - .github/workflows/dry-run.yml
-      - argocd/**
-      - kind/**
-      - tests/e2e/**
-      - Makefile
+#  push:
+#    branches-ignore:
+#      - main
+#    paths:
+#      - .github/workflows/dry-run.yml
+#      - argocd/**
+#      - kind/**
+#      - tests/e2e/**
+#      - Makefile
 
 jobs:
   dry-run:

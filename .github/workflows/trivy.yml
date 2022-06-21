@@ -11,9 +11,9 @@ on:
     branches:
       - main
 
-  push:
-    branches-ignore:
-      - main
+#  push:
+#    branches-ignore:
+#      - main
 
 permissions:
   contents: read
