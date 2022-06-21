@@ -103,7 +103,7 @@ jobs:
       - name: "prepare cluster: install ArgoCD"
         run: make argocd-deploy
 
-      - name: "prepare cluster: install nginx"
+      - name: "prepare cluster: install nginx-ingress (and gateway-api CRDs)"
         run: make nginx-ingress-deploy
 
       - name: "prepare cluster: install cert-manager"
@@ -118,7 +118,7 @@ jobs:
       - name: "debug info: show all services"
         run: kubectl get svc -A
 
-      - name: "argo-cd: init"
+      - name: "argo-cd: cli init"
         uses: clowdhaus/argo-cd-action/@main
         with:
           version: ${{ env.argocd_version }}
