@@ -17,5 +17,5 @@ spec:
   project: system-monitoring
   source:
     repoURL: https://github.com/prometheus-community/helm-charts.git
-    targetRevision: kube-prometheus-stack-36.0.0
+    targetRevision: kube-prometheus-stack-36.0.3
     path: charts/kube-prometheus-stack/crds
