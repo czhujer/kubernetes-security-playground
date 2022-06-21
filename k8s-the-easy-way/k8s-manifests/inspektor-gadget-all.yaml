@@ -237,7 +237,7 @@ spec:
       containers:
       - name: gadget
         terminationMessagePolicy: FallbackToLogsOnError
-        image: docker.io/kinvolk/gadget:v0.5.0
+        image: docker.io/kinvolk/gadget:v0.5.1
         imagePullPolicy: Always
         command: [ "/entrypoint.sh" ]
         lifecycle:
@@ -276,9 +276,9 @@ spec:
               fieldRef:
                 fieldPath: metadata.namespace
           - name: GADGET_IMAGE
-            value: docker.io/kinvolk/gadget:v0.5.0
+            value: docker.io/kinvolk/gadget:v0.5.1
           - name: INSPEKTOR_GADGET_VERSION
-            value: v0.5.0
+            value: v0.5.1
           - name: INSPEKTOR_GADGET_OPTION_HOOK_MODE
             value: "auto"
           - name: INSPEKTOR_GADGET_OPTION_FALLBACK_POD_INFORMER
