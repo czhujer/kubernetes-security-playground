@@ -13,7 +13,7 @@ spec:
       requests:
         cpu: 200m
     volumeMounts:
-      - mountPath: /kubeadm-configs
+      - mountPath: /kube-configs
         readOnly: true
         name: kube-admissionconfig
   volumes:

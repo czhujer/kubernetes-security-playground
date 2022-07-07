@@ -64,6 +64,7 @@ kind-debug:
 	docker exec $(CLUSTER_NAME)-control-plane crictl pods || true
 	docker exec $(CLUSTER_NAME)-control-plane ls -lRh /kubeadm-configs /kubeadm-patches || true
 	docker exec $(CLUSTER_NAME)-control-plane cat /etc/kubernetes/manifests/kube-apiserver.yaml || true
+	kubectl describe ns || true
 
 .PHONY: kind-delete
 kind-delete:
