@@ -1,7 +1,7 @@
 # Set environment variables
 export CLUSTER_NAME?=security-playground
 export CILIUM_VERSION?=1.11.6
-export CERT_MANAGER_CHART_VERSION=1.8.1
+export CERT_MANAGER_CHART_VERSION=1.8.2
 export ARGOCD_CHART_VERSION=4.9.4
 export SPO_VERSION=0.4.3
 export TRIVY_IMAGE_CHECK=0
