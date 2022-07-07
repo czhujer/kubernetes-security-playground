@@ -55,6 +55,11 @@ resource "digitalocean_droplet" "control_plane" {
   }
 
   provisioner "file" {
+    content     = file("../kind/kubeadm-configs/kind-admissionconfiguration.yaml")
+    destination = "/etc/kubernetes/kind-admissionconfiguration.yaml"
+  }
+
+  provisioner "file" {
     content = templatefile("${path.module}/files/kubeadm-config.tpl",
       {
         cluster_name       = format("ktew-%s", var.dc_region),

@@ -37,7 +37,13 @@ apiServer:
     default-not-ready-toleration-seconds: "30"
     default-unreachable-toleration-seconds: "30"
     feature-gates: EphemeralContainers=True,SeccompDefault=True,ServerSideApply=True,PodSecurity=True
+    admission-control-config-file: "/etc/kubernetes/kind-admissionconfiguration.yaml" # for PSS/PSA defaulting
   extraVolumes:
+  - hostPath: /etc/kubernetes/kind-admissionconfiguration.yaml
+    mountPath: /etc/kubernetes/kind-admissionconfiguration.yaml
+    name: admission-control
+    pathType: File
+    readOnly: true
   - hostPath: /etc/kubernetes/audit-policy.yaml
     mountPath: /etc/kubernetes/audit-policy.yaml
     name: audit-policy
