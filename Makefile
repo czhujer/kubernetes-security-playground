@@ -183,11 +183,12 @@ spo-deploy:
 nginx-ingress-deploy:
 	docker pull k8s.gcr.io/ingress-nginx/controller:v1.2.1
 	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.1
+	# setup PSS
+	kubectl create ns/ingress-nginx
+	kubectl label --overwrite ns/ingress-nginx pod-security.kubernetes.io/enforce=privileged
 	# ingress
 	kubectl -n argocd apply -f argocd/nginx-ingress.yaml
 	kubectl -n argocd apply -f argocd/gateway-api-crds.yaml
-	# setup PSS
-	kubectl label --overwrite ns/ingress-nginx pod-security.kubernetes.io/enforce=privileged
 #
 #	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
 #	kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io ingress-nginx-admission
