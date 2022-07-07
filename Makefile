@@ -44,7 +44,8 @@ endif
 	kind --version
 	kind create cluster --name "$(CLUSTER_NAME)" \
  		--config="kind/kind-config.yaml" \
- 		--image="$(KIND_NODE_IMAGE)"
+ 		--image="$(KIND_NODE_IMAGE)" \
+ 		--retain
 # for testing PSP
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/psp/privileged-psp.yaml
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/psp/baseline-psp.yaml
@@ -58,6 +59,8 @@ endif
 kind-debug:
 	docker ps || true
 	docker exec $(CLUSTER_NAME)-control-plane crictl pods || true
+	docker exec $(CLUSTER_NAME)-control-plane ls -lRh /kubeadm-configs /kubeadm-patches || true
+	docker exec $(CLUSTER_NAME)-control-plane cat /etc/kubernetes/manifests/kube-apiserver.yaml || true
 
 .PHONY: kind-delete
 kind-delete:

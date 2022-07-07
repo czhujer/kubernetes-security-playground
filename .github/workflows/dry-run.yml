@@ -190,3 +190,7 @@ jobs:
       - name: "debug info: kind debug"
         if: always()
         run: make kind-debug
+
+      - name: "kind: delete cluster"
+        if: always()
+        run: make kind-delete
