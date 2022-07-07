@@ -29,4 +29,5 @@ plugins:
         # Array of runtime class names to exempt.
         runtimeClasses: []
         # Array of namespaces to exempt.
-        namespaces: []
+        namespaces:
+          - kube-system
