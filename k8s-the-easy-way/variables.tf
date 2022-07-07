@@ -1,5 +1,5 @@
 # https://github.com/kubernetes/sig-release/blob/master/releases/patch-releases.md#timelines
-variable "kubernetes_version" { default = "1.24.1" }
+variable "kubernetes_version" { default = "1.24.2" }
 # https://docs.docker.com/engine/release-notes/
 # variable "docker_version" { default = "20.10.8" }
 # k8s cluster bootstrap
