@@ -184,7 +184,7 @@ nginx-ingress-deploy:
 	docker pull k8s.gcr.io/ingress-nginx/controller:v1.2.1
 	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.1
 	# setup PSS
-	kubectl create ns/ingress-nginx
+	kubectl create ns ingress-nginx
 	kubectl label --overwrite ns/ingress-nginx pod-security.kubernetes.io/enforce=privileged
 	# ingress
 	kubectl -n argocd apply -f argocd/nginx-ingress.yaml
