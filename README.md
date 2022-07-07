@@ -19,6 +19,8 @@
   - add falco exporter
   - seding audit logs into falco
     - https://sysdig.com/blog/kubernetes-audit-log-falco/
+  - test policyReport output
+    - https://github.com/falcosecurity/falcosidekick/pull/256/files
 - terraform: fix fetching external ip from ingress svc
 - terraform: add non-hardcoded token(s) in IaC
   - https://github.com/weibeld/terraform-aws-kubeadm/blob/master/main.tf#L109-L129
