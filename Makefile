@@ -57,6 +57,7 @@ endif
 
 .PHONY: kind-debug
 kind-debug:
+	kubectl -n kube-system get pods -o wide --show-labels || true
 	docker ps || true
 	docker exec $(CLUSTER_NAME)-control-plane crictl pods || true
 	docker exec $(CLUSTER_NAME)-control-plane ls -lRh /kubeadm-configs /kubeadm-patches || true

@@ -31,7 +31,7 @@ kubeadmConfigPatches:
     apiServer:
       extraArgs:
         # for PSS/PSA defaulting
-        admission-control-config-file: "/kube-configs/kind-admissionconfiguration.yaml"
+#        admission-control-config-file: "/kube-configs/kind-admissionconfiguration.yaml"
 #        # for PSP
 #        enable-admission-plugins: NodeRestriction,PodSecurityPolicy
 
