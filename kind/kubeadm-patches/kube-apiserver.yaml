@@ -1,0 +1,15 @@
+spec:
+  containers:
+  - name: kube-apiserver
+    resources:
+      requests:
+        cpu: 200m
+    volumeMounts:
+      - mountPath: /kubeadm-configs
+        readOnly: true
+        name: kube-admissionconfig
+  volumes:
+    - hostPath:
+        path: /kubeadm-configs
+        type: Directory
+      name: kube-admissionconfig
