@@ -54,6 +54,11 @@ endif
 # for more control planes, but no workers
 	kubectl taint nodes --all node-role.kubernetes.io/master- || true
 
+.PHONY: kind-debug
+kind-debug:
+	docker ps || true
+	docker exec $(CLUSTER_NAME)-control-plane crictl pods || true
+
 .PHONY: kind-delete
 kind-delete:
 	kind delete cluster --name $(CLUSTER_NAME)

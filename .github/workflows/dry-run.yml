@@ -187,5 +187,6 @@ jobs:
           comment_mode: off
           files: 'tests/e2e/**/junit_*.xml'
 
-      - name: "debug info: show docker containers"
-        run: docker ps |grep control-plane
+      - name: "debug info: kind debug"
+        if: always()
+        run: make kind-debug
