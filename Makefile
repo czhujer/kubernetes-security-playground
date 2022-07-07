@@ -2,7 +2,7 @@
 export CLUSTER_NAME?=security-playground
 export CILIUM_VERSION?=1.11.6
 export CERT_MANAGER_CHART_VERSION=1.8.2
-export ARGOCD_CHART_VERSION=4.9.4
+export ARGOCD_CHART_VERSION=4.9.11
 export SPO_VERSION=0.4.3
 export TRIVY_IMAGE_CHECK=0
 
@@ -137,11 +137,11 @@ cert-manager-deploy:
 .PHONY: argocd-deploy
 argocd-deploy:
 	# prepare image(s)
-	docker pull quay.io/argoproj/argocd:v2.4.0
+	docker pull quay.io/argoproj/argocd:v2.4.3
 	docker pull quay.io/argoproj/argocd-applicationset:v0.4.1
 	docker pull redis:7.0.0-alpine
 	docker pull bitnami/redis-exporter:1.26.0-debian-10-r2
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/argoproj/argocd:v2.4.0
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/argoproj/argocd:v2.4.3
 	kind load docker-image --name $(CLUSTER_NAME) quay.io/argoproj/argocd-applicationset:v0.4.1
 	kind load docker-image --name $(CLUSTER_NAME) redis:7.0.0-alpine
 	kind load docker-image --name $(CLUSTER_NAME) bitnami/redis-exporter:1.26.0-debian-10-r2
