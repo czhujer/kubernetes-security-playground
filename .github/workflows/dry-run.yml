@@ -80,7 +80,7 @@ jobs:
           install_only: true
 
       - name: "cluster create"
-        run: make kind-create
+        run: make kind-prepare-files kind-create
 
       - name: "debug info: golang version"
         run: go version
