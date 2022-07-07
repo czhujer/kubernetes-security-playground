@@ -186,6 +186,8 @@ nginx-ingress-deploy:
 	# ingress
 	kubectl -n argocd apply -f argocd/nginx-ingress.yaml
 	kubectl -n argocd apply -f argocd/gateway-api-crds.yaml
+	# setup PSS
+	kubectl label --overwrite ns/ingress-nginx pod-security.kubernetes.io/enforce=privileged
 #
 #	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
 #	kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io ingress-nginx-admission
