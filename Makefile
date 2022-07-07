@@ -14,16 +14,27 @@ export ARGOCD_OPTS="--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
 # kindest/node:v1.22.7@sha256:1dfd72d193bf7da64765fd2f2898f78663b9ba366c2aa74be1fd7498a1873166
 # kindest/node:v1.23.4@sha256:0e34f0d0fd448aa2f2819cfd74e99fe5793a6e4938b328f657c8e3f81ee0dfb9
 # kindest/node:v1.23.5@sha256:a69c29d3d502635369a5fe92d8e503c09581fcd406ba6598acc5d80ff5ba81b1"
-export KIND_NODE_IMAGE="kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083"
+# kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083
+export KIND_NODE_IMAGE="kindest/node:v1.24.2@sha256:1f0cee2282f43150b52dc7933183ed96abdcfc8d293f30ec07082495874876f1"
 
 .PHONY: kind-basic
-kind-basic: kind-create kx-kind kind-install-crds cilium-prepare-images cilium-install argocd-deploy nginx-ingress-deploy
+kind-basic: kind-prepare-files kind-create kx-kind kind-install-crds cilium-prepare-images cilium-install argocd-deploy nginx-ingress-deploy
 
 .PHONY: kind-spo
 kind-spo: kind-basic cert-manager-deploy spo-deploy
 
 .PHONY: kind-security
 kind-security: kind-basic starboard-deploy
+
+.PHONY: kind-prepare-files
+kind-prepare-files:
+	# change resources for control plane pods
+	# https://github.com/kubernetes/kubeadm/pull/2184/files
+	mkdir -p /tmp/kind/kubeadm-patches
+	cp -a kind/kubeadm-patches/* /tmp/kind/kubeadm-patches
+	# prepare files for control-plane extra config
+	mkdir -p /tmp/kind/kubeadm-configs
+	cp kind/kubeadm-configs/kind-admissionconfiguration.yaml /tmp/kind/kubeadm-configs
 
 .PHONY: kind-create
 kind-create:
@@ -33,7 +44,8 @@ endif
 	kind --version
 	kind create cluster --name "$(CLUSTER_NAME)" \
  		--config="kind/kind-config.yaml" \
- 		--image="$(KIND_NODE_IMAGE)"
+ 		--image="$(KIND_NODE_IMAGE)" \
+ 		--retain
 # for testing PSP
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/psp/privileged-psp.yaml
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/psp/baseline-psp.yaml
@@ -42,6 +54,17 @@ endif
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/kind/psp/role-bindings.yaml
 # for more control planes, but no workers
 	kubectl taint nodes --all node-role.kubernetes.io/master- || true
+
+.PHONY: kind-debug
+kind-debug:
+	kubectl -n kube-system get pods -o wide --show-labels || true
+	kubectl -n kube-system exec kube-apiserver-security-playground-control-plane -- stat /kubeadm-configs || true
+	kubectl -n kube-system exec kube-apiserver-security-playground-control-plane -- stat /kubeadm-configs/kind-admissionconfiguration.yaml || true
+	docker ps || true
+	docker exec $(CLUSTER_NAME)-control-plane crictl pods || true
+	docker exec $(CLUSTER_NAME)-control-plane ls -lRh /kubeadm-configs /kubeadm-patches || true
+	docker exec $(CLUSTER_NAME)-control-plane cat /etc/kubernetes/manifests/kube-apiserver.yaml || true
+	kubectl describe ns || true
 
 .PHONY: kind-delete
 kind-delete:
@@ -160,6 +183,9 @@ spo-deploy:
 nginx-ingress-deploy:
 	docker pull k8s.gcr.io/ingress-nginx/controller:v1.2.1
 	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.1
+	# setup PSS
+	kubectl create ns ingress-nginx
+	kubectl label --overwrite ns/ingress-nginx pod-security.kubernetes.io/enforce=privileged
 	# ingress
 	kubectl -n argocd apply -f argocd/nginx-ingress.yaml
 	kubectl -n argocd apply -f argocd/gateway-api-crds.yaml

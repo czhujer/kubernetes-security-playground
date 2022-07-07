@@ -36,7 +36,7 @@ apiServer:
     audit-policy-file: /etc/kubernetes/audit-policy.yaml
     default-not-ready-toleration-seconds: "30"
     default-unreachable-toleration-seconds: "30"
-    feature-gates: EphemeralContainers=True,SeccompDefault=True,ServerSideApply=True
+    feature-gates: EphemeralContainers=True,SeccompDefault=True,ServerSideApply=True,PodSecurity=True
   extraVolumes:
   - hostPath: /etc/kubernetes/audit-policy.yaml
     mountPath: /etc/kubernetes/audit-policy.yaml

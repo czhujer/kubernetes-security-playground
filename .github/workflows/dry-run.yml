@@ -80,7 +80,7 @@ jobs:
           install_only: true
 
       - name: "cluster create"
-        run: make kind-create
+        run: make kind-prepare-files kind-create
 
       - name: "debug info: golang version"
         run: go version
@@ -186,3 +186,11 @@ jobs:
         with:
           comment_mode: off
           files: 'tests/e2e/**/junit_*.xml'
+
+      - name: "debug info: kind debug"
+        if: always()
+        run: make kind-debug
+
+      - name: "kind: delete cluster"
+        if: always()
+        run: make kind-delete

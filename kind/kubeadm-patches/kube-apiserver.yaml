@@ -1,0 +1,23 @@
+#apiVersion: v1
+#kind: Pod
+#metadata:
+#  labels:
+#    component: kube-apiserver
+#    tier: control-plane
+#  name: kube-apiserver
+#  namespace: kube-system
+spec:
+  containers:
+  - name: kube-apiserver
+    resources:
+      requests:
+        cpu: 200m
+    volumeMounts:
+      - mountPath: /kube-configs
+        readOnly: true
+        name: kube-admissionconfig
+  volumes:
+    - hostPath:
+        path: /kubeadm-configs
+        type: Directory
+      name: kube-admissionconfig
