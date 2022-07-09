@@ -6,6 +6,8 @@ set -ueo pipefail
 #global_ret_val=0
 GITHUB_BASE_REF_DEFAULT="main"
 
+SCENARIOS=""
+
 echo "running script detect_updated_argocd_apps.sh"
 
 if [ -z "${CI_PROJECT_DIR-}" ]; then
@@ -65,10 +67,28 @@ detect_updated_files() {
     if test -f "${file}"; then
       echo "INFO: apply-ing manifest ${file}"
       kubectl apply -f "${file}"
+
+      echo "INFO: adding into test queue"
+      if [[ "${file}" =~ ^argocd/prometheus-stack\.yaml$ ]]; then
+        echo "INFO: add scenario prometheus-stack to queue"
+        SCENARIOS+=" ./monitoringStack/.. "
+#      elif [[ "${file}" =~ ^argocd/prometheus-stack.yaml$ ]]; then
+#        echo "INFO: add scenario deploy-argocd to queue"
+#        scenario_queue+=('deploy-argocd')
+      elif [[ "${file}" =~ ^argocd/.*$ ]]; then
+        echo "ERROR: this test scenario doesn't exist"
+        # TODO: add scenarios for rest of the roles
+      else
+        echo "INFO: skip non-app file"
+      fi;
     else
       echo "ERROR: file (${file}) not exists.. skipping apply"
     fi
   done < <(echo "$diff_output")
+
+  export SCENARIOS
+
+  echo "SCENARIOS=$SCENARIOS" >> "$GITHUB_ENV"
 
   echo -e "\ngit diff retval: ${diff_retval}"
 }
