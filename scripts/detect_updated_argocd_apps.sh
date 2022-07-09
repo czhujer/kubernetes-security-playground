@@ -71,7 +71,7 @@ detect_updated_files() {
       echo "INFO: adding into test queue"
       if [[ ${file} =~ ^argocd/prometheus-stack\.yaml$ ]]; then
         echo "INFO: add scenario prometheus-stack to queue"
-        SCENARIOS+=" ./monitoringStack/.. "
+        SCENARIOS+=" ./monitoringStack/... "
         #      elif [[ "${file}" =~ ^argocd/logging-stack.yaml$ ]]; then
         #        echo "INFO: add scenario deploy-argocd to queue"
         #        scenario_queue+=('deploy-argocd')
