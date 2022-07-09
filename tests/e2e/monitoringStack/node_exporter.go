@@ -5,6 +5,7 @@ https://github.com/kubernetes/kubernetes/blob/v1.23.7/test/e2e/apps/statefulset.
 https://github.com/kubernetes/kubernetes/blob/v1.23.7/test/e2e/framework/deployment/wait.go
 https://github.com/kubernetes/kubernetes/blob/42c05a547468804b2053ecf60a3bd15560362fc2/test/utils/deployment.go#L199
 k8s.ovn.org/pod-networks
+https://github.com/kubernetes/kubernetes/blob/4569e646ef161c0262d433aed324fec97a525572/test/e2e/autoscaling/dns_autoscaling.go
 */
 
 import (
