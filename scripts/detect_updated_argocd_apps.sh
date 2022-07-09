@@ -65,11 +65,11 @@ detect_updated_files() {
 
     # test if file exists
     if test -f "${file}"; then
-      echo "INFO: apply-ing manifest ${file}"
-      kubectl apply -f "${file}"
-
-      echo "INFO: adding into test queue"
+      echo "INFO: executing prerequisite steps"
       if [[ ${file} =~ ^argocd/prometheus-stack\.yaml$ ]]; then
+        # create namespace with annotations for PSS/PSA
+        kubectl apply -f k8s-manifests/namespace-monitoring.yaml
+
         echo "INFO: add scenario prometheus-stack to queue"
         SCENARIOS+=" ./monitoringStack/... "
         #      elif [[ "${file}" =~ ^argocd/logging-stack.yaml$ ]]; then
@@ -81,6 +81,10 @@ detect_updated_files() {
       else
         echo "INFO: skip non-app file"
       fi
+
+      echo "INFO: apply-ing manifest ${file}"
+      kubectl apply -f "${file}"
+
     else
       echo "ERROR: file (${file}) not exists.. skipping apply"
     fi
