@@ -30,7 +30,7 @@ const (
 
 var f = framework.NewDefaultFramework(frameworkName)
 
-var _ = ginkgo.Describe("e2e podtato-head", func() {
+var _ = ginkgo.Describe("e2e exporter-node", func() {
 	f.SkipNamespaceCreation = true
 
 	ginkgo.BeforeEach(func() {
