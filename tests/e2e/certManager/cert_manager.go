@@ -32,6 +32,7 @@ var (
 )
 
 var _ = ginkgo.Describe("e2e cert-manager", func() {
+	f.SkipNamespaceCreation = true
 
 	ginkgo.BeforeEach(func() {
 		ginkgo.By("Waiting to cert-manager's pods ready")
