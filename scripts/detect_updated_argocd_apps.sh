@@ -69,18 +69,18 @@ detect_updated_files() {
       kubectl apply -f "${file}"
 
       echo "INFO: adding into test queue"
-      if [[ "${file}" =~ ^argocd/prometheus-stack\.yaml$ ]]; then
+      if [[ ${file} =~ ^argocd/prometheus-stack\.yaml$ ]]; then
         echo "INFO: add scenario prometheus-stack to queue"
         SCENARIOS+=" ./monitoringStack/.. "
-#      elif [[ "${file}" =~ ^argocd/prometheus-stack.yaml$ ]]; then
-#        echo "INFO: add scenario deploy-argocd to queue"
-#        scenario_queue+=('deploy-argocd')
-      elif [[ "${file}" =~ ^argocd/.*$ ]]; then
+        #      elif [[ "${file}" =~ ^argocd/logging-stack.yaml$ ]]; then
+        #        echo "INFO: add scenario deploy-argocd to queue"
+        #        scenario_queue+=('deploy-argocd')
+      elif [[ ${file} =~ ^argocd/.*$ ]]; then
         echo "ERROR: this test scenario doesn't exist"
         # TODO: add scenarios for rest of the roles
       else
         echo "INFO: skip non-app file"
-      fi;
+      fi
     else
       echo "ERROR: file (${file}) not exists.. skipping apply"
     fi
@@ -88,7 +88,7 @@ detect_updated_files() {
 
   export SCENARIOS
 
-  echo "SCENARIOS=$SCENARIOS" >> "$GITHUB_ENV"
+  echo "SCENARIOS=$SCENARIOS" >>"$GITHUB_ENV"
 
   echo -e "\ngit diff retval: ${diff_retval}"
 }
