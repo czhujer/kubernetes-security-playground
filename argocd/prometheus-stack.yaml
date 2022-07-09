@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: prometheus-stack
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     namespace: monitoring
@@ -71,6 +73,14 @@ spec:
                 editable: true
                 options:
                   path: /var/lib/grafana/dashboards/system
+              - name: 'modern-kubernetes-dashboards'
+                orgId: 1
+                folder: 'modern kubernetes dashboards'
+                type: file
+                disableDeletion: false
+                editable: true
+                options:
+                  path: /var/lib/grafana/dashboards/modern-kubernetes-dashboards
           dashboards:
             system:
               ingress:
@@ -92,7 +102,23 @@ spec:
               promtail-2.4.x:
                 gnetId: 15443
                 revision: 2
-                datasource: Prometheus                
+                datasource: Prometheus
+              kubernetes-api-server:
+                gnetId: 12006
+                datasource: Prometheus
+              modern-kubernetes-dashboards:
+                k8s-system-api-server:
+                  url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-api-server.json
+                k8s-system-coredns:
+                  url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-coredns.json
+                k8s-views-global:
+                  url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-global.json
+                k8s-views-namespaces:
+                  url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-namespaces.json
+                k8s-views-nodes:
+                  url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-nodes.json
+                k8s-views-pods:
+                  url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-pods.json  
         prometheus:
           enabled: true
           ingress:
@@ -113,16 +139,16 @@ spec:
         alertmanager:
           enabled: false
         kubeApiServer:
-          enabled: false
+          enabled: true
         kubelet:
           enabled: true
         kubeProxy:
           enabled: false
         kubeControllerManager:
-          enabled: false
+          enabled: true
         coreDns:
-          enabled: false
+          enabled: true
         kubeScheduler:
-          enabled: false
+          enabled: true
         kubeEtcd:
           enabled: false
