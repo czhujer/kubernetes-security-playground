@@ -183,9 +183,8 @@ spo-deploy:
 nginx-ingress-deploy:
 	docker pull k8s.gcr.io/ingress-nginx/controller:v1.2.1
 	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.1
-	# setup PSS
-	kubectl create ns ingress-nginx
-	kubectl label --overwrite ns/ingress-nginx pod-security.kubernetes.io/enforce=privileged
+	# create namespace with annotations for PSS/PSA
+	# kubectl apply -f k8s-manifests/namespace-ingress-nginx.yaml
 	# ingress
 	kubectl -n argocd apply -f argocd/nginx-ingress.yaml
 	kubectl -n argocd apply -f argocd/gateway-api-crds.yaml
@@ -200,6 +199,8 @@ metrics-server-deploy:
 
 .PHONY: prometheus-stack-deploy
 prometheus-stack-deploy:
+	# create namespace with annotations for PSS/PSA
+	kubectl apply -f k8s-manifests/namespace-monitoring.yaml
 	# projects
 	kubectl -n argocd apply -f argocd/projects/system-monitoring.yaml
 	# (update) CRDs
