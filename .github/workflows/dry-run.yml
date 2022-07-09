@@ -129,6 +129,7 @@ jobs:
         run: kubectl apply -f ${{ env.argocd_projects_dir }}
 
       - name: "argo-cd: install changed app's defs"
+        id: detectApps
         run: ./scripts/detect_updated_argocd_apps.sh
 
       - name: "argo-cd: show all apps"
@@ -160,8 +161,9 @@ jobs:
       - name: "e2e tests: run"
         id: runE2eTests
         run: |
+          echo "INFO: extra scenarios: ${{ env.SCENARIOS }}"
           cd tests/e2e
-          go test ./kubernetes/... ./certManager/... -report-dir=./junit -v
+          go test ./kubernetes/... ./certManager/... ${{ env.SCENARIOS }} -report-dir=./junit -v
 
       - name: "e2e tests: debug info"
         if: failure() && steps.runE2eTests.outcome == 'failure'

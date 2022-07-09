@@ -232,6 +232,6 @@ test-network-check-status:
 #	linkerd tap deployment/client --namespace test-network
 	kubectl exec -n test-network deploy/client -c client -- curl -s podinfo:9898
 
-.PHONY: run-ginkgo
-run-ginkgo:
-	cd tests/e2e && go test
+.PHONY: run-ginkgo-all
+run-ginkgo-all:
+	cd tests/e2e && go test ./... -v
