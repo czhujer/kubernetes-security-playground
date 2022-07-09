@@ -11,7 +11,8 @@
 ## terraform-based stack
 - switch PSP -> PSA
 - tracing
-  - add OTEL collector chart and remove otel operator
+  - add OTEL collector chart and remove otel operator - ??
+  - enable SM for otel-operator/collector
   - check/fix tempo/otel collector
   - enable tracing in prometheus/k8s API/....
 - re-enable hubble for cilium
