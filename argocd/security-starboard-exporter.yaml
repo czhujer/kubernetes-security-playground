@@ -4,7 +4,7 @@ metadata:
   name: starboard-exporter
   namespace: argocd
 spec:
-  project: security-starboard
+  project: security-trivy
   source:
     chart: starboard-exporter
     repoURL: https://giantswarm.github.io/giantswarm-catalog
@@ -14,7 +14,7 @@ spec:
         monitoring.grafanaDashboard.namespace: monitoring
   destination:
     server: https://kubernetes.default.svc
-    namespace: starboard-system
+    namespace: trivy-system
   syncPolicy:
     automated:
       prune: true
