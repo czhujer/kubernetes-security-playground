@@ -176,6 +176,9 @@ jobs:
           kubectl get issuers -A || true
           kubectl get certificates -A || true
 
+      - name: "e2e tests: debug info 2"
+        run: argocd app get prometheus-stack ${{ env.argocd_params }}
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action/composite@v1
         if: always()
