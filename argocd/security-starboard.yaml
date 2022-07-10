@@ -16,8 +16,10 @@ spec:
         operator:
           vulnerabilityScannerScanOnlyCurrentRevisions: true
           configAuditScannerScanOnlyCurrentRevisions: true
-#        trivy:
-#          ignoreUnfixed: true
+        trivy:
+          ignoreUnfixed: true
+        serviceMonitor:
+          enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: trivy-system
