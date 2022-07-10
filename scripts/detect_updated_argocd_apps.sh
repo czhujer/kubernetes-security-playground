@@ -72,11 +72,11 @@ detect_updated_files() {
         # create CRDs
         kubectl apply -f argocd/prometheus-stack-crds.yaml
 
-        echo "INFO: add test-suite prometheus-stack to queue"
+        echo "INFO: add test-suite for prometheus-stack to queue"
         SCENARIOS+=" ./monitoringStack/... "
-        #      elif [[ "${file}" =~ ^argocd/logging-stack.yaml$ ]]; then
-        #        echo "INFO: add scenario deploy-argocd to queue"
-        #        scenario_queue+=('deploy-argocd')
+      elif [[ ${file} =~ ^argocd/security-trivy.yaml$ ]]; then
+        echo "INFO: add test-suite for security-trivy to queue"
+        SCENARIOS+=" ./trivyOperator/... "
       elif [[ ${file} =~ ^argocd/.*$ ]]; then
         echo "ERROR: this test-suite doesn't exist"
         # TODO: add scenarios for rest of the roles
