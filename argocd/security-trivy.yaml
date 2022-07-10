@@ -19,7 +19,7 @@ spec:
         trivy:
           ignoreUnfixed: true
         serviceMonitor:
-          enabled: true
+          enabled: true # T.B.A. in chart
   destination:
     server: https://kubernetes.default.svc
     namespace: trivy-system
