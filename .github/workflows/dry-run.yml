@@ -177,6 +177,7 @@ jobs:
           kubectl get certificates -A || true
 
       - name: "e2e tests: debug info 2"
+        if: failure() && steps.runE2eTests.outcome == 'failure'
         run: argocd app get prometheus-stack ${{ env.argocd_params }}
 
       - name: Publish Test Results
