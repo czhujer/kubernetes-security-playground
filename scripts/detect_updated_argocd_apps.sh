@@ -69,6 +69,8 @@ detect_updated_files() {
       if [[ ${file} =~ ^argocd/prometheus-stack\.yaml$ ]]; then
         # create namespace with annotations for PSS/PSA
         kubectl apply -f k8s-manifests/namespace-monitoring.yaml
+        # create CRDs
+        kubectl apply -f argocd/prometheus-stack-crds.yaml
 
         echo "INFO: add test-suite prometheus-stack to queue"
         SCENARIOS+=" ./monitoringStack/... "
