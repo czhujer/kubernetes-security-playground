@@ -74,7 +74,7 @@ detect_updated_files() {
 
         echo "INFO: add test-suite for prometheus-stack to queue"
         SCENARIOS+=" ./monitoringStack/... "
-      elif [[ "${file}" =~ ^argocd/security-trivy.yaml$ ]]; then
+      elif [[ ${file} =~ ^argocd/security-trivy.yaml$ ]]; then
         echo "INFO: add test-suite for security-trivy to queue"
         SCENARIOS+=" ./trivyOperator/... "
       elif [[ ${file} =~ ^argocd/.*$ ]]; then
