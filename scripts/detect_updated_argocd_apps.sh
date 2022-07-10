@@ -70,13 +70,13 @@ detect_updated_files() {
         # create namespace with annotations for PSS/PSA
         kubectl apply -f k8s-manifests/namespace-monitoring.yaml
 
-        echo "INFO: add scenario prometheus-stack to queue"
+        echo "INFO: add test-suite prometheus-stack to queue"
         SCENARIOS+=" ./monitoringStack/... "
         #      elif [[ "${file}" =~ ^argocd/logging-stack.yaml$ ]]; then
         #        echo "INFO: add scenario deploy-argocd to queue"
         #        scenario_queue+=('deploy-argocd')
       elif [[ ${file} =~ ^argocd/.*$ ]]; then
-        echo "ERROR: this test scenario doesn't exist"
+        echo "ERROR: this test-suite doesn't exist"
         # TODO: add scenarios for rest of the roles
       else
         echo "INFO: skip non-app file"
