@@ -210,10 +210,10 @@ prometheus-stack-deploy:
 	kubectl -n argocd apply -f argocd/prometheus-stack.yaml
 	kubectl -n argocd apply -f argocd/prometheus-adapter.yaml
 
-.PHONY: starboard-deploy
-starboard-deploy:
-	kubectl -n argocd apply -f argocd/projects/security-starboard.yaml
-	kubectl -n argocd apply -f argocd/security-starboard.yaml
+.PHONY: trivy-deploy
+trivy-deploy:
+	kubectl -n argocd apply -f argocd/projects/security-trivy.yaml
+	kubectl -n argocd apply -f argocd/security-trivy.yaml
 
 .PHONY: falco-deploy
 falco-deploy:

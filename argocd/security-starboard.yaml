@@ -1,14 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: starboard
+  name: trivy
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
-  project: security-starboard
+  project: security-trivy
   source:
-    chart: starboard-operator
+    chart: trivy-operator
     repoURL: https://aquasecurity.github.io/helm-charts/
-    targetRevision: 0.10.6
+    targetRevision: 0.1.0
     helm:
       values: |
         operator:
@@ -18,7 +20,7 @@ spec:
 #          ignoreUnfixed: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: starboard-system
+    namespace: trivy-system
   syncPolicy:
     automated:
       prune: true
