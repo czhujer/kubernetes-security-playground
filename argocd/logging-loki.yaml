@@ -19,7 +19,7 @@ spec:
   source:
     chart: loki-simple-scalable
     repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 1.7.1
+    targetRevision: 1.7.5
     helm:
       values: |
         loki:
