@@ -26,7 +26,8 @@ resource "kubectl_manifest" "argocd_prometheus" {
   yaml_body = each.value
   wait      = true
   depends_on = [helm_release.argocd,
-    kubectl_manifest.argocd_prometheus_crds
+    kubectl_manifest.argocd_prometheus_crds,
+    kubectl_manifest.do_ccm
   ]
 }
 
