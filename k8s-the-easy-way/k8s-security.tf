@@ -81,34 +81,34 @@ EOF
   depends_on = [helm_release.kyverno]
 }
 
-# trivy + starboard
+# trivy-operator + starboard-exporter
 #
-data "kubectl_file_documents" "argocd_starboard_project" {
-  content = file("../argocd/projects/security-starboard.yaml")
+data "kubectl_file_documents" "argocd_trivy_project" {
+  content = file("../argocd/projects/security-trivy.yaml")
 }
 
-data "kubectl_file_documents" "argocd_starboard_app" {
-  content = file("../argocd/security-starboard.yaml")
-}
-
-resource "kubectl_manifest" "argocd_starboard_project" {
-  yaml_body  = data.kubectl_file_documents.argocd_starboard_project.content
+resource "kubectl_manifest" "argocd_trivy_project" {
+  yaml_body  = data.kubectl_file_documents.argocd_trivy_project.content
   depends_on = [helm_release.argocd]
 }
 
-resource "kubectl_manifest" "argocd_starboard_app" {
-  yaml_body  = data.kubectl_file_documents.argocd_starboard_app.content
-  depends_on = [kubectl_manifest.argocd_starboard_project]
-}
+#data "kubectl_file_documents" "argocd_starboard_app" {
+#  content = file("../argocd/security-starboard.yaml")
+#}
 
-data "kubectl_file_documents" "argocd_starboard_sm" {
-  content = file("./k8s-manifests/starboard-service-monitor.yaml")
-}
+#resource "kubectl_manifest" "argocd_starboard_app" {
+#  yaml_body  = data.kubectl_file_documents.argocd_starboard_app.content
+#  depends_on = [kubectl_manifest.argocd_starboard_project]
+#}
 
-resource "kubectl_manifest" "argocd_starboard_sm" {
-  yaml_body  = data.kubectl_file_documents.argocd_starboard_sm.content
-  depends_on = [kubectl_manifest.argocd_starboard_app]
-}
+#data "kubectl_file_documents" "argocd_starboard_sm" {
+#  content = file("./k8s-manifests/starboard-service-monitor.yaml")
+#}
+#
+#resource "kubectl_manifest" "argocd_starboard_sm" {
+#  yaml_body  = data.kubectl_file_documents.argocd_starboard_sm.content
+#  depends_on = [kubectl_manifest.argocd_starboard_app]
+#}
 
 data "kubectl_file_documents" "argocd_starboard_exporter" {
   content = file("../argocd/security-starboard-exporter.yaml")
@@ -116,7 +116,7 @@ data "kubectl_file_documents" "argocd_starboard_exporter" {
 
 resource "kubectl_manifest" "argocd_starboard_expoter" {
   yaml_body  = data.kubectl_file_documents.argocd_starboard_exporter.content
-  depends_on = [kubectl_manifest.argocd_starboard_app]
+  depends_on = [kubectl_manifest.argocd_trivy_project]
 }
 
 # falco security
