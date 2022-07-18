@@ -1,6 +1,6 @@
 # Set environment variables
 export CLUSTER_NAME?=security-playground
-export CILIUM_VERSION?=1.11.6
+export CILIUM_VERSION?=1.11.7
 export CERT_MANAGER_CHART_VERSION=1.8.2
 export ARGOCD_CHART_VERSION=4.9.11
 export SPO_VERSION=0.4.3
@@ -24,7 +24,7 @@ kind-basic: kind-prepare-files kind-create kx-kind kind-install-crds cilium-prep
 kind-spo: kind-basic cert-manager-deploy spo-deploy
 
 .PHONY: kind-security
-kind-security: kind-basic starboard-deploy
+kind-security: kind-basic trivy-deploy
 
 .PHONY: kind-prepare-files
 kind-prepare-files:
