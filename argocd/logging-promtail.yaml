@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: promtail
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     namespace: logging
@@ -17,9 +19,11 @@ spec:
   source:
     chart: promtail
     repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 5.1.0
+    targetRevision: 6.2.0
     helm:
       values: |
+        rbac:
+          pspEnabled: false
         serviceMonitor:
           enabled: true
         extraArgs:
@@ -36,7 +40,7 @@ spec:
             readOnly: true
         config:
           clients:
-            - url: http://loki:3100/loki/api/v1/push
+            - url: http://loki-gateway/loki/api/v1/push
               tenant_id: 1
           snippets:
             extraScrapeConfigs: |
