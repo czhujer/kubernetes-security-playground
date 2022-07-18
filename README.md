@@ -9,7 +9,6 @@
 
 # TODO
 ## terraform-based stack
-- switch PSP -> PSA
 - tracing
   - add OTEL collector chart and remove otel operator - ??
   - enable SM for otel-operator/collector
@@ -31,6 +30,8 @@
 - add cloudflare DNS records for instances
 - test firecracker
   - https://github.com/firecracker-microvm/firecracker-containerd
+- update DigitalOcean CSI to 4.1.0
+  - https://github.com/digitalocean/csi-digitalocean/releases/tag/v4.1.0
 
 # docs
 ## github actions

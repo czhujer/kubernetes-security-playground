@@ -7,12 +7,11 @@ resource "helm_release" "kyverno" {
   version          = "2.5.1"
   namespace        = "kyverno"
   create_namespace = "true"
-
-  set {
-    name  = "serviceMonitor.enabled"
-    value = "true"
-    type  = "string"
-  }
+  values = [<<-EOF
+serviceMonitor:
+  enabled: true
+EOF
+  ]
 }
 
 resource "helm_release" "policies" {
@@ -54,12 +53,29 @@ ui:
   enabled: true
   plugins:
     kyverno: true
+  ingress:
+    enabled: true
+    hosts:
+      - host: policyreporter.127.0.0.1.nip.io
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: policy-reporter-tls
+        hosts:
+          - policyreporter.127.0.0.1.nip.io
 kyvernoPlugin:
   enabled: true
 monitoring:
   enabled: true
   grafana:
     namespace: monitoring
+    folder:
+      annotation: k8s-sidecar-target-directory
+      name: system-policy-reporter
+    dashboards:
+      # Enable the deployment of grafana dashboards
+      enabled: true
 EOF
   ]
   depends_on = [helm_release.kyverno]
