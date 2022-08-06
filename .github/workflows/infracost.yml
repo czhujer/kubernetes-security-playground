@@ -9,6 +9,9 @@ jobs:
   infracost:
     name: Infracost
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
 
     env:
       TF_ROOT: k8s-the-easy-way
