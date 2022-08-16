@@ -10,12 +10,9 @@ export ARGOCD_OPTS="--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
 
 # kind image list
 #for kind v0.12.x
-# kindest/node:v1.21.10@sha256:84709f09756ba4f863769bdcabe5edafc2ada72d3c8c44d6515fc581b66b029c
-# kindest/node:v1.22.7@sha256:1dfd72d193bf7da64765fd2f2898f78663b9ba366c2aa74be1fd7498a1873166
-# kindest/node:v1.23.4@sha256:0e34f0d0fd448aa2f2819cfd74e99fe5793a6e4938b328f657c8e3f81ee0dfb9
 # kindest/node:v1.23.5@sha256:a69c29d3d502635369a5fe92d8e503c09581fcd406ba6598acc5d80ff5ba81b1"
-# kindest/node:v1.24.1@sha256:fd82cddc87336d91aa0a2fc35f3c7a9463c53fd8e9575e9052d2c75c61f5b083
-export KIND_NODE_IMAGE="kindest/node:v1.24.2@sha256:1f0cee2282f43150b52dc7933183ed96abdcfc8d293f30ec07082495874876f1"
+# kindest/node:v1.24.2@sha256:1f0cee2282f43150b52dc7933183ed96abdcfc8d293f30ec07082495874876f1
+export KIND_NODE_IMAGE="kindest/node:v1.24.3@sha256:45829cc2302b9245c2d38996aecda7b24388fd380469887b845dbe4dae2f624b"
 
 .PHONY: kind-basic
 kind-basic: kind-prepare-files kind-create kx-kind kind-install-crds cilium-prepare-images cilium-install argocd-deploy nginx-ingress-deploy
