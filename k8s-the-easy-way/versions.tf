@@ -3,7 +3,7 @@ terraform {
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
-      version = "~> 2.24.0"
+      version = "~> 2.25.0"
     }
     null = { version = "~> 3.1" }
     #    random = { version = "~> 3.1" }
