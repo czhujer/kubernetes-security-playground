@@ -8,7 +8,7 @@ spec:
   source:
     chart: starboard-exporter
     repoURL: https://giantswarm.github.io/giantswarm-catalog
-    targetRevision: 0.6.2
+    targetRevision: 0.6.3
     helm:
       values: |
         monitoring.grafanaDashboard.namespace: monitoring
