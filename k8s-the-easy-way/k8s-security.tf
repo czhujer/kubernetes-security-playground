@@ -4,7 +4,7 @@ resource "helm_release" "kyverno" {
   name             = "kyverno"
   repository       = "https://kyverno.github.io/kyverno"
   chart            = "kyverno"
-  version          = "2.6.2"
+  version          = "2.6.3"
   namespace        = "kyverno"
   create_namespace = "true"
   values = [<<-EOF
