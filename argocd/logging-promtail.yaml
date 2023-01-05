@@ -19,7 +19,7 @@ spec:
   source:
     chart: promtail
     repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 6.8.0
+    targetRevision: 6.8.1
     helm:
       values: |
         rbac:
