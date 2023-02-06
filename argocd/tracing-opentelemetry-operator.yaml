@@ -17,7 +17,7 @@ spec:
   source:
     chart: opentelemetry-operator
     repoURL: https://open-telemetry.github.io/opentelemetry-helm-charts
-    targetRevision: 0.21.0
+    targetRevision: 0.21.5
     helm:
       values: |
 #        serviceMonitor:
