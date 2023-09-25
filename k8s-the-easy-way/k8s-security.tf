@@ -41,7 +41,7 @@ resource "helm_release" "policy-reporter" {
   name             = "policy-reporter"
   repository       = "https://kyverno.github.io/policy-reporter"
   chart            = "policy-reporter"
-  version          = "2.19.4"
+  version          = "2.20.1"
   namespace        = "policy-reporter"
   create_namespace = "true"
   values = [<<-EOF
