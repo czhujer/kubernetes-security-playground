@@ -74,7 +74,7 @@ kx-kind:
 .PHONY: kind-install-crds
 kind-install-crds:
 	# fix prometheus-operator's CRDs
-	kubectl apply -f https://raw.githubusercontent.com/prometheus-community/helm-charts/main/charts/kube-prometheus-stack/crds/crd-servicemonitors.yaml
+	kubectl apply -f https://raw.githubusercontent.com/prometheus-community/helm-charts/refs/heads/main/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml
 
 .PHONY: cilium-prepare-images
 cilium-prepare-images:
@@ -205,7 +205,7 @@ prometheus-stack-deploy:
 	kubectl -n argocd apply -f argocd/prometheus-stack.yaml
 	kubectl -n argocd apply -f argocd/prometheus-adapter.yaml
 
-.PHONY: trivy-deploy
+.PHONY: trivy-deploygit pull
 trivy-deploy:
 	kubectl -n argocd apply -f argocd/projects/security-trivy.yaml
 	kubectl -n argocd apply -f argocd/security-trivy.yaml
