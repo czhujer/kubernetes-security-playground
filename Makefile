@@ -1,7 +1,6 @@
 # Set environment variables
 export CLUSTER_NAME?=security-playground
 export CILIUM_VERSION?=1.11.7
-export CERT_MANAGER_CHART_VERSION=1.9.1
 export ARGOCD_CHART_VERSION=4.10.6
 export SPO_VERSION=0.4.3
 export TRIVY_IMAGE_CHECK=0
@@ -110,27 +109,6 @@ cilium-install:
 	   --namespace kube-system \
 	   --wait
 
-.PHONY: cert-manager-deploy
-cert-manager-deploy:
-	# prepare image(s)
-	docker pull quay.io/jetstack/cert-manager-controller:v$(CERT_MANAGER_CHART_VERSION)
-	docker pull quay.io/jetstack/cert-manager-webhook:v$(CERT_MANAGER_CHART_VERSION)
-	docker pull quay.io/jetstack/cert-manager-cainjector:v$(CERT_MANAGER_CHART_VERSION)
-	docker pull quay.io/jetstack/cert-manager-ctl:v$(CERT_MANAGER_CHART_VERSION)
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-controller:v$(CERT_MANAGER_CHART_VERSION)
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-webhook:v$(CERT_MANAGER_CHART_VERSION)
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-cainjector:v$(CERT_MANAGER_CHART_VERSION)
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/jetstack/cert-manager-ctl:v$(CERT_MANAGER_CHART_VERSION)
-	#
-	helm repo add cert-manager https://charts.jetstack.io
-	helm upgrade --install \
-		cert-manager cert-manager/cert-manager \
-		--version "v${CERT_MANAGER_CHART_VERSION}" \
-	   --namespace cert-manager \
-	   --create-namespace \
-	   --values kind/cert-manager.yaml \
-	   --wait
-
 .PHONY: argocd-deploy
 argocd-deploy:
 ifeq ($(TRIVY_IMAGE_CHECK), 1)
@@ -156,6 +134,11 @@ endif
 	# update CRDs
 	kubectl -n argocd apply -f argocd/argo-cd-crds.yaml
 	# kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo ""
+
+.PHONY: cert-manager-deploy
+cert-manager-deploy:
+	kubectl -n argocd apply -f argocd/projects/system-cert-manager.yaml
+	kubectl -n argocd apply -f argocd/cert-manager.yaml
 
 .PHONY: spo-deploy
 spo-deploy:
