@@ -26,9 +26,10 @@ jobs:
 
       - name: Run Terrascan
         id: terrascan
-        uses: accurics/terrascan-action@v1
+        uses: tenable/terrascan-action@v1
         with:
           iac_type: 'terraform'
+          iac_version: 'v14'
           only_warn: true
           sarif_upload: true
 
