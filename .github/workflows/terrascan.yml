@@ -37,7 +37,7 @@ jobs:
 
       - name: Run Terrascan
         id: terrascan
-        uses: tenable/terrascan-action@v1.5.0
+        uses: tenable/terrascan-action@a4b0f7ec5fb3c4c66b8e76d824d958002f6ce12c
         with:
           iac_type: 'terraform'
           iac_version: 'v14'
