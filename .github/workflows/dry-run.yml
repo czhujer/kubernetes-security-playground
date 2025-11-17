@@ -51,7 +51,7 @@ jobs:
 
     steps:
       - name: "prepare env: clone repo"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
 #      - name: "prepare env: show vars"
 #        run: env
