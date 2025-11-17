@@ -133,6 +133,7 @@ cert-manager-deploy:
 
 .PHONY: argocd-deploy
 argocd-deploy:
+ifeq ($(TRIVY_IMAGE_CHECK), 1)
 	# prepare image(s)
 	docker pull quay.io/argoproj/argocd:v2.4.9
 	docker pull redis:7.0.4-alpine
@@ -140,6 +141,7 @@ argocd-deploy:
 	kind load docker-image --name $(CLUSTER_NAME) quay.io/argoproj/argocd:v2.4.9
 	kind load docker-image --name $(CLUSTER_NAME) redis:7.0.4-alpine
 	kind load docker-image --name $(CLUSTER_NAME) bitnami/redis-exporter:1.26.0-debian-10-r2
+endif
 	# install
 	helm repo add argo https://argoproj.github.io/argo-helm
 	helm upgrade --install \
