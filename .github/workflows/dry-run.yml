@@ -3,6 +3,7 @@ name: dry-run in kind
 env:
   kind_version: "v0.22.0"
   kind_kubectl_version: "v1.25.16"
+  kind_node_image: "kindest/node:v1.25.16@sha256:e8b50f8e06b44bb65a93678a65a26248fae585b3d3c2a669e5ca6c90c69dc519"
   argocd_params: "--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
   argocd_version: "3.2.0"
   argocd_projects_dir: "argocd/projects"
@@ -73,6 +74,7 @@ jobs:
         uses: helm/kind-action@main
         with:
           version: "${{ env.kind_version }}"
+          node_image: "${{ env.kind_node_image }}"
           kubectl_version: "${{ env.kind_kubectl_version }}"
           install_only: true
 
