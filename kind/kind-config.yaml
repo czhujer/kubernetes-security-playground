@@ -65,7 +65,7 @@ nodes:
             - name: seccomp-default
               value: "true"
             - name: feature-gates
-              "SeccompDefault=true"
+              value: "SeccompDefault=true"
         # change static manifests for control plane pods
         patches:
           directory: /kubeadm-patches
