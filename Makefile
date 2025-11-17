@@ -8,10 +8,13 @@ export TRIVY_IMAGE_CHECK=0
 export ARGOCD_OPTS="--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
 
 # kind image list
-#for kind v0.12.x
+#
+# for kind v0.22.x
+# kindest/node:v1.29.2@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245
+# for kind v0.12.x
 # kindest/node:v1.23.5@sha256:a69c29d3d502635369a5fe92d8e503c09581fcd406ba6598acc5d80ff5ba81b1"
 # kindest/node:v1.24.2@sha256:1f0cee2282f43150b52dc7933183ed96abdcfc8d293f30ec07082495874876f1
-export KIND_NODE_IMAGE="kindest/node:v1.24.3@sha256:45829cc2302b9245c2d38996aecda7b24388fd380469887b845dbe4dae2f624b"
+export KIND_NODE_IMAGE="kindest/node:v1.29.2@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245"
 
 .PHONY: kind-basic
 kind-basic: kind-prepare-files kind-create kx-kind kind-install-crds cilium-prepare-images cilium-install argocd-deploy nginx-ingress-deploy
