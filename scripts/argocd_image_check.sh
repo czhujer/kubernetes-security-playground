@@ -90,7 +90,7 @@ parse_images() {
   rm images.list || true
   rm images_tmp.list || true
 
-  return $check_ret_val
+  return "$check_ret_val"
 }
 
 echo "running argocd images check script.."
