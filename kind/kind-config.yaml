@@ -6,10 +6,10 @@ networking:
   apiServerAddress: "0.0.0.0"
   disableDefaultCNI: true
 featureGates:
-  EphemeralContainers: true
-  SeccompDefault: true
-  ServerSideApply: true
-  PodSecurity: true # migration from PodSecurityPolicy to PSS/PSA
+  # EphemeralContainers: true
+  # SeccompDefault: true
+  # ServerSideApply: true
+  # PodSecurity: true # migration from PodSecurityPolicy to PSS/PSA
 
 # add to the apiServer certSANs the name of the docker (dind) service in order to be able to reach the cluster through it
 #kubeadmConfigPatchesJSON6902:
@@ -24,14 +24,15 @@ featureGates:
 # patch the generated kubeadm config with some extra settings
 kubeadmConfigPatches:
   - |
-    apiVersion: kubeadm.k8s.io/v1beta3
+    apiVersion: kubeadm.k8s.io/v1beta4
     kind: ClusterConfiguration
     metadata:
       name: config
     apiServer:
       extraArgs:
         # for PSS/PSA defaulting
-        admission-control-config-file: "/kube-configs/kind-admissionconfiguration.yaml"
+        - name: admission-control-config-file
+          value: "/kube-configs/kind-admissionconfiguration.yaml"
 #        # for PSP
 #        enable-admission-plugins: NodeRestriction,PodSecurityPolicy
 
@@ -61,7 +62,6 @@ nodes:
           kubeletExtraArgs:
             node-labels: "ingress-ready=true"
             seccomp-default: "true"
-            feature-gates: "SeccompDefault=true"
         # change static manifests for control plane pods
         patches:
           directory: /kubeadm-patches
