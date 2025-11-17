@@ -24,12 +24,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      # - name: download terrascan
+      #   run: |
+      #     curl -L "$(curl -s https://api.github.com/repos/tenable/terrascan/releases/latest | grep -o -E "https://.+?_Linux_x86_64.tar.gz")" > terrascan.tar.gz
+      #     tar -xf terrascan.tar.gz terrascan && rm terrascan.tar.gz
+      #     sudo install terrascan /usr/local/bin && rm terrascan
+      #     terrascan
+
+      # - name: proint version terrascan
+      #   run: |
+      #     terrascan version
+
       - name: Run Terrascan
         id: terrascan
-        uses: tenable/terrascan-action@v1.4.1
+        uses: tenable/terrascan-action@v1.5.0
         with:
           iac_type: 'terraform'
-          iac_version: 'v12'
+          iac_version: 'v14'
           only_warn: true
           sarif_upload: true
 
