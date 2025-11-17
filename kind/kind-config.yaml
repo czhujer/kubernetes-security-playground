@@ -55,17 +55,16 @@ nodes:
       - hostPath: /tmp/kind/kubeadm-patches
         containerPath: /kubeadm-patches
         readOnly: true
-    # kubeadmConfigPatches:
-    #   - |
-    #     kind: InitConfiguration
-    #     nodeRegistration:
-    #       kubeletExtraArgs:
-    #         node-labels: "ingress-ready=true"
-    #         seccomp-default: "true"
-    #         feature-gates: "SeccompDefault=true"
-    #     # change static manifests for control plane pods
-    #     patches:
-    #       directory: /kubeadm-patches
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+            seccomp-default: "true"
+        # change static manifests for control plane pods
+        patches:
+          directory: /kubeadm-patches
     extraPortMappings:
       - containerPort: 80
         hostPort: 80
