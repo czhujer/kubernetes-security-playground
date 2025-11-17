@@ -22,14 +22,14 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Run Terrascan
         id: terrascan
-        uses: tenable/terrascan-action@v1
+        uses: tenable/terrascan-action@v1.4.1
         with:
           iac_type: 'terraform'
-          iac_version: 'v14'
+          iac_version: 'v12'
           only_warn: true
           sarif_upload: true
 
