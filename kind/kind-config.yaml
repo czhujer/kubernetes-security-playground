@@ -60,9 +60,12 @@ nodes:
         kind: InitConfiguration
         nodeRegistration:
           kubeletExtraArgs:
-            node-labels: "ingress-ready=true"
-            seccomp-default: "true"
-            feature-gates: "SeccompDefault=true"
+            - name: node-labels
+              value: "ingress-ready=true"
+            - name: seccomp-default
+              value: "true"
+            - name: feature-gates
+              "SeccompDefault=true"
         # change static manifests for control plane pods
         patches:
           directory: /kubeadm-patches
