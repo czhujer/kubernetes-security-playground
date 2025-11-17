@@ -15,7 +15,7 @@ on:
 
 jobs:
   scan_charts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
       actions: read
@@ -31,8 +31,6 @@ jobs:
 
       - name: Install yq
         run: |
-            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CC86BB64
-            sudo add-apt-repository ppa:rmescandon/yq
             sudo apt update
             sudo apt install yq -y
 #
@@ -77,7 +75,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   upload_scans:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       actions: read
