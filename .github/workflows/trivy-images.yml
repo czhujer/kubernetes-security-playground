@@ -27,7 +27,7 @@ jobs:
 #        run: "false"
 
       - name: Clone repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # - name: Install yq
       #   run: |
@@ -91,7 +91,7 @@ jobs:
 
     steps:
       - name: Clone repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: restore results files
         uses: actions/download-artifact@master
