@@ -34,7 +34,7 @@ jobs:
 
       - name: Upload output file
         if: ${{ github.actor!= 'dependabot[bot]' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: tfsec-results.json
           path: results.json
