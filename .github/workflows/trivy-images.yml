@@ -2,11 +2,11 @@ name: trivy-images
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - argocd/**
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - argocd/**
 #  push:
 #    branches-ignore:
 #      - main
