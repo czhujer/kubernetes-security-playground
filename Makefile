@@ -1,7 +1,7 @@
 # Set environment variables
 export CLUSTER_NAME?=security-playground
-export CILIUM_VERSION?=1.11.7
-export ARGOCD_CHART_VERSION=9.1.0
+export CILIUM_VERSION?=1.19.0
+export ARGOCD_CHART_VERSION=9.4.0
 export SPO_VERSION=0.4.3
 export TRIVY_IMAGE_CHECK=0
 
@@ -9,35 +9,34 @@ export ARGOCD_OPTS="--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
 
 # kind image list
 # N.B.: be aware, this image is also used in dru-run GHA workflow
-# for kidn v0.30.0
-# v1.34.0: kindest/node:v1.34.0@sha256:7416a61b42b1662ca6ca89f02028ac133a309a2a30ba309614e8ec94d976dc5a
-# v1.33.4: kindest/node:v1.33.4@sha256:25a6018e48dfcaee478f4a59af81157a437f15e6e140bf103f85a2e7cd0cbbf2
-# v1.32.8: kindest/node:v1.32.8@sha256:abd489f042d2b644e2d033f5c2d900bc707798d075e8186cb65e3f1367a9d5a1
-# v1.31.12: kindest/node:v1.31.12@sha256:0f5cc49c5e73c0c2bb6e2df56e7df189240d83cf94edfa30946482eb08ec57d2
-# for kind v0.22.x
-# kindest/node:v1.25.16@sha256:e8b50f8e06b44bb65a93678a65a26248fae585b3d3c2a669e5ca6c90c69dc519
-# for kind v0.12.x
-# kindest/node:v1.24.2@sha256:1f0cee2282f43150b52dc7933183ed96abdcfc8d293f30ec07082495874876f1
-export KIND_NODE_IMAGE="kindest/node:v1.31.12@sha256:0f5cc49c5e73c0c2bb6e2df56e7df189240d83cf94edfa30946482eb08ec57d2"
+# for kind v0.32.0
+# kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+# kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48
+# kindest/node:v1.33.7@sha256:d26ef333bdb2cbe9862a0f7c3803ecc7b4303d8cea8e814b481b09949d353040
+export KIND_NODE_IMAGE="kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48"
 
 .PHONY: kind-basic
-kind-basic: kind-prepare-files kind-create kx-kind kind-install-crds cilium-prepare-images cilium-install argocd-deploy nginx-ingress-deploy
+kind-basic: kind-prepare-files kind-create kx-kind kind-install-crds cilium-install argocd-deploy nginx-ingress-deploy
+# kind-basic: kind-prepare-files kind-create kx-kind kind-install-crds cilium-prepare-images cilium-install argocd-deploy nginx-ingress-deploy
+
+.PHONY: kind-observability
+kind-observability: cert-manager-deploy metrics-server-deploy prometheus-stack-deploy
 
 .PHONY: kind-spo
-kind-spo: kind-basic cert-manager-deploy spo-deploy
+kind-spo: cert-manager-deploy spo-deploy
 
 .PHONY: kind-security
-kind-security: kind-basic trivy-deploy
+kind-security: trivy-deploy falco-deploy
 
 .PHONY: kind-prepare-files
 kind-prepare-files:
 	# change resources for control plane pods
 	# https://github.com/kubernetes/kubeadm/pull/2184/files
-	mkdir -p /tmp/kind/kubeadm-patches
-	cp -a kind/kubeadm-patches/* /tmp/kind/kubeadm-patches
-	# prepare files for control-plane extra config
-	mkdir -p /tmp/kind/kubeadm-configs
-	cp kind/kubeadm-configs/kind-admissionconfiguration.yaml /tmp/kind/kubeadm-configs
+# 	mkdir -p /tmp/kind/kubeadm-patches
+# 	cp -a kind/kubeadm-patches/* /tmp/kind/kubeadm-patches
+# 	# prepare files for control-plane extra config
+# 	mkdir -p /tmp/kind/kubeadm-configs
+# 	cp kind/kubeadm-configs/kind-admissionconfiguration.yaml /tmp/kind/kubeadm-configs
 
 .PHONY: kind-create
 kind-create:
@@ -47,8 +46,9 @@ endif
 	kind --version
 	kind create cluster --name "$(CLUSTER_NAME)" \
  		--config="kind/kind-config.yaml" \
- 		--image="$(KIND_NODE_IMAGE)" \
- 		--retain
+ 		--image="$(KIND_NODE_IMAGE)"
+# 		 \
+#  		--retain
 # for testing PSP
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/psp/privileged-psp.yaml
 #	kubectl apply -f https://github.com/appscodelabs/tasty-kube/raw/master/psp/baseline-psp.yaml
@@ -85,24 +85,27 @@ kind-install-crds:
 .PHONY: cilium-prepare-images
 cilium-prepare-images:
 	# pull image locally
-	docker pull quay.io/cilium/cilium:v$(CILIUM_VERSION)
-	docker pull quay.io/cilium/hubble-ui:v0.8.5
-	docker pull quay.io/cilium/hubble-ui-backend:v0.8.5
-	docker pull quay.io/cilium/hubble-relay:v$(CILIUM_VERSION)
-	docker pull docker.io/envoyproxy/envoy:v1.18.4@sha256:e5c2bb2870d0e59ce917a5100311813b4ede96ce4eb0c6bfa879e3fbe3e83935
+	podman pull quay.io/cilium/cilium:v$(CILIUM_VERSION)
+	podman pull quay.io/cilium/operator-generic:v$(CILIUM_VERSION)
+	podman pull quay.io/cilium/hubble-ui:v0.13.3
+	podman pull quay.io/cilium/hubble-ui-backend:v0.13.3
+	podman pull quay.io/cilium/hubble-relay:v$(CILIUM_VERSION)
+	podman pull quay.io/cilium/cilium-envoy:v1.35.9-1768828720-c6e4827ebca9c47af2a3a6540c563c30947bae29
 ifeq ($(TRIVY_IMAGE_CHECK), 1)
 	trivy image --severity=HIGH --exit-code=0 quay.io/cilium/cilium:v$(CILIUM_VERSION)
-	trivy image --severity=HIGH --exit-code=0 quay.io/cilium/hubble-ui:v0.8.5
-	trivy image --severity=HIGH --exit-code=0 quay.io/cilium/hubble-ui-backend:v0.8.5
+	trivy image --severity=HIGH --exit-code=0 quay.io/cilium/operator-generic:v$(CILIUM_VERSION)
+	trivy image --severity=HIGH --exit-code=0 quay.io/cilium/hubble-ui:v0.13.3
+	trivy image --severity=HIGH --exit-code=0 quay.io/cilium/hubble-ui-backend:v0.13.3
 	trivy image --severity=HIGH --exit-code=0 quay.io/cilium/hubble-relay:v$(CILIUM_VERSION)
-	trivy image --severity=HIGH --exit-code=0 docker.io/envoyproxy/envoy:v1.18.4@sha256:e5c2bb2870d0e59ce917a5100311813b4ede96ce4eb0c6bfa879e3fbe3e83935
+	trivy image --severity=HIGH --exit-code=0 quay.io/cilium/cilium-envoy:v1.35.9-1768828720-c6e4827ebca9c47af2a3a6540c563c30947bae29
 endif
 	# Load the image onto the cluster
 	kind load docker-image --name $(CLUSTER_NAME) quay.io/cilium/cilium:v$(CILIUM_VERSION)
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/cilium/hubble-ui:v0.8.5
-	kind load docker-image --name $(CLUSTER_NAME) quay.io/cilium/hubble-ui-backend:v0.8.5
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/cilium/operator-generic:v$(CILIUM_VERSION)
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/cilium/hubble-ui:v0.13.3
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/cilium/hubble-ui-backend:v0.13.3
 	kind load docker-image --name $(CLUSTER_NAME) quay.io/cilium/hubble-relay:v$(CILIUM_VERSION)
-	kind load docker-image --name $(CLUSTER_NAME) docker.io/envoyproxy/envoy:v1.18.4@sha256:e5c2bb2870d0e59ce917a5100311813b4ede96ce4eb0c6bfa879e3fbe3e83935
+	kind load docker-image --name $(CLUSTER_NAME) quay.io/cilium/cilium-envoy:v1.35.9-1768828720-c6e4827ebca9c47af2a3a6540c563c30947bae29
 
 .PHONY: cilium-install
 cilium-install:
@@ -168,13 +171,15 @@ spo-deploy:
 
 .PHONY: nginx-ingress-deploy
 nginx-ingress-deploy:
-	docker pull k8s.gcr.io/ingress-nginx/controller:v1.2.1
-	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.1
+# 	podman pull k8s.gcr.io/ingress-nginx/controller:v1.2.1
+# 	kind load docker-image --name $(CLUSTER_NAME) k8s.gcr.io/ingress-nginx/controller:v1.2.1
 	# create namespace with annotations for PSS/PSA
 	kubectl apply -f k8s-manifests/namespace-ingress-nginx.yaml
 	# ingress
 	kubectl -n argocd apply -f argocd/nginx-ingress.yaml
 	kubectl -n argocd apply -f argocd/gateway-api-crds.yaml
+	# wait for ingress up and running
+	kubectl -n argocd wait --timeout=2m --for=jsonpath='{.status.sync.status}'=Synced app nginx-ingress
 #
 #	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
 #	kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io ingress-nginx-admission
@@ -197,7 +202,7 @@ prometheus-stack-deploy:
 	kubectl -n argocd apply -f argocd/prometheus-stack.yaml
 	kubectl -n argocd apply -f argocd/prometheus-adapter.yaml
 
-.PHONY: trivy-deploygit pull
+.PHONY: trivy-deploy
 trivy-deploy:
 	kubectl -n argocd apply -f argocd/projects/security-trivy.yaml
 	kubectl -n argocd apply -f argocd/security-trivy.yaml
@@ -219,6 +224,13 @@ test-network-check-status:
 #	linkerd top deployment/podinfo --namespace test-network
 #	linkerd tap deployment/client --namespace test-network
 	kubectl exec -n test-network deploy/client -c client -- curl -s podinfo:9898
+
+.PHONY: run-golang-lint
+run-golang-lint:
+	golangci-lint \
+		run \ 
+		--path-mode=abs \
+		tests/e2e
 
 .PHONY: run-ginkgo-all
 run-ginkgo-all:

@@ -23,7 +23,7 @@ const (
 	operatorLabelKey       string = "app"
 	operatorLabelValue     string = "kube-prometheus-stack-operator"
 	operatorMinPods        int    = 1
-	nodeExporterLabelKey   string = "app"
+	nodeExporterLabelKey   string = "app.kubernetes.io/name"
 	nodeExporterLabelValue string = "prometheus-node-exporter"
 	nodeExporterMinPods    int    = 1
 )

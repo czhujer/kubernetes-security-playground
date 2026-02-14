@@ -2,11 +2,11 @@ name: trivy-images-2
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - k8s-the-easy-way/argocd/**
+  # pull_request:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - k8s-the-easy-way/argocd/**
 #  push:
 #    branches-ignore:
 #      - main

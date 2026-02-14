@@ -1,7 +1,25 @@
-issues:
-  exclude-rules:
-    # Exclude some linters from running on tests files.
-    - path: kubernetes/apps/.*\.go
-      linters:
-        - unused
-        - deadcode
+version: "2"
+linters:
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - deadcode
+          - unused
+        path: kubernetes/apps/.*\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"time"
+
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/kubernetes/test/e2e/framework"
 	e2ekubectl "k8s.io/kubernetes/test/e2e/framework/kubectl"
 	e2elog "k8s.io/kubernetes/test/e2e/framework/log"
-	"time"
 )
 
 func ApplyManifest(testContext *e2ekubectl.TestKubeconfig, yamlFile string) {
@@ -50,7 +51,7 @@ func GetCrdObjects(c kubernetes.Interface, absPath string) (*apiextensionsv1.Cus
 		}
 		return result, nil
 	case <-time.After(framework.PodStartShortTimeout):
-		return &apiextensionsv1.CustomResourceDefinitionList{}, fmt.Errorf("Waiting up to %v for getting the list of CRDs", framework.PodStartShortTimeout)
+		return &apiextensionsv1.CustomResourceDefinitionList{}, fmt.Errorf("waiting up to %v for getting the list of CRDs", framework.PodStartShortTimeout)
 	}
 }
 
