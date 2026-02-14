@@ -12,13 +12,14 @@ server:
     url: http://argocd.127.0.0.1.nip.io
   metrics:
     enabled: true
+    serviceMonitor:
+      enabled: true
   extraArgs:
     - --insecure
     - --disable-auth
   ingress:
     enabled: true
-    hosts:
-      - argocd.127.0.0.1.nip.io
+    hostname: "argocd.127.0.0.1.nip.io"
 redis:
   metrics:
     enabled: true
