@@ -837,6 +837,7 @@ func testDeploymentCleanUpPolicy(f *framework.Framework) {
 	framework.ExpectNoError(err, "Failed to query for pods: %v", err)
 
 	options := metav1.ListOptions{
+		//nolint:staticcheck // QF1008 ignore this!
 		ResourceVersion: pods.ListMeta.ResourceVersion,
 	}
 	stopCh := make(chan struct{})
