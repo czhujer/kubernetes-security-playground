@@ -23,6 +23,8 @@ spec:
     helm:
       skipCrds: true
       values: |
+        crds:
+          enabled: false
         grafana:
           enabled: true
           serviceMonitor:

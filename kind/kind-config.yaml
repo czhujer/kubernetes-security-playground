@@ -5,6 +5,7 @@ kind: Cluster
 networking:
   apiServerAddress: "0.0.0.0"
   disableDefaultCNI: true
+  # kubeProxyMode: none
 featureGates:
   # EphemeralContainers: true
   # SeccompDefault: true
@@ -49,12 +50,12 @@ nodes:
       - hostPath: /var/run/docker.sock
         containerPath: /var/run/docker.sock
       # modify static manifests and admission config
-      - hostPath: /tmp/kind/kubeadm-configs
-        containerPath: /kubeadm-configs
-        readOnly: true
-      - hostPath: /tmp/kind/kubeadm-patches
-        containerPath: /kubeadm-patches
-        readOnly: true
+      # - hostPath: /tmp/kind/kubeadm-configs
+      #   containerPath: /kubeadm-configs
+      #   readOnly: true
+      # - hostPath: /tmp/kind/kubeadm-patches
+      #   containerPath: /kubeadm-patches
+      #   readOnly: true
     kubeadmConfigPatches:
       - |
         kind: InitConfiguration
@@ -63,8 +64,8 @@ nodes:
             node-labels: "ingress-ready=true"
             seccomp-default: "true"
         # change static manifests for control plane pods
-        patches:
-          directory: /kubeadm-patches
+        # patches:
+        #   directory: /kubeadm-patches
     extraPortMappings:
       - containerPort: 80
         hostPort: 80

@@ -12,7 +12,7 @@ nodeinit:
   image:
     pullPolicy: IfNotPresent
   enabled: true
-kubeProxyReplacement: partial
+kubeProxyReplacement: true
 hostServices:
   enabled: false
 externalIPs:
