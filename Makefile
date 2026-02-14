@@ -178,6 +178,8 @@ nginx-ingress-deploy:
 	# ingress
 	kubectl -n argocd apply -f argocd/nginx-ingress.yaml
 	kubectl -n argocd apply -f argocd/gateway-api-crds.yaml
+	# wait
+	kubectl -n ingress-nginx wait --timeout=2m --for=condition=available deployment nginx-ingress-ingress-nginx-controller
 #
 #	kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/static/provider/kind/deploy.yaml
 #	kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io ingress-nginx-admission
