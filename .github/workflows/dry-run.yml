@@ -8,6 +8,7 @@ env:
   argocd_projects_dir: "argocd/projects"
   go_version: '>=1.18.0'
   ACK_GINKGO_DEPRECATIONS: "1.16.5"
+  SCENARIOS: ""
 
 on:
   workflow_dispatch:
