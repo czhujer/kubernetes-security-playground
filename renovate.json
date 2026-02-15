@@ -2,8 +2,10 @@
   "extends": [
     "config:base"
   ],
+  "schedule": [
+    "before 10am on monday"
+  ],
   "assignees": [
-    "czhujer"
   ],
   "kubernetes": {
     "fileMatch": ["k8s-the-easy-way/k8s-manifests/.*\\.yaml$",
