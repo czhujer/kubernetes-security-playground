@@ -1,7 +1,7 @@
 # Set environment variables
 export CLUSTER_NAME?=security-playground
-export CILIUM_VERSION?=1.19.0
-export ARGOCD_CHART_VERSION=9.4.0
+export CILIUM_VERSION?=1.19.4
+export ARGOCD_CHART_VERSION=9.5.15
 export SPO_VERSION=0.4.3
 export TRIVY_IMAGE_CHECK=0
 
@@ -10,10 +10,10 @@ export ARGOCD_OPTS="--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
 # kind image list
 # N.B.: be aware, this image is also used in dru-run GHA workflow
 # for kind v0.32.0
-# kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
 # kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48
-# kindest/node:v1.33.7@sha256:d26ef333bdb2cbe9862a0f7c3803ecc7b4303d8cea8e814b481b09949d353040
-export KIND_NODE_IMAGE="kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48"
+# kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+# kindest/node:v1.35.1@sha256:05d7bcdefbda08b4e038f644c4df690cdac3fba8b06f8289f30e10026720a1ab
+export KIND_NODE_IMAGE="kindest/node:v1.35.1@sha256:05d7bcdefbda08b4e038f644c4df690cdac3fba8b06f8289f30e10026720a1ab"
 
 .PHONY: kind-basic
 kind-basic: kind-prepare-files kind-create kx-kind kind-install-crds cilium-install argocd-deploy nginx-ingress-deploy
@@ -44,7 +44,7 @@ ifeq ($(TRIVY_IMAGE_CHECK), 1)
 	trivy image --severity=HIGH --exit-code=0 "$(KIND_NODE_IMAGE)"
 endif
 	kind --version
-	kind create cluster --name "$(CLUSTER_NAME)" \
+	KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --name "$(CLUSTER_NAME)" \
  		--config="kind/kind-config.yaml" \
  		--image="$(KIND_NODE_IMAGE)"
 # 		 \
