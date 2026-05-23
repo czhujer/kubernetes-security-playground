@@ -44,7 +44,7 @@ ifeq ($(TRIVY_IMAGE_CHECK), 1)
 	trivy image --severity=HIGH --exit-code=0 "$(KIND_NODE_IMAGE)"
 endif
 	kind --version
-	KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --name "$(CLUSTER_NAME)" \
+	kind create cluster --name "$(CLUSTER_NAME)" \
  		--config="kind/kind-config.yaml" \
  		--image="$(KIND_NODE_IMAGE)"
 # 		 \
