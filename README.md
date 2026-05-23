@@ -2,6 +2,11 @@
 
 # kind
 - for kind-based setup use Makefile
+  - for podman (desktop) on mac os x maybe you will need do this:
+  ```
+  podman machine stop
+  podman machine set --rootful=true
+  podman machine start
 
 # Digital Ocean
 - for DO setup use terraform/scripts in k8s-the-easy-way folder
