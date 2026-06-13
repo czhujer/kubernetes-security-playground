@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "schedule": [
     "before 10am on monday"
@@ -9,26 +9,29 @@
   "assignees": [
   ],
   "kubernetes": {
-    "fileMatch": ["k8s-the-easy-way/k8s-manifests/.*\\.yaml$",
-    "tests/assets/k8s/.*\\.yaml$"]
+    "managerFilePatterns": [
+      "/k8s-the-easy-way/k8s-manifests/.*\\.yaml$/",
+      "/tests/assets/k8s/.*\\.yaml$/"
+    ]
   },
   "argocd": {
-    "fileMatch": ["argocd/.+\\.yaml$",
-      "argocd/projects/.+\\.yaml$",
-      "k8s-the-easy-way/argocd/.+\\.yaml$"
+    "managerFilePatterns": [
+      "/argocd/.+\\.yaml$/",
+      "/argocd/projects/.+\\.yaml$/",
+      "/k8s-the-easy-way/argocd/.+\\.yaml$/"
     ]
   },
   "gomod": {
-    "fileMatch": [
-      "tests/.*go\\.mod$",
-      "(^|/)go\\.mod$"
+    "managerFilePatterns": [
+      "/tests/.*go\\.mod$/",
+      "/(^|/)go\\.mod$/"
     ]
   },
   "helm-values": {
-    "fileMatch": [
-      "(^|/)values\\.yaml$",
-      "k8s-the-easy-way/helm-values/*\\.yaml",
-      "kind/kind-values.*\\.yaml$"
+    "managerFilePatterns": [
+      "/(^|/)values\\.yaml$/",
+      "/k8s-the-easy-way/helm-values/*\\.yaml/",
+      "/kind/kind-values.*\\.yaml$/"
     ]
   }
 }
