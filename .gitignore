@@ -1,4 +1,7 @@
 /.idea/
+
+/.claude
+
 /argo-cd-crds/
 
 /tests/e2e/vendor/
