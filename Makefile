@@ -10,10 +10,9 @@ export ARGOCD_OPTS="--grpc-web --insecure --server argocd.127.0.0.1.nip.io"
 # kind image list
 # N.B.: be aware, this image is also used in dru-run GHA workflow
 # for kind v0.32.0
-# kindest/node:v1.34.3@sha256:08497ee19eace7b4b5348db5c6a1591d7752b164530a36f855cb0f2bdcbadd48
-# kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
-# kindest/node:v1.35.1@sha256:05d7bcdefbda08b4e038f644c4df690cdac3fba8b06f8289f30e10026720a1ab
-export KIND_NODE_IMAGE="kindest/node:v1.35.1@sha256:05d7bcdefbda08b4e038f644c4df690cdac3fba8b06f8289f30e10026720a1ab"
+# kindest/node:v1.35.5@sha256:ce977ae6d65918d0b58a5f8b5e940429c2ce42fa3a5619ec2bbc60b949c0ac95
+# kindest/node:v1.36.1@sha256:3489c7674813ba5d8b1a9977baea8a6e553784dab7b84759d1014dbd78f7ebd5
+export KIND_NODE_IMAGE="kindest/node:v1.36.1@sha256:3489c7674813ba5d8b1a9977baea8a6e553784dab7b84759d1014dbd78f7ebd5"
 
 .PHONY: kind-basic
 kind-basic: kind-prepare-files kind-create kx-kind kind-install-crds cilium-install argocd-deploy nginx-ingress-deploy
